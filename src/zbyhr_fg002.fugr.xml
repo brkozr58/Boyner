@@ -1,0 +1,327 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<abapGit version="v1.0.0" serializer="LCL_OBJECT_FUGR" serializer_version="v1.0.0">
+ <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
+  <asx:values>
+   <AREAT>Genel Fonksiyonlar</AREAT>
+   <INCLUDES>
+    <SOBJ_NAME>LZBYHR_FG002F01</SOBJ_NAME>
+    <SOBJ_NAME>LZBYHR_FG002TOP</SOBJ_NAME>
+    <SOBJ_NAME>SAPLZBYHR_FG002</SOBJ_NAME>
+   </INCLUDES>
+   <FUNCTIONS>
+    <item>
+     <FUNCNAME>ZBYHR_FG002_001</FUNCNAME>
+     <SHORT_TEXT>Bordro Zarfı</SHORT_TEXT>
+     <IMPORT>
+      <RSIMP>
+       <PARAMETER>IV_PERNR</PARAMETER>
+       <OPTIONAL>X</OPTIONAL>
+       <TYP>PA0001-PERNR</TYP>
+      </RSIMP>
+      <RSIMP>
+       <PARAMETER>IV_SEQUENCE</PARAMETER>
+       <REFERENCE>X</REFERENCE>
+       <TYP>BAPI7004_RL-SEQUENCENUMBER</TYP>
+      </RSIMP>
+      <RSIMP>
+       <PARAMETER>IV_PYVAR</PARAMETER>
+       <REFERENCE>X</REFERENCE>
+       <TYP>BAPI7004-PAYSLIP_VARIANT</TYP>
+      </RSIMP>
+      <RSIMP>
+       <PARAMETER>IV_MONTH</PARAMETER>
+       <REFERENCE>X</REFERENCE>
+       <TYP>CHAR10</TYP>
+      </RSIMP>
+      <RSIMP>
+       <PARAMETER>IV_YEAR</PARAMETER>
+       <REFERENCE>X</REFERENCE>
+       <TYP>CHAR04</TYP>
+      </RSIMP>
+      <RSIMP>
+       <PARAMETER>IV_SAVE</PARAMETER>
+       <REFERENCE>X</REFERENCE>
+       <TYP>CHAR1</TYP>
+      </RSIMP>
+      <RSIMP>
+       <PARAMETER>IV_SVFL</PARAMETER>
+       <REFERENCE>X</REFERENCE>
+       <TYP>STRING</TYP>
+      </RSIMP>
+      <RSIMP>
+       <PARAMETER>IV_FORML</PARAMETER>
+       <REFERENCE>X</REFERENCE>
+       <TYP>FORMU_514D</TYP>
+      </RSIMP>
+      <RSIMP>
+       <PARAMETER>IT_PERNR</PARAMETER>
+       <OPTIONAL>X</OPTIONAL>
+       <TYP>HRPADUN_AAP_PERSONS</TYP>
+      </RSIMP>
+      <RSIMP>
+       <PARAMETER>IV_SPOOL</PARAMETER>
+       <REFERENCE>X</REFERENCE>
+       <TYP>CHAR1</TYP>
+      </RSIMP>
+      <RSIMP>
+       <PARAMETER>IT_DATE</PARAMETER>
+       <REFERENCE>X</REFERENCE>
+       <TYP>HRPBSDEZV_FPPER</TYP>
+      </RSIMP>
+      <RSIMP>
+       <PARAMETER>IV_LOW</PARAMETER>
+       <REFERENCE>X</REFERENCE>
+       <TYP>FPPER</TYP>
+      </RSIMP>
+      <RSIMP>
+       <PARAMETER>IV_HIGH</PARAMETER>
+       <REFERENCE>X</REFERENCE>
+       <TYP>FPPER</TYP>
+      </RSIMP>
+     </IMPORT>
+     <DOCUMENTATION>
+      <RSFDO>
+       <PARAMETER>IV_PERNR</PARAMETER>
+       <KIND>P</KIND>
+       <STEXT>Personel numarası</STEXT>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>IV_SEQUENCE</PARAMETER>
+       <KIND>P</KIND>
+       <STEXT>Sıra numarası</STEXT>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>IV_PYVAR</PARAMETER>
+       <KIND>P</KIND>
+       <STEXT>Ödeme bilgileri görüntü varyantı</STEXT>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>IV_MONTH</PARAMETER>
+       <KIND>P</KIND>
+       <STEXT>Karakter alanı uzunluğu 10</STEXT>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>IV_YEAR</PARAMETER>
+       <KIND>P</KIND>
+       <STEXT>Veri tipi 4 karakter</STEXT>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>IV_SAVE</PARAMETER>
+       <KIND>P</KIND>
+       <STEXT>Tek basamaklı gösterge</STEXT>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>IV_SVFL</PARAMETER>
+       <KIND>P</KIND>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>IV_FORML</PARAMETER>
+       <KIND>P</KIND>
+       <STEXT>Form adı</STEXT>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>IT_PERNR</PARAMETER>
+       <KIND>P</KIND>
+       <STEXT>List of person numbers</STEXT>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>IV_SPOOL</PARAMETER>
+       <KIND>P</KIND>
+       <STEXT>Tek basamaklı gösterge</STEXT>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>IT_DATE</PARAMETER>
+       <KIND>P</KIND>
+       <STEXT>For-Periods</STEXT>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>IV_LOW</PARAMETER>
+       <KIND>P</KIND>
+       <STEXT>Haciz için hesaplanan dönem</STEXT>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>IV_HIGH</PARAMETER>
+       <KIND>P</KIND>
+       <STEXT>Haciz için hesaplanan dönem</STEXT>
+      </RSFDO>
+     </DOCUMENTATION>
+    </item>
+    <item>
+     <FUNCNAME>ZBYHR_FG002_002</FUNCNAME>
+     <SHORT_TEXT>Bordro Zarf Maili</SHORT_TEXT>
+     <IMPORT>
+      <RSIMP>
+       <PARAMETER>IV_PERNR</PARAMETER>
+       <REFERENCE>X</REFERENCE>
+       <TYP>PA0001-PERNR</TYP>
+      </RSIMP>
+      <RSIMP>
+       <PARAMETER>IV_SEQUENCE</PARAMETER>
+       <REFERENCE>X</REFERENCE>
+       <TYP>BAPI7004_RL-SEQUENCENUMBER</TYP>
+      </RSIMP>
+      <RSIMP>
+       <PARAMETER>IV_PYVAR</PARAMETER>
+       <REFERENCE>X</REFERENCE>
+       <TYP>BAPI7004-PAYSLIP_VARIANT</TYP>
+      </RSIMP>
+      <RSIMP>
+       <PARAMETER>IV_MONTH</PARAMETER>
+       <REFERENCE>X</REFERENCE>
+       <TYP>CHAR10</TYP>
+      </RSIMP>
+      <RSIMP>
+       <PARAMETER>IV_YEAR</PARAMETER>
+       <REFERENCE>X</REFERENCE>
+       <TYP>CHAR04</TYP>
+      </RSIMP>
+     </IMPORT>
+     <DOCUMENTATION>
+      <RSFDO>
+       <PARAMETER>IV_PERNR</PARAMETER>
+       <KIND>P</KIND>
+       <STEXT>Personel numarası</STEXT>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>IV_SEQUENCE</PARAMETER>
+       <KIND>P</KIND>
+       <STEXT>Sıra numarası</STEXT>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>IV_PYVAR</PARAMETER>
+       <KIND>P</KIND>
+       <STEXT>Ödeme bilgileri görüntü varyantı</STEXT>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>IV_MONTH</PARAMETER>
+       <KIND>P</KIND>
+       <STEXT>Karakter alanı uzunluğu 10</STEXT>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>IV_YEAR</PARAMETER>
+       <KIND>P</KIND>
+       <STEXT>Veri tipi 4 karakter</STEXT>
+      </RSFDO>
+     </DOCUMENTATION>
+    </item>
+    <item>
+     <FUNCNAME>ZBYHR_FG002_003</FUNCNAME>
+     <SHORT_TEXT>Bordro Zarfı</SHORT_TEXT>
+     <IMPORT>
+      <RSIMP>
+       <PARAMETER>IV_PERNR</PARAMETER>
+       <OPTIONAL>X</OPTIONAL>
+       <TYP>PA0001-PERNR</TYP>
+      </RSIMP>
+      <RSIMP>
+       <PARAMETER>IV_SEND</PARAMETER>
+       <OPTIONAL>X</OPTIONAL>
+       <TYP>CHAR1</TYP>
+      </RSIMP>
+      <RSIMP>
+       <PARAMETER>IV_SAVE</PARAMETER>
+       <OPTIONAL>X</OPTIONAL>
+       <TYP>CHAR1</TYP>
+      </RSIMP>
+      <RSIMP>
+       <PARAMETER>IV_SVFL</PARAMETER>
+       <OPTIONAL>X</OPTIONAL>
+       <TYP>STRING</TYP>
+      </RSIMP>
+      <RSIMP>
+       <PARAMETER>IT_PERNR</PARAMETER>
+       <OPTIONAL>X</OPTIONAL>
+       <TYP>HRPADUN_AAP_PERSONS</TYP>
+      </RSIMP>
+      <RSIMP>
+       <PARAMETER>IV_LOW</PARAMETER>
+       <OPTIONAL>X</OPTIONAL>
+       <TYP>SPMON</TYP>
+      </RSIMP>
+      <RSIMP>
+       <PARAMETER>IV_HIGH</PARAMETER>
+       <OPTIONAL>X</OPTIONAL>
+       <TYP>SPMON</TYP>
+      </RSIMP>
+     </IMPORT>
+     <DOCUMENTATION>
+      <RSFDO>
+       <PARAMETER>IV_PERNR</PARAMETER>
+       <KIND>P</KIND>
+       <STEXT>Personel numarası</STEXT>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>IV_SEND</PARAMETER>
+       <KIND>P</KIND>
+       <STEXT>Tek basamaklı gösterge</STEXT>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>IV_SAVE</PARAMETER>
+       <KIND>P</KIND>
+       <STEXT>Tek basamaklı gösterge</STEXT>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>IV_SVFL</PARAMETER>
+       <KIND>P</KIND>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>IT_PERNR</PARAMETER>
+       <KIND>P</KIND>
+       <STEXT>List of person numbers</STEXT>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>IV_LOW</PARAMETER>
+       <KIND>P</KIND>
+       <STEXT>Haciz için hesaplanan dönem</STEXT>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>IV_HIGH</PARAMETER>
+       <KIND>P</KIND>
+       <STEXT>Haciz için hesaplanan dönem</STEXT>
+      </RSFDO>
+     </DOCUMENTATION>
+    </item>
+    <item>
+     <FUNCNAME>ZHR_ISYERI_SSKNO_URET</FUNCNAME>
+     <SHORT_TEXT>HR-TR: İşyeri SSKNO alanı üretilmesi</SHORT_TEXT>
+     <IMPORT>
+      <RSIMP>
+       <PARAMETER>SSKNO</PARAMETER>
+       <REFERENCE>X</REFERENCE>
+       <TYP>PTR_SSKNO</TYP>
+      </RSIMP>
+      <RSIMP>
+       <PARAMETER>AKODU</PARAMETER>
+       <REFERENCE>X</REFERENCE>
+       <TYP>PTR_AKODU</TYP>
+      </RSIMP>
+     </IMPORT>
+     <EXPORT>
+      <RSEXP>
+       <PARAMETER>SSK_NO</PARAMETER>
+       <REFERENCE>X</REFERENCE>
+       <TYP>TEXT40</TYP>
+      </RSEXP>
+     </EXPORT>
+     <DOCUMENTATION>
+      <RSFDO>
+       <PARAMETER>SSKNO</PARAMETER>
+       <KIND>P</KIND>
+       <STEXT>SSK İşyeri numarası</STEXT>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>AKODU</PARAMETER>
+       <KIND>P</KIND>
+       <STEXT>Aracı kodu</STEXT>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>SSK_NO</PARAMETER>
+       <KIND>P</KIND>
+       <STEXT>40 karakter uzunluğundaki metin</STEXT>
+      </RSFDO>
+     </DOCUMENTATION>
+    </item>
+   </FUNCTIONS>
+  </asx:values>
+ </asx:abap>
+</abapGit>

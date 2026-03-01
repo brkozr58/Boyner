@@ -1,0 +1,560 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<abapGit version="v1.0.0" serializer="LCL_OBJECT_SFPI" serializer_version="v1.0.0">
+ <asx:abap version="1.0" xmlns:asx="http://www.sap.com/abapxml">
+  <asx:values>
+   <VERSION>1</VERSION>
+   <TYPE/>
+   <INTERFACE href="#o1"/>
+   <INTERFACET>
+    <FPINTERFACET>
+     <NAME/>
+     <STATE/>
+     <LANGUAGE>T</LANGUAGE>
+     <ID/>
+     <TEXT>Bordro zarfı  düzenlemesi</TEXT>
+    </FPINTERFACET>
+   </INTERFACET>
+  </asx:values>
+  <asx:heap xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:abap="http://www.sap.com/abapxml/types/built-in" xmlns:cls="http://www.sap.com/abapxml/classes/global" xmlns:dic="http://www.sap.com/abapxml/types/dictionary">
+   <cls:CL_FP_INTERFACE_DATA id="o1">
+    <CL_FP_INTERFACE_DATA classVersion="1">
+     <CODING href="#o5"/>
+     <PARAMETERS href="#o4"/>
+     <GLOBAL_DEFINITIONS href="#o3"/>
+     <REFERENCE_FIELDS href="#o2"/>
+     <XSD_DEFINITIONS/>
+    </CL_FP_INTERFACE_DATA>
+   </cls:CL_FP_INTERFACE_DATA>
+   <cls:CL_FP_REFERENCE_FIELDS id="o2">
+    <CL_FP_INTERFACE_DATA_CHANGED classVersion="1">
+     <INTERFACE_DATA href="#o1"/>
+    </CL_FP_INTERFACE_DATA_CHANGED>
+    <CL_FP_REFERENCE_FIELDS classVersion="1">
+     <REFERENCE_FIELDS>
+      <SFPREF>
+       <ACTIVE/>
+       <STANDARD/>
+       <DATATYPE>CURR</DATATYPE>
+       <VALUE>S011-HEADER-BETRG</VALUE>
+       <UNIT>S011-HEADER-WAERS</UNIT>
+      </SFPREF>
+      <SFPREF>
+       <ACTIVE/>
+       <STANDARD/>
+       <DATATYPE>CURR</DATATYPE>
+       <VALUE>S011-T_RETURN-BETPE</VALUE>
+       <UNIT>S011-HEADER-WAERS</UNIT>
+      </SFPREF>
+      <SFPREF>
+       <ACTIVE/>
+       <STANDARD/>
+       <DATATYPE>CURR</DATATYPE>
+       <VALUE>S011-T_RETURN-BETRG</VALUE>
+       <UNIT>S011-HEADER-WAERS</UNIT>
+      </SFPREF>
+      <SFPREF>
+       <ACTIVE/>
+       <STANDARD/>
+       <DATATYPE>CURR</DATATYPE>
+       <VALUE>GV_NDY</VALUE>
+       <UNIT>S011-HEADER-WAERS</UNIT>
+      </SFPREF>
+     </REFERENCE_FIELDS>
+    </CL_FP_REFERENCE_FIELDS>
+   </cls:CL_FP_REFERENCE_FIELDS>
+   <cls:CL_FP_GLOBAL_DEFINITIONS id="o3">
+    <CL_FP_INTERFACE_DATA_CHANGED classVersion="1">
+     <INTERFACE_DATA href="#o1"/>
+    </CL_FP_INTERFACE_DATA_CHANGED>
+    <CL_FP_GLOBAL_DEFINITIONS classVersion="1">
+     <GLOBAL_DATA>
+      <SFPGDATA>
+       <NAME>S011</NAME>
+       <TYPING>TYPE</TYPING>
+       <TYPENAME>/DSL/HR20_S011</TYPENAME>
+       <DEFAULTVAL/>
+       <CONSTANT/>
+      </SFPGDATA>
+      <SFPGDATA>
+       <NAME>GT_01</NAME>
+       <TYPING>TYPE</TYPING>
+       <TYPENAME>/DSL/HR20_TT012</TYPENAME>
+       <DEFAULTVAL/>
+       <CONSTANT/>
+      </SFPGDATA>
+      <SFPGDATA>
+       <NAME>GT_02</NAME>
+       <TYPING>TYPE</TYPING>
+       <TYPENAME>/DSL/HR20_TT012</TYPENAME>
+       <DEFAULTVAL/>
+       <CONSTANT/>
+      </SFPGDATA>
+      <SFPGDATA>
+       <NAME>GT_03</NAME>
+       <TYPING>TYPE</TYPING>
+       <TYPENAME>/DSL/HR20_TT012</TYPENAME>
+       <DEFAULTVAL/>
+       <CONSTANT/>
+      </SFPGDATA>
+      <SFPGDATA>
+       <NAME>GT_04</NAME>
+       <TYPING>TYPE</TYPING>
+       <TYPENAME>/DSL/HR20_TT012</TYPENAME>
+       <DEFAULTVAL/>
+       <CONSTANT/>
+      </SFPGDATA>
+      <SFPGDATA>
+       <NAME>GT_05</NAME>
+       <TYPING>TYPE</TYPING>
+       <TYPENAME>/DSL/HR20_TT012</TYPENAME>
+       <DEFAULTVAL/>
+       <CONSTANT/>
+      </SFPGDATA>
+      <SFPGDATA>
+       <NAME>GT_06</NAME>
+       <TYPING>TYPE</TYPING>
+       <TYPENAME>/DSL/HR20_TT012</TYPENAME>
+       <DEFAULTVAL/>
+       <CONSTANT/>
+      </SFPGDATA>
+      <SFPGDATA>
+       <NAME>GT_07</NAME>
+       <TYPING>TYPE</TYPING>
+       <TYPENAME>/DSL/HR20_TT012</TYPENAME>
+       <DEFAULTVAL/>
+       <CONSTANT/>
+      </SFPGDATA>
+      <SFPGDATA>
+       <NAME>GT_08</NAME>
+       <TYPING>TYPE</TYPING>
+       <TYPENAME>/DSL/HR20_TT012</TYPENAME>
+       <DEFAULTVAL/>
+       <CONSTANT/>
+      </SFPGDATA>
+      <SFPGDATA>
+       <NAME>GT_09</NAME>
+       <TYPING>TYPE</TYPING>
+       <TYPENAME>/DSL/HR20_TT012</TYPENAME>
+       <DEFAULTVAL/>
+       <CONSTANT/>
+      </SFPGDATA>
+      <SFPGDATA>
+       <NAME>GT_10</NAME>
+       <TYPING>TYPE</TYPING>
+       <TYPENAME>/DSL/HR20_TT012</TYPENAME>
+       <DEFAULTVAL/>
+       <CONSTANT/>
+      </SFPGDATA>
+      <SFPGDATA>
+       <NAME>GT_11</NAME>
+       <TYPING>TYPE</TYPING>
+       <TYPENAME>/DSL/HR20_TT012</TYPENAME>
+       <DEFAULTVAL/>
+       <CONSTANT/>
+      </SFPGDATA>
+      <SFPGDATA>
+       <NAME>GT_12</NAME>
+       <TYPING>TYPE</TYPING>
+       <TYPENAME>/DSL/HR20_TT012</TYPENAME>
+       <DEFAULTVAL/>
+       <CONSTANT/>
+      </SFPGDATA>
+      <SFPGDATA>
+       <NAME>GT_13</NAME>
+       <TYPING>TYPE</TYPING>
+       <TYPENAME>/DSL/HR20_TT012</TYPENAME>
+       <DEFAULTVAL/>
+       <CONSTANT/>
+      </SFPGDATA>
+      <SFPGDATA>
+       <NAME>GT_14</NAME>
+       <TYPING>TYPE</TYPING>
+       <TYPENAME>/DSL/HR20_TT012</TYPENAME>
+       <DEFAULTVAL/>
+       <CONSTANT/>
+      </SFPGDATA>
+      <SFPGDATA>
+       <NAME>GT_15</NAME>
+       <TYPING>TYPE</TYPING>
+       <TYPENAME>/DSL/HR20_TT012</TYPENAME>
+       <DEFAULTVAL/>
+       <CONSTANT/>
+      </SFPGDATA>
+      <SFPGDATA>
+       <NAME>GV_TOT01</NAME>
+       <TYPING>TYPE</TYPING>
+       <TYPENAME>TS_SUBTOT</TYPENAME>
+       <DEFAULTVAL/>
+       <CONSTANT/>
+      </SFPGDATA>
+      <SFPGDATA>
+       <NAME>GV_TOT02</NAME>
+       <TYPING>TYPE</TYPING>
+       <TYPENAME>TS_SUBTOT</TYPENAME>
+       <DEFAULTVAL/>
+       <CONSTANT/>
+      </SFPGDATA>
+      <SFPGDATA>
+       <NAME>GV_TOT03</NAME>
+       <TYPING>TYPE</TYPING>
+       <TYPENAME>TS_SUBTOT</TYPENAME>
+       <DEFAULTVAL/>
+       <CONSTANT/>
+      </SFPGDATA>
+      <SFPGDATA>
+       <NAME>GV_TOT04</NAME>
+       <TYPING>TYPE</TYPING>
+       <TYPENAME>TS_SUBTOT</TYPENAME>
+       <DEFAULTVAL/>
+       <CONSTANT/>
+      </SFPGDATA>
+      <SFPGDATA>
+       <NAME>GV_TOT05</NAME>
+       <TYPING>TYPE</TYPING>
+       <TYPENAME>TS_SUBTOT</TYPENAME>
+       <DEFAULTVAL/>
+       <CONSTANT/>
+      </SFPGDATA>
+      <SFPGDATA>
+       <NAME>GV_TOT06</NAME>
+       <TYPING>TYPE</TYPING>
+       <TYPENAME>TS_SUBTOT</TYPENAME>
+       <DEFAULTVAL/>
+       <CONSTANT/>
+      </SFPGDATA>
+      <SFPGDATA>
+       <NAME>GV_TOT07</NAME>
+       <TYPING>TYPE</TYPING>
+       <TYPENAME>TS_SUBTOT</TYPENAME>
+       <DEFAULTVAL/>
+       <CONSTANT/>
+      </SFPGDATA>
+      <SFPGDATA>
+       <NAME>GV_TOT08</NAME>
+       <TYPING>TYPE</TYPING>
+       <TYPENAME>TS_SUBTOT</TYPENAME>
+       <DEFAULTVAL/>
+       <CONSTANT/>
+      </SFPGDATA>
+      <SFPGDATA>
+       <NAME>GV_TOT09</NAME>
+       <TYPING>TYPE</TYPING>
+       <TYPENAME>TS_SUBTOT</TYPENAME>
+       <DEFAULTVAL/>
+       <CONSTANT/>
+      </SFPGDATA>
+      <SFPGDATA>
+       <NAME>GV_ADRES</NAME>
+       <TYPING>TYPE</TYPING>
+       <TYPENAME>TEXT250</TYPENAME>
+       <DEFAULTVAL/>
+       <CONSTANT/>
+      </SFPGDATA>
+      <SFPGDATA>
+       <NAME>GV_UNVAN</NAME>
+       <TYPING>TYPE</TYPING>
+       <TYPENAME>TEXT250</TYPENAME>
+       <DEFAULTVAL/>
+       <CONSTANT/>
+      </SFPGDATA>
+      <SFPGDATA>
+       <NAME>GS_01</NAME>
+       <TYPING>TYPE</TYPING>
+       <TYPENAME>/DSL/HR20_S012</TYPENAME>
+       <DEFAULTVAL/>
+       <CONSTANT/>
+      </SFPGDATA>
+      <SFPGDATA>
+       <NAME>GS_02</NAME>
+       <TYPING>TYPE</TYPING>
+       <TYPENAME>/DSL/HR20_S012</TYPENAME>
+       <DEFAULTVAL/>
+       <CONSTANT/>
+      </SFPGDATA>
+      <SFPGDATA>
+       <NAME>GS_03</NAME>
+       <TYPING>TYPE</TYPING>
+       <TYPENAME>/DSL/HR20_S012</TYPENAME>
+       <DEFAULTVAL/>
+       <CONSTANT/>
+      </SFPGDATA>
+      <SFPGDATA>
+       <NAME>GS_04</NAME>
+       <TYPING>TYPE</TYPING>
+       <TYPENAME>/DSL/HR20_S012</TYPENAME>
+       <DEFAULTVAL/>
+       <CONSTANT/>
+      </SFPGDATA>
+      <SFPGDATA>
+       <NAME>GS_05</NAME>
+       <TYPING>TYPE</TYPING>
+       <TYPENAME>/DSL/HR20_S012</TYPENAME>
+       <DEFAULTVAL/>
+       <CONSTANT/>
+      </SFPGDATA>
+      <SFPGDATA>
+       <NAME>GS_06</NAME>
+       <TYPING>TYPE</TYPING>
+       <TYPENAME>/DSL/HR20_S012</TYPENAME>
+       <DEFAULTVAL/>
+       <CONSTANT/>
+      </SFPGDATA>
+      <SFPGDATA>
+       <NAME>GS_07</NAME>
+       <TYPING>TYPE</TYPING>
+       <TYPENAME>/DSL/HR20_S012</TYPENAME>
+       <DEFAULTVAL/>
+       <CONSTANT/>
+      </SFPGDATA>
+      <SFPGDATA>
+       <NAME>GS_08</NAME>
+       <TYPING>TYPE</TYPING>
+       <TYPENAME>/DSL/HR20_S012</TYPENAME>
+       <DEFAULTVAL/>
+       <CONSTANT/>
+      </SFPGDATA>
+      <SFPGDATA>
+       <NAME>GS_09</NAME>
+       <TYPING>TYPE</TYPING>
+       <TYPENAME>/DSL/HR20_S012</TYPENAME>
+       <DEFAULTVAL/>
+       <CONSTANT/>
+      </SFPGDATA>
+      <SFPGDATA>
+       <NAME>GS_10</NAME>
+       <TYPING>TYPE</TYPING>
+       <TYPENAME>/DSL/HR20_S012</TYPENAME>
+       <DEFAULTVAL/>
+       <CONSTANT/>
+      </SFPGDATA>
+      <SFPGDATA>
+       <NAME>GS_11</NAME>
+       <TYPING>TYPE</TYPING>
+       <TYPENAME>/DSL/HR20_S012</TYPENAME>
+       <DEFAULTVAL/>
+       <CONSTANT/>
+      </SFPGDATA>
+      <SFPGDATA>
+       <NAME>GS_12</NAME>
+       <TYPING>TYPE</TYPING>
+       <TYPENAME>/DSL/HR20_S012</TYPENAME>
+       <DEFAULTVAL/>
+       <CONSTANT/>
+      </SFPGDATA>
+      <SFPGDATA>
+       <NAME>GS_13</NAME>
+       <TYPING>TYPE</TYPING>
+       <TYPENAME>/DSL/HR20_S012</TYPENAME>
+       <DEFAULTVAL/>
+       <CONSTANT/>
+      </SFPGDATA>
+      <SFPGDATA>
+       <NAME>GS_14</NAME>
+       <TYPING>TYPE</TYPING>
+       <TYPENAME>/DSL/HR20_S012</TYPENAME>
+       <DEFAULTVAL/>
+       <CONSTANT/>
+      </SFPGDATA>
+      <SFPGDATA>
+       <NAME>GS_15</NAME>
+       <TYPING>TYPE</TYPING>
+       <TYPENAME>/DSL/HR20_S012</TYPENAME>
+       <DEFAULTVAL/>
+       <CONSTANT/>
+      </SFPGDATA>
+      <SFPGDATA>
+       <NAME>GV_NDY</NAME>
+       <TYPING>TYPE</TYPING>
+       <TYPENAME>MAXBT</TYPENAME>
+       <DEFAULTVAL/>
+       <CONSTANT/>
+      </SFPGDATA>
+     </GLOBAL_DATA>
+     <TYPES>
+      <FPCLINE>TYPES : BEGIN OF ts_subtot,</FPCLINE>
+      <FPCLINE>            text      TYPE text100,</FPCLINE>
+      <FPCLINE>            brtur     TYPE maxbt  ,</FPCLINE>
+      <FPCLINE>            netur     TYPE betpe  ,</FPCLINE>
+      <FPCLINE>            anzhl     TYPE pranz  ,</FPCLINE>
+      <FPCLINE>            value_t   TYPE text100,</FPCLINE>
+      <FPCLINE>        END OF ts_subtot.</FPCLINE>
+     </TYPES>
+     <FIELDSYMBOLS/>
+    </CL_FP_GLOBAL_DEFINITIONS>
+   </cls:CL_FP_GLOBAL_DEFINITIONS>
+   <cls:CL_FP_PARAMETERS id="o4">
+    <CL_FP_INTERFACE_DATA_CHANGED classVersion="1">
+     <INTERFACE_DATA href="#o1"/>
+    </CL_FP_INTERFACE_DATA_CHANGED>
+    <CL_FP_PARAMETERS classVersion="1">
+     <IMPORT_PARAMETERS>
+      <SFPIOPAR>
+       <NAME>I_TABLE</NAME>
+       <TYPING>TYPE</TYPING>
+       <TYPENAME>/DSL/HR20_TT011</TYPENAME>
+       <OPTIONAL>X</OPTIONAL>
+       <BYVALUE>X</BYVALUE>
+       <DEFAULTVAL/>
+       <STANDARD/>
+       <CONSTANT/>
+      </SFPIOPAR>
+     </IMPORT_PARAMETERS>
+     <EXPORT_PARAMETERS/>
+     <TABLE_PARAMETERS/>
+     <EXCEPTIONS/>
+    </CL_FP_PARAMETERS>
+   </cls:CL_FP_PARAMETERS>
+   <cls:CL_FP_CODING id="o5">
+    <CL_FP_INTERFACE_DATA_CHANGED classVersion="1">
+     <INTERFACE_DATA href="#o1"/>
+    </CL_FP_INTERFACE_DATA_CHANGED>
+    <CL_FP_CODING classVersion="1">
+     <INPUT_PARAMETERS>
+      <FPPARAMETER>I_TABLE</FPPARAMETER>
+     </INPUT_PARAMETERS>
+     <OUTPUT_PARAMETERS>
+      <FPPARAMETER>GT_01</FPPARAMETER>
+      <FPPARAMETER>GT_02</FPPARAMETER>
+      <FPPARAMETER>GT_03</FPPARAMETER>
+      <FPPARAMETER>GT_04</FPPARAMETER>
+      <FPPARAMETER>GT_05</FPPARAMETER>
+      <FPPARAMETER>GT_06</FPPARAMETER>
+      <FPPARAMETER>GT_07</FPPARAMETER>
+      <FPPARAMETER>GT_08</FPPARAMETER>
+      <FPPARAMETER>GT_09</FPPARAMETER>
+      <FPPARAMETER>GT_10</FPPARAMETER>
+      <FPPARAMETER>GT_11</FPPARAMETER>
+      <FPPARAMETER>GT_12</FPPARAMETER>
+      <FPPARAMETER>GT_13</FPPARAMETER>
+      <FPPARAMETER>GT_14</FPPARAMETER>
+      <FPPARAMETER>GT_15</FPPARAMETER>
+      <FPPARAMETER>S011</FPPARAMETER>
+      <FPPARAMETER>GV_TOT01</FPPARAMETER>
+      <FPPARAMETER>GV_TOT02</FPPARAMETER>
+      <FPPARAMETER>GV_TOT03</FPPARAMETER>
+      <FPPARAMETER>GV_TOT04</FPPARAMETER>
+      <FPPARAMETER>GV_TOT05</FPPARAMETER>
+      <FPPARAMETER>GV_TOT06</FPPARAMETER>
+      <FPPARAMETER>GV_TOT07</FPPARAMETER>
+      <FPPARAMETER>GV_TOT08</FPPARAMETER>
+      <FPPARAMETER>GV_TOT09</FPPARAMETER>
+      <FPPARAMETER>GV_ADRES</FPPARAMETER>
+      <FPPARAMETER>GV_UNVAN</FPPARAMETER>
+      <FPPARAMETER>GS_01</FPPARAMETER>
+      <FPPARAMETER>GS_02</FPPARAMETER>
+      <FPPARAMETER>GS_03</FPPARAMETER>
+      <FPPARAMETER>GS_04</FPPARAMETER>
+      <FPPARAMETER>GS_05</FPPARAMETER>
+      <FPPARAMETER>GS_06</FPPARAMETER>
+      <FPPARAMETER>GS_07</FPPARAMETER>
+      <FPPARAMETER>GS_08</FPPARAMETER>
+      <FPPARAMETER>GS_09</FPPARAMETER>
+      <FPPARAMETER>GS_10</FPPARAMETER>
+      <FPPARAMETER>GS_11</FPPARAMETER>
+      <FPPARAMETER>GS_12</FPPARAMETER>
+      <FPPARAMETER>GS_13</FPPARAMETER>
+      <FPPARAMETER>GS_14</FPPARAMETER>
+      <FPPARAMETER>GS_15</FPPARAMETER>
+      <FPPARAMETER>GV_NDY</FPPARAMETER>
+     </OUTPUT_PARAMETERS>
+     <INITIALIZATION>
+      <FPCLINE/>
+      <FPCLINE>DATA : lv_table(2) TYPE n .</FPCLINE>
+      <FPCLINE>DATA : ls_payroll TYPE /dsl/hr20_s012.</FPCLINE>
+      <FPCLINE>DATA : ls_return TYPE /dsl/hr20_s035.</FPCLINE>
+      <FPCLINE>DATA : lv_tabname(30).</FPCLINE>
+      <FPCLINE/>
+      <FPCLINE>FIELD-SYMBOLS : &lt;ft_table&gt; TYPE /dsl/hr20_tt012.</FPCLINE>
+      <FPCLINE>FIELD-SYMBOLS : &lt;fs_sum&gt; TYPE /dsl/hr20_s012.</FPCLINE>
+      <FPCLINE>FIELD-SYMBOLS : &lt;fs_table&gt; TYPE any.</FPCLINE>
+      <FPCLINE>FIELD-SYMBOLS : &lt;fs_tot&gt;   TYPE ts_subtot.</FPCLINE>
+      <FPCLINE>*break d_bozer.</FPCLINE>
+      <FPCLINE/>
+      <FPCLINE/>
+      <FPCLINE>CLEAR :  s011    ,</FPCLINE>
+      <FPCLINE>         gt_01[] ,gv_tot01,gs_01   ,</FPCLINE>
+      <FPCLINE>         gt_02[] ,gv_tot02,gs_02   ,</FPCLINE>
+      <FPCLINE>         gt_03[] ,gv_tot03,gs_03   ,</FPCLINE>
+      <FPCLINE>         gt_04[] ,gv_tot04,gs_04   ,</FPCLINE>
+      <FPCLINE>         gt_05[] ,gv_tot05,gs_05   ,</FPCLINE>
+      <FPCLINE>         gt_06[] ,gv_tot06,gs_06   ,</FPCLINE>
+      <FPCLINE>         gt_07[] ,gv_tot07,gs_07   ,</FPCLINE>
+      <FPCLINE>         gt_08[] ,gv_tot08,gs_08   ,</FPCLINE>
+      <FPCLINE>         gt_09[] ,gv_tot09,gs_09   ,</FPCLINE>
+      <FPCLINE>         gt_10[] ,         gs_10   ,</FPCLINE>
+      <FPCLINE>         gt_11[] ,         gs_11   ,</FPCLINE>
+      <FPCLINE>         gt_12[] ,         gs_12   ,</FPCLINE>
+      <FPCLINE>         gt_13[] ,         gs_13   ,</FPCLINE>
+      <FPCLINE>         gt_14[] ,         gs_14   ,</FPCLINE>
+      <FPCLINE>         gt_15[] ,         gs_15   ,</FPCLINE>
+      <FPCLINE>         gv_adres,</FPCLINE>
+      <FPCLINE>         gv_unvan,</FPCLINE>
+      <FPCLINE>         gv_ndy  .</FPCLINE>
+      <FPCLINE/>
+      <FPCLINE>LOOP AT i_table INTO s011.</FPCLINE>
+      <FPCLINE>  CLEAR : lv_table.</FPCLINE>
+      <FPCLINE>  LOOP AT s011-t_payroll INTO ls_payroll</FPCLINE>
+      <FPCLINE>*    WHERE lgart NE &apos;SUM&apos;</FPCLINE>
+      <FPCLINE>    .</FPCLINE>
+      <FPCLINE>    ON CHANGE OF ls_payroll-pytyp.</FPCLINE>
+      <FPCLINE>*      ADD 1 TO lv_table .</FPCLINE>
+      <FPCLINE>      lv_table = ls_payroll-pytyp.</FPCLINE>
+      <FPCLINE>      lv_tabname = &apos;GT_&apos; &amp;&amp; lv_table.</FPCLINE>
+      <FPCLINE>      ASSIGN (lv_tabname) TO &lt;ft_table&gt;.</FPCLINE>
+      <FPCLINE/>
+      <FPCLINE>      lv_tabname = &apos;GS_&apos; &amp;&amp; lv_table.</FPCLINE>
+      <FPCLINE>      ASSIGN (lv_tabname) TO &lt;fs_sum&gt;.</FPCLINE>
+      <FPCLINE>    ENDON.</FPCLINE>
+      <FPCLINE/>
+      <FPCLINE>    CHECK &lt;ft_table&gt; IS ASSIGNED AND &lt;fs_sum&gt; IS ASSIGNED .</FPCLINE>
+      <FPCLINE/>
+      <FPCLINE>    IF ls_payroll-lgart NE &apos;SUM&apos;.</FPCLINE>
+      <FPCLINE/>
+      <FPCLINE>      COLLECT ls_payroll INTO &lt;ft_table&gt;.</FPCLINE>
+      <FPCLINE>    ELSE.</FPCLINE>
+      <FPCLINE>      IF ls_payroll-seqnr EQ &apos;999&apos; AND ls_payroll-pytyp EQ &apos;004&apos; .</FPCLINE>
+      <FPCLINE>        CLEAR ls_payroll-brtur.</FPCLINE>
+      <FPCLINE>      ENDIF.</FPCLINE>
+      <FPCLINE>      MOVE-CORRESPONDING ls_payroll TO &lt;fs_sum&gt;. &quot; Dip toplamları al</FPCLINE>
+      <FPCLINE>    ENDIF.</FPCLINE>
+      <FPCLINE>  ENDLOOP.</FPCLINE>
+      <FPCLINE/>
+      <FPCLINE/>
+      <FPCLINE>*break d_bozer.</FPCLINE>
+      <FPCLINE>  LOOP AT s011-t_total INTO ls_payroll.</FPCLINE>
+      <FPCLINE>    CONCATENATE &apos;GV_TOT&apos; ls_payroll-seqnr+1(2) INTO lv_tabname.</FPCLINE>
+      <FPCLINE>    ASSIGN (lv_tabname) TO &lt;fs_tot&gt;.</FPCLINE>
+      <FPCLINE>    CHECK &lt;fs_tot&gt; IS ASSIGNED .</FPCLINE>
+      <FPCLINE>    &lt;fs_tot&gt;-text    = ls_payroll-gtotl_t.</FPCLINE>
+      <FPCLINE>    &lt;fs_tot&gt;-brtur   = ls_payroll-brtur.</FPCLINE>
+      <FPCLINE>    &lt;fs_tot&gt;-netur   = ls_payroll-netur.</FPCLINE>
+      <FPCLINE>    &lt;fs_tot&gt;-anzhl   = ls_payroll-anzhl.</FPCLINE>
+      <FPCLINE>    UNASSIGN &lt;fs_tot&gt;.</FPCLINE>
+      <FPCLINE>  ENDLOOP.</FPCLINE>
+      <FPCLINE>*  break d_bozer.</FPCLINE>
+      <FPCLINE>  LOOP AT s011-t_return INTO ls_return WHERE lgart EQ &apos;/NDY&apos;</FPCLINE>
+      <FPCLINE>                                         AND pytab EQ &apos;RT&apos;.</FPCLINE>
+      <FPCLINE>    gv_ndy = ls_return-anzhl.</FPCLINE>
+      <FPCLINE>  ENDLOOP.</FPCLINE>
+      <FPCLINE/>
+      <FPCLINE>  CONCATENATE s011-header-st7trg01-stras</FPCLINE>
+      <FPCLINE>              s011-header-st7trg01-stret</FPCLINE>
+      <FPCLINE>*              s011-header-st7trg01-sdist</FPCLINE>
+      <FPCLINE>      INTO gv_adres. &quot;SEPARATED BY space.</FPCLINE>
+      <FPCLINE>*break d_ckalkan.</FPCLINE>
+      <FPCLINE>  CONCATENATE gv_adres s011-header-st7trg01-sdist</FPCLINE>
+      <FPCLINE>      INTO gv_adres SEPARATED BY space.</FPCLINE>
+      <FPCLINE/>
+      <FPCLINE/>
+      <FPCLINE>  CONCATENATE s011-header-st7trg01-name1 s011-header-st7trg01-name2</FPCLINE>
+      <FPCLINE>      INTO gv_unvan.</FPCLINE>
+      <FPCLINE/>
+      <FPCLINE/>
+      <FPCLINE>ENDLOOP.</FPCLINE>
+     </INITIALIZATION>
+     <FORMS/>
+    </CL_FP_CODING>
+   </cls:CL_FP_CODING>
+  </asx:heap>
+ </asx:abap>
+</abapGit>

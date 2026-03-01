@@ -1,0 +1,89 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<abapGit version="v1.0.0" serializer="LCL_OBJECT_CLAS" serializer_version="v1.0.0">
+ <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
+  <asx:values>
+   <VSEOCLASS>
+    <CLSNAME>ZBYHR_CL001</CLSNAME>
+    <LANGU>T</LANGU>
+    <DESCRIPT>Banka Disketleri SFTP</DESCRIPT>
+    <STATE>1</STATE>
+    <CLSCCINCL>X</CLSCCINCL>
+    <FIXPT>X</FIXPT>
+    <UNICODE>X</UNICODE>
+   </VSEOCLASS>
+   <TPOOL>
+    <item>
+     <ID>I</ID>
+     <KEY>001</KEY>
+     <ENTRY>SFTP dosya uyarlaması yapılmadı !!! - (ZHRC001)</ENTRY>
+     <LENGTH>92</LENGTH>
+    </item>
+    <item>
+     <ID>I</ID>
+     <KEY>002</KEY>
+     <ENTRY>?</ENTRY>
+     <LENGTH>11</LENGTH>
+    </item>
+    <item>
+     <ID>I</ID>
+     <KEY>003</KEY>
+     <ENTRY>Entegrasyon hatası!!</ENTRY>
+     <LENGTH>40</LENGTH>
+    </item>
+    <item>
+     <ID>I</ID>
+     <KEY>BSR</KEY>
+     <ENTRY>Dosya gönderildi.</ENTRY>
+     <LENGTH>27</LENGTH>
+    </item>
+   </TPOOL>
+   <DESCRIPTIONS>
+    <SEOCOMPOTX>
+     <CMPNAME>CONSTRUCTOR</CMPNAME>
+     <LANGU>T</LANGU>
+     <DESCRIPT>CONSTRUCTOR</DESCRIPT>
+    </SEOCOMPOTX>
+    <SEOCOMPOTX>
+     <CMPNAME>FILE_CONVERT_BINARY</CMPNAME>
+     <LANGU>T</LANGU>
+     <DESCRIPT>ASC dosyayı Binary olarak çevir</DESCRIPT>
+    </SEOCOMPOTX>
+    <SEOCOMPOTX>
+     <CMPNAME>JSON_PARSE</CMPNAME>
+     <LANGU>T</LANGU>
+     <DESCRIPT>REturn</DESCRIPT>
+    </SEOCOMPOTX>
+    <SEOCOMPOTX>
+     <CMPNAME>REST_TRASNPORT_FILE</CMPNAME>
+     <LANGU>T</LANGU>
+     <DESCRIPT>Dosya gönder</DESCRIPT>
+    </SEOCOMPOTX>
+    <SEOCOMPOTX>
+     <CMPNAME>SOAP_TRASNPORT_FILE</CMPNAME>
+     <LANGU>T</LANGU>
+     <DESCRIPT>Dosya gönder (Çalışmıyor)</DESCRIPT>
+    </SEOCOMPOTX>
+   </DESCRIPTIONS>
+   <DESCRIPTIONS_SUB>
+    <SEOSUBCOTX>
+     <CMPNAME>CONSTRUCTOR</CMPNAME>
+     <SCONAME>TCODE</SCONAME>
+     <LANGU>T</LANGU>
+     <DESCRIPT>İşlem kodu</DESCRIPT>
+    </SEOSUBCOTX>
+    <SEOSUBCOTX>
+     <CMPNAME>REST_TRASNPORT_FILE</CMPNAME>
+     <SCONAME>S_FILE</SCONAME>
+     <LANGU>T</LANGU>
+     <DESCRIPT>Banka Disketleri transfer bilgileri</DESCRIPT>
+    </SEOSUBCOTX>
+    <SEOSUBCOTX>
+     <CMPNAME>SOAP_TRASNPORT_FILE</CMPNAME>
+     <SCONAME>S_FILE</SCONAME>
+     <LANGU>T</LANGU>
+     <DESCRIPT>Banka Disketleri transfer bilgileri</DESCRIPT>
+    </SEOSUBCOTX>
+   </DESCRIPTIONS_SUB>
+  </asx:values>
+ </asx:abap>
+</abapGit>

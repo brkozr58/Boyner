@@ -1,0 +1,918 @@
+<?sap.transform simple?>
+<tt:transform xmlns:tt="http://www.sap.com/transformation-templates" xmlns:ddic="http://www.sap.com/abapxml/types/dictionary" xmlns:def="http://www.sap.com/abapxml/types/defined">
+  <tt:root name="KRMKD" type="?"/>
+  <tt:root name="SBKOD" type="?"/>
+  <tt:root name="HESAP" type="?"/>
+  <tt:root name="TOPAD" type="?"/>
+  <tt:root name="TPTAR" type="?"/>
+  <tt:root name="DVKUR" type="?"/>
+  <tt:root name="ODTRH" type="?"/>
+  <tt:root name="ODMTP" type="?"/>
+  <tt:root name="BRCIZ" type="?"/>
+  <tt:root line-type="ddic:ZBYHR_S010" name="GT_LIST"/>
+
+
+  <tt:template>
+
+
+    <Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet" xmlns:html=
+"http://www.w3.org/TR/REC-html40">
+      <DocumentProperties xmlns="urn:schemas-microsoft-com:office:office">
+        <Author>Burak Özer</Author>
+        <LastAuthor>Burak Özer</LastAuthor>
+        <Created>2025-12-24T05:56:59Z</Created>
+        <LastSaved>2025-12-24T06:42:48Z</LastSaved>
+        <Version>16.00</Version>
+      </DocumentProperties>
+      <OfficeDocumentSettings xmlns="urn:schemas-microsoft-com:office:office">
+        <AllowPNG/>
+      </OfficeDocumentSettings>
+      <ExcelWorkbook xmlns="urn:schemas-microsoft-com:office:excel">
+        <WindowHeight>15720</WindowHeight>
+        <WindowWidth>29040</WindowWidth>
+        <WindowTopX>32767</WindowTopX>
+        <WindowTopY>32767</WindowTopY>
+        <ProtectStructure>False</ProtectStructure>
+        <ProtectWindows>False</ProtectWindows>
+      </ExcelWorkbook>
+      <Styles>
+        <Style ss:ID="Default" ss:Name="Normal">
+          <Alignment ss:Vertical="Bottom"/>
+          <Borders/>
+          <Font ss:Color="#000000" ss:FontName="Calibri" ss:Size="11" x:CharSet="162" x:Family="Swiss"/>
+          <Interior/>
+          <NumberFormat/>
+          <Protection/>
+        </Style>
+        <Style ss:ID="s64" ss:Name="Comma">
+          <NumberFormat ss:Format='_-* #,##0.00_-;\-* #,##0.00_-;_-* "-"??_-;_-@_-'/>
+        </Style>
+        <Style ss:ID="m493318064">
+          <Alignment ss:Horizontal="Left" ss:Vertical="Center" ss:WrapText="1"/>
+          <Borders>
+            <Border ss:LineStyle="Continuous" ss:Position="Bottom" ss:Weight="1"/>
+            <Border ss:LineStyle="Continuous" ss:Position="Left" ss:Weight="1"/>
+            <Border ss:LineStyle="Continuous" ss:Position="Right" ss:Weight="1"/>
+            <Border ss:LineStyle="Continuous" ss:Position="Top" ss:Weight="1"/>
+          </Borders>
+          <Font ss:Color="#FF0000" ss:FontName="Times New Roman" x:CharSet="162" x:Family="Roman"/>
+          <Interior ss:Color="#FFFFFF" ss:Pattern="Solid"/>
+          <Protection x:HideFormula="1"/>
+        </Style>
+        <Style ss:ID="m493318084">
+          <Alignment ss:Horizontal="Left" ss:Vertical="Center" ss:WrapText="1"/>
+          <Borders>
+            <Border ss:LineStyle="Continuous" ss:Position="Bottom" ss:Weight="1"/>
+            <Border ss:LineStyle="Continuous" ss:Position="Left" ss:Weight="1"/>
+            <Border ss:LineStyle="Continuous" ss:Position="Right" ss:Weight="1"/>
+            <Border ss:LineStyle="Continuous" ss:Position="Top" ss:Weight="1"/>
+          </Borders>
+          <Font ss:Color="#0000FF" ss:FontName="Times New Roman" x:CharSet="162" x:Family="Roman"/>
+          <Interior ss:Color="#FFFFFF" ss:Pattern="Solid"/>
+          <Protection x:HideFormula="1"/>
+        </Style>
+        <Style ss:ID="m493318104">
+          <Alignment ss:Horizontal="Center" ss:Vertical="Bottom"/>
+          <Borders>
+            <Border ss:LineStyle="Continuous" ss:Position="Bottom" ss:Weight="1"/>
+            <Border ss:LineStyle="Continuous" ss:Position="Left" ss:Weight="1"/>
+            <Border ss:LineStyle="Continuous" ss:Position="Right" ss:Weight="1"/>
+            <Border ss:LineStyle="Continuous" ss:Position="Top" ss:Weight="1"/>
+          </Borders>
+          <Font ss:Bold="1" ss:FontName="Arial" x:CharSet="162" x:Family="Swiss"/>
+          <Interior ss:Color="#FFFFFF" ss:Pattern="Solid"/>
+          <Protection x:HideFormula="1"/>
+        </Style>
+        <Style ss:ID="m493318144">
+          <Alignment ss:Horizontal="Left" ss:Vertical="Center"/>
+          <Borders>
+            <Border ss:LineStyle="Continuous" ss:Position="Bottom" ss:Weight="1"/>
+            <Border ss:LineStyle="Continuous" ss:Position="Right" ss:Weight="1"/>
+          </Borders>
+          <Font ss:Bold="1" ss:Color="#008000" ss:FontName="Courier New Tur" x:CharSet="162"/>
+        </Style>
+        <Style ss:ID="s16">
+          <Alignment ss:Horizontal="Center" ss:Vertical="Center"/>
+        </Style>
+        <Style ss:ID="s17">
+          <Alignment ss:Horizontal="Center" ss:Vertical="Bottom"/>
+          <Font ss:Bold="1" ss:Color="#FFFFFF" ss:FontName="Times New Roman" x:CharSet="162" x:Family="Roman"/>
+          <Interior ss:Color="#008000" ss:Pattern="Solid"/>
+          <Protection x:HideFormula="1"/>
+        </Style>
+        <Style ss:ID="s18">
+          <Alignment ss:Horizontal="Left" ss:Vertical="Bottom"/>
+          <Font ss:Bold="1" ss:Color="#FFFFFF" ss:FontName="Times New Roman" x:CharSet="162" x:Family="Roman"/>
+          <Interior ss:Color="#008000" ss:Pattern="Solid"/>
+          <Protection x:HideFormula="1"/>
+        </Style>
+        <Style ss:ID="s19">
+          <Alignment ss:Horizontal="Left" ss:Vertical="Bottom"/>
+          <Font ss:Bold="1" ss:Color="#FFFFFF" ss:FontName="Times New Roman" x:CharSet="162" x:Family="Roman"/>
+          <Interior ss:Color="#008000" ss:Pattern="Solid"/>
+          <NumberFormat ss:Format="@"/>
+          <Protection x:HideFormula="1"/>
+        </Style>
+        <Style ss:ID="s20">
+          <Alignment ss:Horizontal="Center" ss:Vertical="Bottom"/>
+          <Font ss:Bold="1" ss:Color="#FFFFFF" ss:FontName="Times New Roman" x:CharSet="162" x:Family="Roman"/>
+          <Interior ss:Color="#008000" ss:Pattern="Solid"/>
+          <NumberFormat ss:Format='_-* #,##0.00\ _T_L_-;\-* #,##0.00\ _T_L_-;_-* "-"??\ _T_L_-;_-@_-'/>
+          <Protection x:HideFormula="1"/>
+        </Style>
+        <Style ss:ID="s21">
+          <Font ss:Bold="1" ss:Color="#FFFFFF" ss:FontName="Times New Roman" x:CharSet="162" x:Family="Roman"/>
+          <Interior ss:Color="#008000" ss:Pattern="Solid"/>
+        </Style>
+        <Style ss:ID="s22">
+          <Font ss:Color="#000000" ss:FontName="Times New Roman" x:CharSet="162" x:Family="Roman"/>
+          <Protection ss:Protected="0"/>
+        </Style>
+        <Style ss:ID="s23">
+          <Alignment ss:Horizontal="Center" ss:Vertical="Bottom"/>
+          <Borders>
+            <Border ss:LineStyle="Continuous" ss:Position="Bottom" ss:Weight="1"/>
+            <Border ss:LineStyle="Continuous" ss:Position="Left" ss:Weight="1"/>
+            <Border ss:LineStyle="Continuous" ss:Position="Right" ss:Weight="1"/>
+            <Border ss:LineStyle="Continuous" ss:Position="Top" ss:Weight="1"/>
+          </Borders>
+          <Font ss:Bold="1" ss:Color="#000000" ss:FontName="Trebuchet MS" x:CharSet="162" x:Family="Swiss"/>
+          <NumberFormat ss:Format="@"/>
+          <Protection x:HideFormula="1"/>
+        </Style>
+        <Style ss:ID="s24">
+          <Alignment ss:Horizontal="Justify" ss:Vertical="Bottom"/>
+          <Borders>
+            <Border ss:LineStyle="Continuous" ss:Position="Bottom" ss:Weight="1"/>
+            <Border ss:LineStyle="Continuous" ss:Position="Left" ss:Weight="1"/>
+            <Border ss:LineStyle="Continuous" ss:Position="Right" ss:Weight="1"/>
+            <Border ss:LineStyle="Continuous" ss:Position="Top" ss:Weight="1"/>
+          </Borders>
+          <Font ss:Color="#000000" ss:FontName="Trebuchet MS" ss:Size="8" x:CharSet="162" x:Family="Swiss"/>
+          <Protection x:HideFormula="1"/>
+        </Style>
+        <Style ss:ID="s25">
+          <Alignment ss:Horizontal="Center" ss:Vertical="Bottom"/>
+          <Borders>
+            <Border ss:LineStyle="Continuous" ss:Position="Left" ss:Weight="1"/>
+            <Border ss:LineStyle="Continuous" ss:Position="Right" ss:Weight="1"/>
+          </Borders>
+          <Font ss:Bold="1" ss:Color="#000000" ss:FontName="Trebuchet MS" x:CharSet="162" x:Family="Swiss"/>
+          <NumberFormat ss:Format="@"/>
+          <Protection x:HideFormula="1"/>
+        </Style>
+        <Style ss:ID="s26">
+          <Alignment ss:Horizontal="Justify" ss:Vertical="Bottom"/>
+          <Borders>
+            <Border ss:LineStyle="Continuous" ss:Position="Left" ss:Weight="1"/>
+            <Border ss:LineStyle="Continuous" ss:Position="Right" ss:Weight="1"/>
+          </Borders>
+          <Font ss:Color="#000000" ss:FontName="Trebuchet MS" ss:Size="8" x:CharSet="162" x:Family="Swiss"/>
+          <Protection x:HideFormula="1"/>
+        </Style>
+        <Style ss:ID="s27">
+          <Alignment ss:Horizontal="Center" ss:Vertical="Bottom"/>
+          <Borders>
+            <Border ss:LineStyle="Continuous" ss:Position="Left" ss:Weight="1"/>
+            <Border ss:LineStyle="Continuous" ss:Position="Right" ss:Weight="1"/>
+          </Borders>
+          <Font ss:Bold="1" ss:Color="#000000" ss:FontName="Trebuchet MS" x:CharSet="162" x:Family="Swiss"/>
+          <Protection x:HideFormula="1"/>
+        </Style>
+        <Style ss:ID="s28">
+          <Alignment ss:Horizontal="Center" ss:Vertical="Bottom"/>
+          <Borders>
+            <Border ss:LineStyle="Continuous" ss:Position="Bottom" ss:Weight="1"/>
+            <Border ss:LineStyle="Continuous" ss:Position="Left" ss:Weight="1"/>
+            <Border ss:LineStyle="Continuous" ss:Position="Right" ss:Weight="1"/>
+          </Borders>
+          <Font ss:Bold="1" ss:Color="#000000" ss:FontName="Trebuchet MS" x:CharSet="162" x:Family="Swiss"/>
+          <NumberFormat ss:Format="@"/>
+          <Protection x:HideFormula="1"/>
+        </Style>
+        <Style ss:ID="s29">
+          <Alignment ss:Horizontal="Justify" ss:Vertical="Bottom"/>
+          <Borders>
+            <Border ss:LineStyle="Continuous" ss:Position="Bottom" ss:Weight="1"/>
+            <Border ss:LineStyle="Continuous" ss:Position="Left" ss:Weight="1"/>
+            <Border ss:LineStyle="Continuous" ss:Position="Right" ss:Weight="1"/>
+          </Borders>
+          <Font ss:Color="#000000" ss:FontName="Trebuchet MS" ss:Size="8" x:CharSet="162" x:Family="Swiss"/>
+          <Protection x:HideFormula="1"/>
+        </Style>
+        <Style ss:ID="s30">
+          <Alignment ss:Horizontal="Center" ss:Vertical="Bottom"/>
+          <Borders>
+            <Border ss:LineStyle="Continuous" ss:Position="Bottom" ss:Weight="1"/>
+            <Border ss:LineStyle="Continuous" ss:Position="Left" ss:Weight="1"/>
+            <Border ss:LineStyle="Continuous" ss:Position="Right" ss:Weight="1"/>
+          </Borders>
+          <Font ss:Bold="1" ss:Color="#000000" ss:FontName="Trebuchet MS" x:CharSet="162" x:Family="Swiss"/>
+          <Protection x:HideFormula="1"/>
+        </Style>
+        <Style ss:ID="s31">
+          <Borders>
+            <Border ss:LineStyle="Continuous" ss:Position="Bottom" ss:Weight="1"/>
+            <Border ss:LineStyle="Continuous" ss:Position="Left" ss:Weight="1"/>
+            <Border ss:LineStyle="Continuous" ss:Position="Right" ss:Weight="1"/>
+          </Borders>
+          <Font ss:Color="#000000" ss:FontName="Trebuchet MS" ss:Size="8" x:CharSet="162" x:Family="Swiss"/>
+          <Protection x:HideFormula="1"/>
+        </Style>
+        <Style ss:ID="s43">
+          <Alignment ss:Horizontal="Center" ss:Vertical="Bottom"/>
+          <Font ss:Bold="1" ss:Color="#008000" ss:FontName="Courier New Tur" x:CharSet="162" x:Family="Modern"/>
+          <Interior ss:Color="#FFFFFF" ss:Pattern="Solid"/>
+          <Protection ss:Protected="0"/>
+        </Style>
+        <Style ss:ID="s46">
+          <Alignment ss:Horizontal="Center" ss:Vertical="Center"/>
+          <Font ss:Bold="1" ss:Color="#008000" ss:FontName="Times New Roman" x:CharSet="162" x:Family="Roman"/>
+        </Style>
+        <Style ss:ID="s49">
+          <Alignment ss:Horizontal="Left" ss:Vertical="Bottom" ss:WrapText="1"/>
+          <Font ss:Color="#0000FF" ss:FontName="Times New Roman Tur" x:CharSet="162" x:Family="Roman"/>
+          <Interior ss:Color="#FFFFFF" ss:Pattern="Solid"/>
+          <Protection x:HideFormula="1"/>
+        </Style>
+        <Style ss:ID="s60">
+          <Alignment ss:Horizontal="Center" ss:Vertical="Bottom"/>
+          <Borders>
+            <Border ss:LineStyle="Continuous" ss:Position="Left" ss:Weight="1"/>
+            <Border ss:LineStyle="Continuous" ss:Position="Top" ss:Weight="1"/>
+          </Borders>
+          <Font ss:Color="#000000" ss:FontName="Times New Roman" x:CharSet="162" x:Family="Roman"/>
+        </Style>
+        <Style ss:ID="s110">
+          <Font ss:Color="#008000" ss:FontName="Courier New Tur" x:CharSet="162" x:Family="Modern"/>
+          <Protection ss:Protected="0"/>
+        </Style>
+        <Style ss:ID="s111">
+          <Font ss:Color="#008000" ss:FontName="Courier New" x:CharSet="162" x:Family="Modern"/>
+          <Protection ss:Protected="0" x:HideFormula="1"/>
+        </Style>
+        <Style ss:ID="s112">
+          <Font ss:Color="#008000" ss:FontName="Courier New Tur" x:CharSet="162" x:Family="Modern"/>
+          <NumberFormat ss:Format="@"/>
+          <Protection ss:Protected="0"/>
+        </Style>
+        <Style ss:ID="s113">
+          <Font ss:Color="#339966" ss:FontName="Arial" x:CharSet="162" x:Family="Swiss"/>
+          <Protection ss:Protected="0" x:HideFormula="1"/>
+        </Style>
+        <Style ss:ID="s114">
+          <Alignment ss:Horizontal="Center" ss:Vertical="Bottom"/>
+          <Font ss:Color="#339966" ss:FontName="Courier New" x:CharSet="162" x:Family="Modern"/>
+          <Protection ss:Protected="0"/>
+        </Style>
+        <Style ss:ID="s115">
+          <Alignment ss:Horizontal="Left" ss:Vertical="Bottom"/>
+          <Font ss:Color="#008000" ss:FontName="Courier New" x:CharSet="162" x:Family="Modern"/>
+          <Protection ss:Protected="0"/>
+        </Style>
+        <Style ss:ID="s116" ss:Parent="s64">
+          <Alignment ss:Horizontal="Center" ss:Vertical="Bottom"/>
+          <Font ss:Color="#008000" ss:FontName="Courier New" x:CharSet="162" x:Family="Modern"/>
+          <Protection ss:Protected="0"/>
+        </Style>
+        <Style ss:ID="s117" ss:Parent="s64">
+          <Font ss:Color="#008000" ss:FontName="Courier New Tur" x:CharSet="162" x:Family="Modern"/>
+          <Protection ss:Protected="0"/>
+        </Style>
+      </Styles>
+      <Worksheet ss:Name="TGB Yeni Maaş Dosyası">
+        <Table ss:DefaultRowHeight="15" ss:ExpandedColumnCount="12" ss:ExpandedRowCount="13" x:FullColumns="1" x:FullRows="1">
+          <Column ss:Width="69"/>
+          <Column ss:AutoFitWidth="0" ss:StyleID="s16" ss:Width="102.75"/>
+          <Column ss:AutoFitWidth="0" ss:Width="116.25"/>
+          <Column ss:AutoFitWidth="0" ss:Width="82.5"/>
+          <Column ss:AutoFitWidth="0" ss:Width="85.5"/>
+          <Column ss:AutoFitWidth="0" ss:Width="147"/>
+          <Column ss:AutoFitWidth="0" ss:Width="81.75"/>
+          <Column ss:AutoFitWidth="0" ss:Width="121.5"/>
+          <Column ss:AutoFitWidth="0" ss:Width="77.25"/>
+          <Column ss:AutoFitWidth="0" ss:Width="87.75"/>
+          <Column ss:AutoFitWidth="0" ss:Width="21"/>
+          <Column ss:AutoFitWidth="0" ss:Width="106.5"/>
+          <Row>
+            <Cell ss:StyleID="s21">
+              <Data ss:Type="String">
+                <tt:text>Kurum Kodu</tt:text>
+              </Data>
+            </Cell>
+            <Cell ss:StyleID="s43">
+              <Data ss:Type="Number">
+                <tt:value ref=".KRMKD"/>
+              </Data>
+            </Cell>
+            <Cell ss:MergeAcross="5" ss:StyleID="s49">
+              <Data ss:Type="String">
+                <tt:text>Garanti Bankası tarafından verilen kurum kodunuz.</tt:text>
+              </Data>
+            </Cell>
+            <Cell ss:MergeAcross="3" ss:StyleID="m493318104">
+              <Data ss:Type="String">
+                <tt:text>Ödeme Tipleri</tt:text>
+              </Data>
+            </Cell>
+          </Row>
+          <Row ss:Height="15.75">
+            <Cell ss:StyleID="s21">
+              <Data ss:Type="String">
+                <tt:text>Şube Kodu</tt:text>
+              </Data>
+            </Cell>
+            <Cell ss:StyleID="s46">
+              <Data ss:Type="Number">
+                <tt:value ref=".SBKOD"/>
+              </Data>
+            </Cell>
+            <Cell ss:MergeAcross="5" ss:StyleID="s49">
+              <Data ss:Type="String">
+                <tt:text>Şubenizden öğreniniz</tt:text>
+              </Data>
+            </Cell>
+            <Cell ss:StyleID="s23">
+              <Data ss:Type="String">
+                <tt:text>O</tt:text>
+              </Data>
+            </Cell>
+            <Cell ss:StyleID="s24">
+              <Data ss:Type="String">
+                <tt:text>SOSYAL YARDIM</tt:text>
+              </Data>
+            </Cell>
+            <Cell ss:StyleID="s23">
+              <Data ss:Type="String">
+                <tt:text>G</tt:text>
+              </Data>
+            </Cell>
+            <Cell ss:StyleID="s24">
+              <Data ss:Type="String">
+                <tt:text>PROMOSYON</tt:text>
+              </Data>
+            </Cell>
+          </Row>
+          <Row ss:Height="15.75">
+            <Cell ss:StyleID="s21">
+              <Data ss:Type="String">
+                <tt:text>Hesap</tt:text>
+              </Data>
+            </Cell>
+            <Cell ss:StyleID="s46">
+              <Data ss:Type="Number">
+                <tt:value ref=".HESAP"/>
+              </Data>
+            </Cell>
+            <Cell ss:MergeAcross="5" ss:StyleID="s49">
+              <Data ss:Type="String">
+                <tt:text>Maaş ödemesinde kullanacağınız hesap. 1299998-2 şeklinde kontrol digiti girmeyiniz.</tt:text>
+              </Data>
+            </Cell>
+            <Cell ss:StyleID="s25">
+              <Data ss:Type="String">
+                <tt:text>D</tt:text>
+              </Data>
+            </Cell>
+            <Cell ss:StyleID="s26">
+              <Data ss:Type="String">
+                <tt:text>DÖNER SERMAYE    </tt:text>
+              </Data>
+            </Cell>
+            <Cell ss:StyleID="s27">
+              <Data ss:Type="String">
+                <tt:text>R</tt:text>
+              </Data>
+            </Cell>
+            <Cell ss:StyleID="s26">
+              <Data ss:Type="String">
+                <tt:text>PRİM ÖDEMESİ     </tt:text>
+              </Data>
+            </Cell>
+          </Row>
+          <Row ss:AutoFitHeight="0" ss:Height="15.75">
+            <Cell ss:StyleID="s21">
+              <Data ss:Type="String">
+                <tt:text>Toplam Adet</tt:text>
+              </Data>
+            </Cell>
+            <Cell ss:StyleID="s46">
+              <Data ss:Type="Number">
+                <tt:value ref=".TOPAD"/>
+              </Data>
+            </Cell>
+            <Cell ss:MergeAcross="5" ss:StyleID="s49">
+              <Data ss:Type="String">
+                <tt:text>Toplam maaş adedi. (Giriş yapıldıkça otomatik olarak hesaplanır.)</tt:text>
+              </Data>
+            </Cell>
+            <Cell ss:StyleID="s25">
+              <Data ss:Type="String">
+                <tt:text>C</tt:text>
+              </Data>
+            </Cell>
+            <Cell ss:StyleID="s26">
+              <Data ss:Type="String">
+                <tt:text>KOMİSYON</tt:text>
+              </Data>
+            </Cell>
+            <Cell ss:StyleID="s27">
+              <Data ss:Type="String">
+                <tt:text>S</tt:text>
+              </Data>
+            </Cell>
+            <Cell ss:StyleID="s26">
+              <Data ss:Type="String">
+                <tt:text>EK DERS ÜCRETİ</tt:text>
+              </Data>
+            </Cell>
+          </Row>
+          <Row ss:AutoFitHeight="0" ss:Height="15.75">
+            <Cell ss:StyleID="s21">
+              <Data ss:Type="String">
+                <tt:text>Toplam Tutar</tt:text>
+              </Data>
+            </Cell>
+            <Cell ss:StyleID="s46">
+              <Data ss:Type="Number">
+                <tt:value ref=".TPTAR"/>
+              </Data>
+            </Cell>
+            <Cell ss:MergeAcross="5" ss:StyleID="s49">
+              <Data ss:Type="String">
+                <tt:text>Toplam ödeme tutarı. (Giriş yapıldıkça otomatik olarak hesaplanır.)</tt:text>
+              </Data>
+            </Cell>
+            <Cell ss:StyleID="s25">
+              <Data ss:Type="String">
+                <tt:text>F</tt:text>
+              </Data>
+            </Cell>
+            <Cell ss:StyleID="s26">
+              <Data ss:Type="String">
+                <tt:text>FAZLA MESAİ      </tt:text>
+              </Data>
+            </Cell>
+            <Cell ss:StyleID="s27">
+              <Data ss:Type="String">
+                <tt:text>H</tt:text>
+              </Data>
+            </Cell>
+            <Cell ss:StyleID="s26">
+              <Data ss:Type="String">
+                <tt:text>HUZUR HAKKI</tt:text>
+              </Data>
+            </Cell>
+          </Row>
+          <Row ss:AutoFitHeight="0" ss:Height="15.75">
+            <Cell ss:StyleID="s21">
+              <Data ss:Type="String">
+                <tt:text>Döviz Kodu</tt:text>
+              </Data>
+            </Cell>
+            <Cell ss:StyleID="s46">
+              <Data ss:Type="String">
+                <tt:value ref=".DVKUR"/>
+              </Data>
+            </Cell>
+            <Cell ss:MergeAcross="5" ss:StyleID="s49">
+              <Data ss:Type="String">
+                <tt:text>Döviz kodunu listeden seçiniz.</tt:text>
+              </Data>
+            </Cell>
+            <Cell ss:StyleID="s25">
+              <Data ss:Type="String">
+                <tt:text>I</tt:text>
+              </Data>
+            </Cell>
+            <Cell ss:StyleID="s26">
+              <Data ss:Type="String">
+                <tt:text>İKRAMİYE         </tt:text>
+              </Data>
+            </Cell>
+            <Cell ss:StyleID="s27">
+              <Data ss:Type="String">
+                <tt:text>V</tt:text>
+              </Data>
+            </Cell>
+            <Cell ss:StyleID="s26">
+              <Data ss:Type="String">
+                <tt:text>ASGARİ GEÇİM İNDİRİMİ</tt:text>
+              </Data>
+            </Cell>
+          </Row>
+          <Row ss:AutoFitHeight="0" ss:Height="15.75">
+            <Cell ss:StyleID="s21">
+              <Data ss:Type="String">
+                <tt:text>Ödeme Tarihi</tt:text>
+              </Data>
+            </Cell>
+            <Cell ss:StyleID="s46">
+              <Data ss:Type="String">
+                <tt:value ref=".ODTRH"/>
+              </Data>
+            </Cell>
+            <Cell ss:MergeAcross="5" ss:StyleID="s49">
+              <Data ss:Type="String">
+                <tt:text>GGAAYYYY formatında. (Örnek: 04032001 giriniz.)</tt:text>
+              </Data>
+            </Cell>
+            <Cell ss:StyleID="s25">
+              <Data ss:Type="String">
+                <tt:text>K</tt:text>
+              </Data>
+            </Cell>
+            <Cell ss:StyleID="s26">
+              <Data ss:Type="String">
+                <tt:text>KIDEM TAZMİNATI  </tt:text>
+              </Data>
+            </Cell>
+            <Cell ss:StyleID="s27">
+              <Data ss:Type="String">
+                <tt:text>Y</tt:text>
+              </Data>
+            </Cell>
+            <Cell ss:StyleID="s26">
+              <Data ss:Type="String">
+                <tt:text>YOLLUK           </tt:text>
+              </Data>
+            </Cell>
+          </Row>
+          <Row ss:AutoFitHeight="0" ss:Height="15.75">
+            <Cell ss:StyleID="s21">
+              <Data ss:Type="String">
+                <tt:text>Ödeme Tipi</tt:text>
+              </Data>
+            </Cell>
+            <Cell ss:StyleID="s46">
+              <Data ss:Type="String">
+                <tt:value ref=".ODMTP"/>
+              </Data>
+            </Cell>
+            <Cell ss:MergeAcross="5" ss:StyleID="s49">
+              <Data ss:Type="String">
+                <tt:text>Ödeme tiplerini yandaki tabloda görebilirsiniz.</tt:text>
+              </Data>
+            </Cell>
+            <Cell ss:StyleID="s25">
+              <Data ss:Type="String">
+                <tt:text>M</tt:text>
+              </Data>
+            </Cell>
+            <Cell ss:StyleID="s26">
+              <Data ss:Type="String">
+                <tt:text>MAAŞ             </tt:text>
+              </Data>
+            </Cell>
+            <Cell ss:StyleID="s27">
+              <Data ss:Type="String">
+                <tt:text>Z</tt:text>
+              </Data>
+            </Cell>
+            <Cell ss:StyleID="s26">
+              <Data ss:Type="String">
+                <tt:text>DİĞER            </tt:text>
+              </Data>
+            </Cell>
+          </Row>
+          <Row ss:Height="15.75">
+            <Cell ss:StyleID="s21">
+              <Data ss:Type="String">
+                <tt:text>Borç İzahat</tt:text>
+              </Data>
+            </Cell>
+            <Cell ss:MergeAcross="6" ss:StyleID="m493318144">
+              <Data ss:Type="String">
+                <tt:value ref=".BRCIZ"/>
+              </Data>
+            </Cell>
+            <Cell ss:StyleID="s28">
+              <Data ss:Type="String">
+                <tt:text>N</tt:text>
+              </Data>
+            </Cell>
+            <Cell ss:StyleID="s29">
+              <Data ss:Type="String">
+                <tt:text>AVANS            </tt:text>
+              </Data>
+            </Cell>
+            <Cell ss:StyleID="s30">
+              <Data ss:Type="String">
+                <tt:text>X</tt:text>
+              </Data>
+            </Cell>
+            <Cell ss:StyleID="s31">
+              <Data ss:Type="String">
+                <tt:text>KESİNTİ</tt:text>
+              </Data>
+            </Cell>
+          </Row>
+          <Row ss:AutoFitHeight="0" ss:Height="39.75">
+            <Cell ss:MergeAcross="7" ss:StyleID="m493318064">
+              <ss:Data xmlns="http://www.w3.org/TR/REC-html40" ss:Type="String">
+                <Font html:Color="#FF0000">
+                  <tt:text>BİLGİLENDİRME :</tt:text>
+                </Font>
+                <Font html:Color="#0000FF">
+                  <tt:text> Dosyanızdaki bilgiler banka sistemine otomatik olarak yüklenecektir. Banka kodu boş veya  62 ise </tt:text>
+                </Font>
+                <U>
+                  <Font html:Color="#0000FF">
+                    <tt:text>havale</tt:text>
+                  </Font>
+                </U>
+                <Font html:Color="#0000FF">
+                  <tt:text>, 62'den farklı ise </tt:text>
+                </Font>
+                <U>
+                  <Font html:Color="#0000FF">
+                    <tt:text>EFT</tt:text>
+                  </Font>
+                </U>
+                <Font html:Color="#0000FF">
+                  <tt:text>'dir. </tt:text>
+                </Font>
+                <B>
+                  <U>
+                    <Font html:Color="#0000FF">
+                      <tt:text>Kayıtlar içinde EFT varsa</tt:text>
+                    </Font>
+                  </U>
+                  <Font html:Color="#0000FF">
+                    <tt:text> ödeme tarihi işgünü olmalıdır. </tt:text>
+                  </Font>
+                </B>
+                <Font html:Color="#0000FF">
+                  <tt:text>Başka bir excel dosyasından kopyalama yapmak istiyorsanız Edit/</tt:text>
+                </Font>
+                <B>
+                  <Font html:Color="#0000FF">
+                    <tt:text>Paste Spacial</tt:text>
+                  </Font>
+                </B>
+                <Font html:Color="#0000FF">
+                  <tt:text> seçeneğini </tt:text>
+                </Font>
+                <B>
+                  <Font html:Color="#0000FF">
+                    <tt:text>Values</tt:text>
+                  </Font>
+                </B>
+                <Font html:Color="#0000FF">
+                  <tt:text> seçerek kullanınız.</tt:text>
+                </Font>
+              </ss:Data>
+            </Cell>
+            <Cell ss:MergeAcross="1" ss:StyleID="s60"/>
+          </Row>
+          <Row>
+            <Cell ss:MergeAcross="7" ss:StyleID="m493318084">
+              <Data ss:Type="String">
+                <tt:text>Herhangi bir hataya yol açmamak için dosyanın formatını değiştirmeyiniz, açıklamalara uyunuz. </tt:text>
+              </Data>
+            </Cell>
+            <Cell ss:StyleID="s22"/>
+          </Row>
+          <Row>
+            <Cell ss:StyleID="s18">
+              <Data ss:Type="String">
+                <tt:text>İsim</tt:text>
+              </Data>
+            </Cell>
+            <Cell ss:StyleID="s18">
+              <Data ss:Type="String">
+                <tt:text>TCKN (Opsiyonel)</tt:text>
+              </Data>
+            </Cell>
+            <Cell ss:StyleID="s18">
+              <Data ss:Type="String">
+                <tt:text>Banka Kodu</tt:text>
+              </Data>
+            </Cell>
+            <Cell ss:StyleID="s17">
+              <Data ss:Type="String">
+                <tt:text>Şube Kodu</tt:text>
+              </Data>
+            </Cell>
+            <Cell ss:StyleID="s17">
+              <Data ss:Type="String">
+                <tt:text>Hesap</tt:text>
+              </Data>
+            </Cell>
+            <Cell ss:StyleID="s19">
+              <Data ss:Type="String">
+                <tt:text>IBAN (Boşluksuz 26 Karakter)</tt:text>
+              </Data>
+            </Cell>
+            <Cell ss:StyleID="s20">
+              <Data ss:Type="String">
+                <tt:text>Tutar</tt:text>
+              </Data>
+            </Cell>
+            <Cell ss:StyleID="s18">
+              <Data ss:Type="String">
+                <tt:text>Borç İzahat</tt:text>
+              </Data>
+            </Cell>
+            <Cell ss:StyleID="s18">
+              <Data ss:Type="String">
+                <tt:text>Alacak izahat</tt:text>
+              </Data>
+            </Cell>
+          </Row>
+
+
+          <!--          -->
+          <tt:loop ref=".GT_LIST">
+            <Row>
+              <Cell ss:StyleID="s110">
+                <Data ss:Type="String">
+                  <tt:value ref="ENAME"/>
+                </Data>
+              </Cell>
+
+              <Cell ss:StyleID="s111">
+                <Data ss:Type="String">
+                  <tt:value ref="MERNI"/>
+                </Data>
+              </Cell>
+
+              <Cell ss:StyleID="s112">
+                <Data ss:Type="String">
+                  <tt:value ref="BANKD"/>
+                </Data>
+              </Cell>
+
+              <Cell ss:StyleID="s113">
+                <Data ss:Type="String">
+                  <tt:value ref="BANKL"/>
+                </Data>
+              </Cell>
+
+              <Cell ss:StyleID="s114">
+                <Data ss:Type="String">
+                  <tt:value ref="BANKN"/>
+                </Data>
+              </Cell>
+
+              <Cell ss:StyleID="s115">
+                <Data ss:Type="String">
+                  <tt:value ref="IBAN"/>
+                </Data>
+              </Cell>
+
+              <Cell ss:StyleID="s116">
+                <Data ss:Type="Number">
+                  <tt:value ref="BETRG"/>
+                </Data>
+              </Cell>
+
+
+              <Cell ss:StyleID="s117">
+                <Data ss:Type="String">
+                  <tt:value ref="BIZAH"/>
+                </Data>
+              </Cell>
+
+              <Cell ss:StyleID="s117">
+                <Data ss:Type="String">
+                  <tt:value ref="AIZAH"/>
+                </Data>
+              </Cell>
+
+            </Row>
+          </tt:loop>
+
+
+
+
+        </Table>
+
+
+
+        <WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">
+          <PageSetup>
+            <Header x:Margin="0.3"/>
+            <Footer x:Margin="0.3"/>
+            <PageMargins x:Bottom="0.75" x:Left="0.7" x:Right="0.7" x:Top="0.75"/>
+          </PageSetup>
+          <Selected/>
+          <Panes>
+            <Pane>
+              <Number>3</Number>
+              <ActiveRow>12</ActiveRow>
+              <RangeSelection>R13C1:R13C9</RangeSelection>
+            </Pane>
+          </Panes>
+          <ProtectObjects>False</ProtectObjects>
+          <ProtectScenarios>False</ProtectScenarios>
+        </WorksheetOptions>
+        <DataValidation xmlns="urn:schemas-microsoft-com:office:excel">
+          <Range>R1C2</Range>
+          <Type>Whole</Type>
+          <Min>1</Min>
+          <Max>999999</Max>
+          <InputHide/>
+          <InputTitle>kuru</InputTitle>
+          <ErrorMessage>Kurum kodunuz sadece sayısal değer olabilir.
+Kurum kodu 1 ile 6 hane arası olmalıdır.</ErrorMessage>
+          <ErrorTitle>KURUM KODU HATASI</ErrorTitle>
+        </DataValidation>
+        <DataValidation xmlns="urn:schemas-microsoft-com:office:excel">
+          <Range>R13C5</Range>
+          <Type>TextLength</Type>
+          <Min>5</Min>
+          <Max>20</Max>
+          <ErrorMessage>Hesap Numarası 5 ile 20 hane arası olmalıdır</ErrorMessage>
+          <ErrorTitle>HESAP KODU HATASI</ErrorTitle>
+        </DataValidation>
+        <DataValidation xmlns="urn:schemas-microsoft-com:office:excel">
+          <Range>R13C4</Range>
+          <Type>Whole</Type>
+          <Min>1</Min>
+          <Max>99999</Max>
+          <ErrorMessage>Şube kodu sayısal değer olmalıdır.Şube kodu 1 ile 5 hane arası olmalıdır</ErrorMessage>
+          <ErrorTitle>ŞUBE KODU HATASI</ErrorTitle>
+        </DataValidation>
+        <ConditionalFormatting xmlns="urn:schemas-microsoft-com:office:excel">
+          <Range>R3C3:R3C8</Range>
+          <Condition>
+            <Qualifier>Equal</Qualifier>
+            <Value1>"UYARI : ZORUNLU ALAN LÜFTEN HESAP NUMARANIZI GİRİNİZ"</Value1>
+            <Format Style="color:yellow;font-weight:700;background:red"/>
+          </Condition>
+        </ConditionalFormatting>
+        <ConditionalFormatting xmlns="urn:schemas-microsoft-com:office:excel">
+          <Range>R2C3:R2C8</Range>
+          <Condition>
+            <Qualifier>Equal</Qualifier>
+            <Value1>"UYARI : ZORUNLU ALAN LÜFTEN HESAP NUMARANIZI GİRİNİZ"</Value1>
+            <Format Style="color:yellow;font-weight:700;background:red"/>
+          </Condition>
+        </ConditionalFormatting>
+        <ConditionalFormatting xmlns="urn:schemas-microsoft-com:office:excel">
+          <Range>R1C3:R1C8</Range>
+          <Condition>
+            <Qualifier>Equal</Qualifier>
+            <Value1>"UYARI : ZORUNLU ALAN LÜFTEN HESAP NUMARANIZI GİRİNİZ"</Value1>
+            <Format Style="color:yellow;font-weight:700;background:red"/>
+          </Condition>
+        </ConditionalFormatting>
+        <ConditionalFormatting xmlns="urn:schemas-microsoft-com:office:excel">
+          <Range>R4C3:R4C8</Range>
+          <Condition>
+            <Qualifier>Equal</Qualifier>
+            <Value1>"UYARI : ZORUNLU ALAN LÜFTEN HESAP NUMARANIZI GİRİNİZ"</Value1>
+            <Format Style="color:yellow;font-weight:700;background:red"/>
+          </Condition>
+        </ConditionalFormatting>
+        <ConditionalFormatting xmlns="urn:schemas-microsoft-com:office:excel">
+          <Range>R5C3:R5C8</Range>
+          <Condition>
+            <Qualifier>Equal</Qualifier>
+            <Value1>"UYARI : ZORUNLU ALAN LÜFTEN HESAP NUMARANIZI GİRİNİZ"</Value1>
+            <Format Style="color:yellow;font-weight:700;background:red"/>
+          </Condition>
+        </ConditionalFormatting>
+        <ConditionalFormatting xmlns="urn:schemas-microsoft-com:office:excel">
+          <Range>R6C3:R6C8</Range>
+          <Condition>
+            <Qualifier>Equal</Qualifier>
+            <Value1>"UYARI : ZORUNLU ALAN LÜFTEN HESAP NUMARANIZI GİRİNİZ"</Value1>
+            <Format Style="color:yellow;font-weight:700;background:red"/>
+          </Condition>
+        </ConditionalFormatting>
+        <ConditionalFormatting xmlns="urn:schemas-microsoft-com:office:excel">
+          <Range>R7C3:R7C8</Range>
+          <Condition>
+            <Qualifier>Equal</Qualifier>
+            <Value1>"UYARI : ZORUNLU ALAN LÜFTEN HESAP NUMARANIZI GİRİNİZ"</Value1>
+            <Format Style="color:yellow;font-weight:700;background:red"/>
+          </Condition>
+        </ConditionalFormatting>
+        <ConditionalFormatting xmlns="urn:schemas-microsoft-com:office:excel">
+          <Range>R8C3:R8C8</Range>
+          <Condition>
+            <Qualifier>Equal</Qualifier>
+            <Value1>"UYARI : ZORUNLU ALAN LÜFTEN HESAP NUMARANIZI GİRİNİZ"</Value1>
+            <Format Style="color:yellow;font-weight:700;background:red"/>
+          </Condition>
+        </ConditionalFormatting>
+        <ConditionalFormatting xmlns="urn:schemas-microsoft-com:office:excel">
+          <Range>R13C2:R13C3,R13C7:R13C9</Range>
+          <Condition>
+            <Value1>R[-11]C[9]</Value1>
+          </Condition>
+        </ConditionalFormatting>
+        <ConditionalFormatting xmlns="urn:schemas-microsoft-com:office:excel">
+          <Range>R13C6</Range>
+          <Condition>
+            <Qualifier>Equal</Qualifier>
+            <Value1>"HESAP DOLU OLMALI"</Value1>
+            <Format Style="color:yellow;font-weight:700;border:.5pt solid windowtext;&#xA;     background:red;mso-pattern:gray-0625"/>
+          </Condition>
+        </ConditionalFormatting>
+      </Worksheet>
+    </Workbook>
+  </tt:template>
+</tt:transform>
