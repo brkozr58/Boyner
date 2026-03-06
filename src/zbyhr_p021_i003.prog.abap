@@ -338,7 +338,17 @@ CLASS lcl_report IMPLEMENTATION.
 
     CASE  e_salv_function.
       WHEN '&KAYIT'.
+
         lt_rows = gr_selection->get_selected_rows( ).
+        LOOP AT lt_rows INTO lv_rows.
+          CLEAR gs_alv.
+          READ TABLE gt_alv INTO gs_alv INDEX lv_rows.
+          IF sy-subrc IS INITIAL.
+            PERFORM delete_2010.
+            CLEAR gs_alv.
+          ENDIF.
+        ENDLOOP.
+
         LOOP AT lt_rows INTO lv_rows.
           CLEAR gs_alv.
           READ TABLE gt_alv INTO gs_alv INDEX lv_rows.
@@ -355,105 +365,70 @@ CLASS lcl_report IMPLEMENTATION.
 
     DATA : ls_2010 TYPE p2010.
     DATA: ls_mess   TYPE bapireturn1.
-*    DATA: ls_mess   TYPE bapireturn1.
 
-    LOOP AT gt_2010 INTO DATA(s_2010)
-                          WHERE pernr EQ gs_alv-pernr
-                          AND   begda LE s_datum-high
-                          AND   endda GE s_datum-low
-                          AND   anzhl EQ gs_alv-anzhl
-                          AND   lgart EQ gs_alv-lgart.
+    SELECT SINGLE begda FROM pa0000
+                        INTO @DATA(lv_begda)
+                        WHERE pernr EQ @gs_alv-pernr
+                          AND begda LE @s_datum-high
+                          AND endda GE @s_datum-low
+                          AND stat2 EQ '0'.
 
-      DELETE pa2010 FROM s_2010.
-      COMMIT WORK. CLEAR s_2010.
+    IF lv_begda IS NOT INITIAL.
+      ls_2010-begda = lv_begda - 1.
+    ELSE.
+      ls_2010-begda = s_datum-high.
+    ENDIF.
 
-*      CALL FUNCTION 'BAPI_EMPLOYEE_ENQUEUE'
-*        EXPORTING
-*          number = s_2010-pernr
-*        IMPORTING
-*          return = ls_mess.
-*      IF ls_mess IS INITIAL.
-*        CALL FUNCTION 'HR_INFOTYPE_OPERATION'
-*          EXPORTING
-*            infty         = '2010'
-*            number        = s_2010-pernr
-*            validitybegin = s_2010-begda
-*            validityend   = s_2010-endda
-*            record        = s_2010
-*            operation     = 'DEL'
-*            tclas         = 'A'
-*            dialog_mode   = '0'
-*          IMPORTING
-*            return        = ls_mess.
-*
-*        IF ls_mess IS NOT INITIAL.
-*          gs_alv-message = ls_mess-message.
-*        ENDIF.
-*
-*        CALL FUNCTION 'BAPI_EMPLOYEE_DEQUEUE'
-*          EXPORTING
-*            number = s_2010-pernr
-*          IMPORTING
-*            return = ls_mess.
-*      ELSE.
-*        gs_alv-message = ls_mess-message.
-*        CHECK 1 = 2.
-*      ENDIF.
-    ENDLOOP.
+    ls_2010-anzhl = gs_alv-anzhl.
+    ls_2010-lgart = gs_alv-lgart.
+    ls_2010-pernr = gs_alv-pernr.
+    ls_2010-infty = '2010'.
 
-*    IF gs_alv-message IS INITIAL.
 
-      SELECT SINGLE begda FROM pa0000
-                          INTO @DATA(lv_begda)
-                          WHERE pernr EQ @gs_alv-pernr
-                            AND begda LE @s_datum-high
-                            AND endda GE @s_datum-low
-                            AND stat2 EQ '0'.
+    CALL FUNCTION 'BAPI_EMPLOYEE_ENQUEUE'
+      EXPORTING
+        number = ls_2010-pernr
+      IMPORTING
+        return = ls_mess.
+    IF ls_mess IS INITIAL.
+      CALL FUNCTION 'HR_INFOTYPE_OPERATION'
+        EXPORTING
+          infty         = '2010'
+          number        = ls_2010-pernr
+          validitybegin = ls_2010-begda
+          record        = ls_2010
+          operation     = 'INS'
+        IMPORTING
+          return        = ls_mess.
 
-      IF lv_begda IS NOT INITIAL.
-        ls_2010-begda = lv_begda - 1.
+      IF ls_mess IS INITIAL.
+        gs_alv-message = 'Başarılı'.
       ELSE.
-        ls_2010-begda = s_datum-high.
+        gs_alv-message = ls_mess-message.
       ENDIF.
 
-      ls_2010-anzhl = gs_alv-anzhl.
-      ls_2010-lgart = gs_alv-lgart.
-      ls_2010-pernr = gs_alv-pernr.
-      ls_2010-infty = '2010'.
-
-
-      CALL FUNCTION 'BAPI_EMPLOYEE_ENQUEUE'
+      CALL FUNCTION 'BAPI_EMPLOYEE_DEQUEUE'
         EXPORTING
           number = ls_2010-pernr
         IMPORTING
           return = ls_mess.
-      IF ls_mess IS INITIAL.
-        CALL FUNCTION 'HR_INFOTYPE_OPERATION'
-          EXPORTING
-            infty         = '2010'
-            number        = ls_2010-pernr
-            validitybegin = ls_2010-begda
-            record        = ls_2010
-            operation     = 'INS'
-          IMPORTING
-            return        = ls_mess.
-
-        IF ls_mess IS INITIAL.
-          gs_alv-message = 'Başarılı'.
-        ELSE.
-          gs_alv-message = ls_mess-message.
-        ENDIF.
-
-        CALL FUNCTION 'BAPI_EMPLOYEE_DEQUEUE'
-          EXPORTING
-            number = ls_2010-pernr
-          IMPORTING
-            return = ls_mess.
-      ELSE.
-        gs_alv-message = ls_mess-message.
-      ENDIF.
+    ELSE.
+      gs_alv-message = ls_mess-message.
+    ENDIF.
 
 *    ENDIF.
     CLEAR : ls_mess,ls_2010.
   ENDMETHOD.
 ENDCLASS.
+FORM delete_2010.
+
+  LOOP AT gt_2010 INTO DATA(s_2010)
+                        WHERE pernr EQ gs_alv-pernr
+                        AND   begda LE s_datum-high
+                        AND   endda GE s_datum-low.
+*                          AND   anzhl EQ gs_alv-anzhl
+*                          AND   lgart EQ gs_alv-lgart.
+    DELETE pa2010 FROM s_2010.
+    COMMIT WORK. CLEAR s_2010.
+  ENDLOOP.
+ENDFORM.

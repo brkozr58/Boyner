@@ -84,6 +84,7 @@ FORM get_person_payroll_pdf  TABLES   it_person TYPE  tt_person
         invalid_archive_params = 3
         OTHERS                 = 4.
 
+    ls_print_parameters-pdest = 'ZPDF'.
     IF iv_low  IS NOT INITIAL AND iv_high IS NOT INITIAL.
       APPEND VALUE #( sign  = 'I' option = 'BT' low = iv_low high = iv_high ) TO lr_range.
     ELSEIF iv_low  IS NOT INITIAL AND iv_high IS INITIAL.
@@ -186,6 +187,7 @@ FORM download_pdf  TABLES   it_person TYPE  tt_person
       EXPORTING
         filename                = lv_pdfname
         filetype                = 'BIN'
+        codepage                = '4100'
       TABLES
         data_tab                = <wa>-trecord
 *       FIELDNAMES              =
@@ -432,12 +434,12 @@ FORM send_mail_pdf  TABLES    it_person TYPE  tt_person
         CLEAR lv_text.
 
         IF iv_high IS NOT INITIAL.
-          lv_text = |{ lv_joined } bordron ektedir.Bordronu üçüncü şahıslarla paylaşmamanı rica ederiz. Ayrıca SF sistemine giriş yaparak bordronu görüntüleyebilirsin|.
+          lv_text = |{ lv_joined } bordron ektedir.Bordronu üçüncü şahıslarla paylaşmamanı rica ederiz. Ayrıca BoynerPeople sistemine giriş yaparak bordronu görüntüleyebilirsin|.
           i_objtxt = lv_text.
           APPEND i_objtxt.
         ELSE.
           CONCATENATE iv_low+4(2) iv_low(4)
-        'bordron ektedir.Bordronu üçüncü şahıslarla paylaşmamanı rica ederiz. Ayrıca SF sistemine giriş yaparak bordronu görüntüleyebilirsin.' INTO
+        'bordron ektedir.Bordronu üçüncü şahıslarla paylaşmamanı rica ederiz. Ayrıca BoynerPeople sistemine giriş yaparak bordronu görüntüleyebilirsin.' INTO
         i_objtxt SEPARATED BY space.
           APPEND i_objtxt.
         ENDIF.

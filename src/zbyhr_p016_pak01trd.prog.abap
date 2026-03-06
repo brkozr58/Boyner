@@ -149,7 +149,7 @@ DATA: BEGIN OF mmer OCCURS 1000,
 *DATA:  iper TYPE ptr07 OCCURS 10 WITH HEADER LINE.
 DATA:   BEGIN OF iper OCCURS 10 .
 DATA : bukrs  LIKE pernr-bukrs.
-       INCLUDE    TYPE ptr07 .
+       INCLUDE    TYPE zptr07 .
        INCLUDE    TYPE zbyhr_skid00 .
 DATA : fchire TYPE datum.
 DATA : END OF iper.

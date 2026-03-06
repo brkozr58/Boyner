@@ -762,7 +762,7 @@ FORM count_p0001.
     ENDIF.
     IF &2 IS NOT INITIAL .
       " Gün ekle
-      lv_end_date = lv_start_date + &2.
+      lv_end_date = lv_start_date + &2 .
       " Yıl farkı
       &3(4) = lv_end_date(4) - lv_start_date(4).
       " Ay farkı
@@ -807,6 +807,9 @@ FORM count_p0001.
 
   PROVIDE * FROM p0001 BETWEEN lv_begda AND iper-fire.
     ADD 1 TO lv_index .
+    IF lv_index EQ 1.
+      temptarh2 = p0001-begda.
+    ENDIF.
     LOOP AT lt_t028 WHERE begda LE p0001-begda AND endda GE p0001-begda.ENDLOOP.
     IF sy-subrc EQ 0  .
       p0001-begda = lt_t028-endda.
@@ -824,7 +827,7 @@ FORM count_p0001.
                                      AND persk EQ p0001-persk.
         IF sy-subrc EQ 0.
           IF p0001-begda LT p0001-endda.
-         lv_pday = lv_pday + ( p0001-endda - p0001-begda ) + 1 .
+            lv_pday = lv_pday + ( p0001-endda - p0001-begda ) + 1 .
           ENDIF.
         ENDIF.
       WHEN OTHERS.
@@ -834,9 +837,12 @@ FORM count_p0001.
     ENDCASE.
   ENDPROVIDE.
 
-  convert_xtime : 'PART' lv_pday iper-ptime.
+  PERFORM conv_per USING lv_pday iper-ptime temptarh2.
+  PERFORM conv_per USING lv_fday iper-ftime temptarh2.
 
-  convert_xtime : 'FULL' lv_fday iper-ftime.
+*  convert_xtime : 'PART' lv_pday iper-ptime.
+
+*  convert_xtime : 'FULL' lv_fday iper-ftime.
 
 
   IF cikisgun EQ 'X'.
@@ -1531,13 +1537,21 @@ FORM at_user_command.
         END OF lt_p.
 *        hrpaymx_cfdi_total
 
-  DATA: topbetrg    TYPE ptr_amaas, gentopbetrg TYPE ptr_amaas,
-        topekucr    TYPE ptr_amaas, gentopekucr TYPE ptr_amaas,
-        toptopla    TYPE ptr_amaas, gentoptopla TYPE ptr_amaas,
-        topk1yil    TYPE ptr_amaas, gentopk1yil TYPE ptr_amaas,
-        topkidem    TYPE ptr_amaas, gentopkidem TYPE ptr_amaas,
-        topihbar    TYPE ptr_amaas, gentopihbar TYPE ptr_amaas,
-        topkiton    TYPE ptr_amaas, gentopkiton TYPE ptr_amaas .
+*  DATA: topbetrg    TYPE ptr_amaas, gentopbetrg TYPE ptr_amaas.
+*        topekucr    TYPE ptr_amaas, gentopekucr TYPE ptr_amaas,
+*        toptopla    TYPE ptr_amaas, gentoptopla TYPE ptr_amaas,
+*        topk1yil    TYPE ptr_amaas, gentopk1yil TYPE ptr_amaas,
+*        topkidem    TYPE ptr_amaas, gentopkidem TYPE ptr_amaas,
+*        topihbar    TYPE ptr_amaas, gentopihbar TYPE ptr_amaas,
+*        topkiton    TYPE ptr_amaas, gentopkiton TYPE ptr_amaas .
+
+  DATA: topbetrg    TYPE decfloat34, gentopbetrg TYPE decfloat34,
+        topekucr    TYPE decfloat34, gentopekucr TYPE decfloat34,
+        toptopla    TYPE decfloat34, gentoptopla TYPE decfloat34,
+        topk1yil    TYPE decfloat34, gentopk1yil TYPE decfloat34,
+        topkidem    TYPE decfloat34, gentopkidem TYPE decfloat34,
+        topihbar    TYPE decfloat34, gentopihbar TYPE decfloat34,
+        topkiton    TYPE decfloat34, gentopkiton TYPE decfloat34.
 
   CASE sy-ucomm.
     WHEN 'OLDK'.
@@ -3522,13 +3536,21 @@ FORM write_potkidembtrtl_is USING    $werks
                                      $btrtl
  CHANGING topbetrg  topekucr  toptopla topk1yil topkidem topkiton topihbar.
 
-  DATA: btrbetrg LIKE iper-betrg,
-        btrekucr LIKE iper-ekucr,
-        btrtopla LIKE iper-topla,
-        btrk1yil LIKE iper-k1yil,
-        btrkidem LIKE iper-kidem,
-        btrkiton LIKE iper-kiton,
-        btrihbar LIKE iper-ihbar.
+*  DATA: btrbetrg LIKE iper-betrg,
+*        btrekucr LIKE iper-ekucr,
+*        btrtopla LIKE iper-topla,
+*        btrk1yil LIKE iper-k1yil,
+*        btrkidem LIKE iper-kidem,
+*        btrkiton LIKE iper-kiton,
+*        btrihbar LIKE iper-ihbar.
+
+  DATA: btrbetrg TYPE decfloat34,
+        btrekucr TYPE decfloat34,
+        btrtopla TYPE decfloat34,
+        btrk1yil TYPE decfloat34,
+        btrkidem TYPE decfloat34,
+        btrkiton TYPE decfloat34,
+        btrihbar TYPE decfloat34.
 
   SORT iper BY werks btrtl pernr.
   CLEAR iper.
@@ -5013,3 +5035,62 @@ FORM old_devam_value USING ps_oldd TYPE zbyhr_t027.
 
   HIDE iper.
 ENDFORM.
+FORM conv_per USING fday
+                    lv_date
+                    lv_gec.
+  DATA: p_fday        TYPE i,
+        p_date        LIKE sy-datum,
+        lv_toplam_gun TYPE i,
+        lv_yil        TYPE i,
+        lv_ay         TYPE i,
+        lv_gun        TYPE i,
+        lv_gecici_tar TYPE d.
+
+lv_toplam_gun = fday.
+lv_gecici_tar = lv_gec.
+
+*   Yılları hesapla
+  WHILE lv_toplam_gun >= 365.
+    DATA(lv_yil_gun) = COND i( WHEN ( ( lv_gecici_tar+0(4) MOD 4 = 0 ) ) THEN 366 ELSE 365 ).
+    IF lv_toplam_gun >= lv_yil_gun.
+      lv_toplam_gun = lv_toplam_gun - lv_yil_gun.
+      lv_yil = lv_yil + 1.
+      lv_gecici_tar+0(4) = lv_gecici_tar+0(4) + 1.
+    ELSE.
+      EXIT.
+    ENDIF.
+  ENDWHILE.
+
+* Ayları hesapla
+  DO 12 TIMES.
+    DATA(lv_ay_gun) = 0.
+    CASE lv_gecici_tar+4(2).
+      WHEN '01' OR '03' OR '05' OR '07' OR '08' OR '10' OR '12'. lv_ay_gun = 31.
+      WHEN '04' OR '06' OR '09' OR '11'.                 lv_ay_gun = 30.
+      WHEN '02'.
+        IF ( lv_gecici_tar+0(4) MOD 4 = 0 ). lv_ay_gun = 29. ELSE. lv_ay_gun = 28. ENDIF.
+    ENDCASE.
+
+    IF lv_toplam_gun >= lv_ay_gun.
+      lv_toplam_gun = lv_toplam_gun - lv_ay_gun.
+      lv_ay = lv_ay + 1.
+      " Ayı bir artır
+      IF lv_gecici_tar+4(2) = '12'.
+        lv_gecici_tar+4(2) = '01'.
+        lv_gecici_tar+0(4) = lv_gecici_tar+0(4) + 1.
+      ELSE.
+        lv_gecici_tar+4(2) = lv_gecici_tar+4(2) + 1.
+      ENDIF.
+    ELSE.
+      EXIT.
+    ENDIF.
+  ENDDO.
+
+* Kalan gün
+  lv_gun = lv_toplam_gun.
+
+  lv_date+0(4) = lv_yil.
+  lv_date+4(2) = lv_ay.
+  lv_date+6(2) = lv_gun.
+
+ENDFORM.                               " TARIHTOPLAMI

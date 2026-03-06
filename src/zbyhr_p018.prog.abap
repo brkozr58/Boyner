@@ -8,7 +8,7 @@ REPORT zbyhr_p018.
 TYPE-POOLS : slis .
 TYPE-POOLS : slis .
 CLASS : gr_report DEFINITION DEFERRED.
-
+DATA: lv_xstring  TYPE xstring.
 
 * Tables
 TABLES : pernr   ,
@@ -48,11 +48,94 @@ DATA : BEGIN OF gt_filter OCCURS 0 ,
        END OF gt_filter .
 
 
-DATA: ld_filename TYPE string,
-      ld_path     TYPE string,
-      ld_fullpath TYPE string,
-      ld_result   TYPE i,
-      l_filename  TYPE string.
+DATA: ld_filename      TYPE string,
+      ld_path          TYPE string,
+      ld_fullpath      TYPE string,
+      ld_result        TYPE i,
+      l_filename       TYPE string,
+      lv_def_extension TYPE string.
+
+
+"$. Region OLE
+INCLUDE ole2incl.
+
+DATA: go_excel TYPE ole2_object,
+      go_books TYPE ole2_object,
+      go_book  TYPE ole2_object,
+      go_sheet TYPE ole2_object,
+      go_cell  TYPE ole2_object,
+      go_font  TYPE ole2_object,
+      go_int   TYPE ole2_object,
+      go_range TYPE ole2_object,
+      go_row   TYPE ole2_object.
+
+" Hücreye değer basmak için makro
+DEFINE m_set_cell.
+  CALL METHOD OF go_excel 'Cells' = go_cell EXPORTING #1 = &1 #2 = &2.
+  SET PROPERTY OF go_cell 'Value' = &3.
+END-OF-DEFINITION.
+
+"  (Yeşil arka plan, Beyaz/Kalın yazı) boyamak için makro
+DEFINE m_color_green.
+  CALL METHOD OF go_excel 'Cells' = go_cell EXPORTING #1 = &1 #2 = &2.
+  CALL METHOD OF go_cell 'Interior' = go_int.
+  SET PROPERTY OF go_int 'Color' = 32768. " Koyu Yeşil
+  CALL METHOD OF go_cell 'Font' = go_font.
+  SET PROPERTY OF go_font 'Color' = 16777215. " Beyaz
+  SET PROPERTY OF go_font 'Bold' = 1.
+END-OF-DEFINITION.
+
+" Hücre birleştirme makrosu (Örn: m_merge_cells 'C1' 'H1'.)
+DEFINE m_merge_cells.
+  CALL METHOD OF go_excel 'Range' = go_range EXPORTING #1 = &1 #2 = &2.
+  SET PROPERTY OF go_range 'MergeCells' = 1.
+END-OF-DEFINITION.
+
+" B sütununu metin formatına çevirip ortalama makrosu
+DEFINE m_format_col_b.
+  CALL METHOD OF go_excel 'Cells' = go_cell EXPORTING #1 = &1 #2 = 2.
+  SET PROPERTY OF go_cell 'NumberFormat' = '@'. " Metin formatı (başındaki 0'ları korur)
+  SET PROPERTY OF go_cell 'HorizontalAlignment' = -4108. " xlCenter (Ortala)
+END-OF-DEFINITION.
+
+" Belirli bir aralığa (Range) kenarlık ekleme makrosu
+DEFINE m_range_border.
+  CALL METHOD OF go_excel 'Range' = go_range EXPORTING #1 = &1 #2 = &2.
+  CALL METHOD OF go_range 'Borders' = go_int.
+  SET PROPERTY OF go_int 'LineStyle' = 1. " xlContinuous (Düz çizgi)
+END-OF-DEFINITION.
+
+" Belirli bir hücreyi ortalama makrosu
+DEFINE m_center_cell.
+  CALL METHOD OF go_excel 'Cells' = go_cell EXPORTING #1 = &1 #2 = &2.
+  SET PROPERTY OF go_cell 'HorizontalAlignment' = -4108. " xlCenter
+END-OF-DEFINITION.
+
+DATA: go_chars TYPE ole2_object. " Kısmi metin formatlama nesnesi
+DATA: lv_off TYPE i, lv_len TYPE i, lv_start TYPE i. " Metin arama pozisyonları
+
+" Metni Mavi yapmak için
+DEFINE m_color_blue_text.
+  CALL METHOD OF go_excel 'Cells' = go_cell EXPORTING #1 = &1 #2 = &2.
+  CALL METHOD OF go_cell 'Font' = go_font.
+  SET PROPERTY OF go_font 'Color' = 16711680. " Excel Mavi Renk Kodu
+END-OF-DEFINITION.
+
+" Sütun genişliği ayarlama makrosu
+DEFINE m_col_width.
+  CALL METHOD OF go_excel 'Columns' = go_range EXPORTING #1 = &1.
+  SET PROPERTY OF go_range 'ColumnWidth' = &2.
+END-OF-DEFINITION.
+
+" Hücreyi metin formatında ayarlayıp değer basmak için makro (Başındaki 0'ları korur)
+DEFINE m_set_cell_text.
+  CALL METHOD OF go_excel 'Cells' = go_cell EXPORTING #1 = &1 #2 = &2.
+  SET PROPERTY OF go_cell 'NumberFormat' = '@'. " Formatı Metin yap
+  SET PROPERTY OF go_cell 'Value' = &3.         " Değeri bas
+END-OF-DEFINITION.
+
+"$. Endregion OLE
+
 * Selection Screen
 SELECTION-SCREEN BEGIN OF BLOCK b1 WITH FRAME TITLE TEXT-bl1     .
   PARAMETERS : p_pdate LIKE pa0015-begda OBLIGATORY,

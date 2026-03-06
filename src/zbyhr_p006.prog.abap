@@ -1302,7 +1302,8 @@ FORM def_column.
       WHEN '2001'.
         SELECT SINGLE atext INTO (wlgtxt) FROM t554t
          WHERE awart = wheading-lgart
-          AND sprsl = 'T'.
+           AND moabw = '01'
+           AND sprsl = 'T'.
       WHEN '9917'.
         SELECT SINGLE stext INTO (wlgtxt) FROM t591s
          WHERE infty EQ '9917'

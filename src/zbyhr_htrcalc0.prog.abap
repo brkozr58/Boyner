@@ -155,15 +155,15 @@ FORM pyp_tesvik .
          AND ls_0771-borgo0 EQ '01'
          AND ls_0771-borde0 BETWEEN '01' AND '03' ).
 
-      LOOP AT rt WHERE lgart EQ '/N03' OR lgart EQ '/S03' OR lgart EQ '/N10' OR lgart EQ '/S05'.
-        IF rt-lgart EQ '/N03'.
+      LOOP AT rt WHERE lgart EQ '9N03' OR lgart EQ '9S03' OR lgart EQ '9N10' OR lgart EQ '9S05'.
+        IF rt-lgart EQ '9N03'.
           lv_n032 = lv_n03 = rt-betrg.
-        ELSEIF rt-lgart EQ '/S03'.
+        ELSEIF rt-lgart EQ '9S03'.
           lv_s032 = lv_s03 = rt-betrg.
         ENDIF.
-        IF rt-lgart EQ '/N10'.
+        IF rt-lgart EQ '9N10'.
           lv_n102 = lv_n10 = rt-betrg.
-        ELSEIF rt-lgart EQ '/S05'.
+        ELSEIF rt-lgart EQ '9S05'.
           lv_s052 = lv_s05 = rt-betrg.
         ENDIF.
       ENDLOOP.

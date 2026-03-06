@@ -162,6 +162,8 @@ CLASS gr_report IMPLEMENTATION.
         cx_salv_msg INTO gr_exp_msg.
     ENDTRY.
 
+
+    lv_xstring = gr_alv->to_xml( if_salv_bs_xml=>c_type_xlsx ).
   ENDMETHOD.                    "create_alv
 
 
@@ -257,7 +259,11 @@ CLASS gr_report IMPLEMENTATION.
         PERFORM download_text .
 
       WHEN 'EXCEL'.
-        PERFORM download_excel .
+*        IF sy-uname EQ 'D_BOZER'.
+*          PERFORM download_excel .
+*        ELSE.
+        PERFORM download_ole .
+*        ENDIF.
 *
 *        PERFORM download_excel_oaor TABLES gt_grnt
 *                                    USING 'ZBYHR_P018'
@@ -420,6 +426,8 @@ ENDFORM.
 *& Form append_person
 *&---------------------------------------------------------------------*
 FORM append_person USING ps_out TYPE zbyhr_s011 .
+  DATA: lv_left  TYPE string,
+        lv_right TYPE string.
   IF ps_out-betrg IS NOT INITIAL.
 *    READ TABLE gt_t001 INTO DATA(ls_t001) WITH KEY bukrs = pernr-bukrs.
     READ TABLE gt_t001 INTO DATA(ls_t001) WITH KEY bukrs = pernr-bukrs werks = pernr-werks btrtl = pernr-btrtl.
@@ -450,7 +458,10 @@ FORM append_person USING ps_out TYPE zbyhr_s011 .
     ps_out-lgart    = p_lgart.
     ps_out-fiban    = ls_t001-iban.
     ps_out-kurkod   = ls_t001-kurkod.
-    ps_out-subkod   = ls_t001-subkod.
+    SHIFT ps_out-kurkod LEFT DELETING LEADING '0'.
+    SPLIT p0009-bankl AT '-' INTO lv_left lv_right.
+    ps_out-subkod   = lv_right.
+    SHIFT ls_t001-hspno LEFT DELETING LEADING '0'.
     ps_out-hspno    = ls_t001-hspno .
     ps_out-bukrs    = p0001-bukrs .
     ps_out-werks    = p0001-werks .
@@ -465,24 +476,41 @@ FORM append_person USING ps_out TYPE zbyhr_s011 .
 
     APPEND ps_out TO go_report->gt_out .
   ENDIF.
-  CLEAR ps_out .
+  CLEAR: ps_out.
 ENDFORM.
 *&---------------------------------------------------------------------*
 *& Form download_excel
 *&---------------------------------------------------------------------*
 FORM download_excel .
-  DATA: ld_filename TYPE string,
-        ld_path     TYPE string,
-        ld_fullpath TYPE string,
-        ld_result   TYPE i,
-        l_filename  TYPE string.
+
+  TYPES:
+    BEGIN OF ty_s_cline,
+      line TYPE c LENGTH 1024, " Line of type Character
+    END OF ty_s_cline .
+  DATA: ld_filename    TYPE string,
+        ld_path        TYPE string,
+        ld_fullpath    TYPE string,
+        ld_result      TYPE i,
+        l_filename     TYPE string,
+        lv_xstring     TYPE xstring,
+        lt_bin         TYPE solix_tab,
+        gt_len         TYPE i,
+        gt_srctab      TYPE STANDARD TABLE OF ty_s_cline,
+        lv_data_string TYPE string.
+
+  DATA: lo_excel  TYPE REF TO cl_fdt_xl_spreadsheet,
+*      lv_xstring    TYPE xstring,
+        lt_binary TYPE solix_tab,
+        lv_size   TYPE i.
 
   DATA: xml_table TYPE STANDARD TABLE OF string .
 
-  l_filename = 'Garanti Bankası.xls'.
+  l_filename = 'Garanti Bankası.xlsx'.
+  lv_def_extension = 'XLSX'.
+
   CALL METHOD cl_gui_frontend_services=>file_save_dialog
     EXPORTING
-      default_extension = 'XLS'
+      default_extension = lv_def_extension
       default_file_name = l_filename
       initial_directory = 'C:\'
     CHANGING
@@ -507,22 +535,449 @@ FORM download_excel .
                 gt_filter-bukrs '_'
                 gt_filter-werks '_'
                 gt_filter-btrtl '.' lv2 INTO ld_fullpath.
-    .
-    CHECK xml_table[] IS NOT INITIAL  .
-    CALL FUNCTION 'GUI_DOWNLOAD'
+
+    LOOP AT xml_table INTO DATA(ls_table).
+      lv_data_string = ls_table.
+    ENDLOOP.
+
+
+    CALL FUNCTION 'SCMS_STRING_TO_XSTRING'
       EXPORTING
-        filename              = ld_fullpath
-        filetype              = 'ASC'
-        write_field_separator = 'X'
-        confirm_overwrite     = 'X'
-        codepage              = '4100'
-      TABLES
-        data_tab              = xml_table[]
+        text   = lv_data_string
+      IMPORTING
+        buffer = lv_xstring
       EXCEPTIONS
-        file_open_error       = 1
-        file_write_error      = 2
-        OTHERS                = 3.
+        failed = 1
+        OTHERS = 2.
+
+    CALL FUNCTION 'SCMS_XSTRING_TO_BINARY'
+      EXPORTING
+        buffer        = lv_xstring
+      IMPORTING
+        output_length = gt_len
+      TABLES
+        binary_tab    = lt_bin.
+
+    CALL METHOD cl_gui_frontend_services=>gui_download
+      EXPORTING
+        bin_filesize            = gt_len
+        filename                = ld_fullpath
+        filetype                = 'BIN'
+        confirm_overwrite       = 'X'
+        codepage                = '4100'
+      CHANGING
+        data_tab                = lt_bin[]
+      EXCEPTIONS
+        file_write_error        = 1
+        no_batch                = 2
+        gui_refuse_filetransfer = 3
+        invalid_type            = 4
+        no_authority            = 5
+        unknown_error           = 6
+        header_not_allowed      = 7
+        separator_not_allowed   = 8
+        filesize_not_allowed    = 9
+        header_too_long         = 10
+        dp_error_create         = 11
+        dp_error_send           = 12
+        dp_error_write          = 13
+        unknown_dp_error        = 14
+        access_denied           = 15
+        dp_out_of_memory        = 16
+        disk_full               = 17
+        dp_timeout              = 18
+        file_not_found          = 19
+        dataprovider_exception  = 20
+        control_flush_error     = 21
+        not_supported_by_gui    = 22
+        error_no_gui            = 23
+        OTHERS                  = 24.
+
+    CHECK xml_table[] IS NOT INITIAL.
+
   ENDLOOP.
+ENDFORM.
+*&---------------------------------------------------------------------*
+*& Form set_excel_ole
+*&---------------------------------------------------------------------*
+FORM download_ole .
+
+  DATA: ld_filename      TYPE string,
+        ld_path          TYPE string,
+        ld_fullpath      TYPE string,
+        ld_result        TYPE i,
+        l_filename       TYPE string,
+        lv_def_extension TYPE string,
+        lv_bin_file      TYPE zbyhr_s001-bin_file.
+
+  l_filename = 'Garanti Bankası.xlsx'.
+  lv_def_extension = 'XLSX'.
+
+  CALL METHOD cl_gui_frontend_services=>file_save_dialog
+    EXPORTING
+      default_extension = lv_def_extension
+      default_file_name = l_filename
+      initial_directory = 'C:\'
+    CHANGING
+      filename          = ld_filename
+      path              = ld_path
+      fullpath          = ld_fullpath
+      user_action       = ld_result.
+
+  CHECK ld_result EQ '0'.
+
+  LOOP AT gt_filter.
+    SPLIT ld_filename AT '.' INTO ld_filename DATA(lv2).
+
+    " Tam dosya yolunu oluşturuyoruz
+    CONCATENATE ld_path
+                ld_filename   '_'
+                gt_filter-bukrs '_'
+                gt_filter-werks '_'
+                gt_filter-btrtl '.' lv2 INTO ld_fullpath.
+
+    PERFORM set_excel_ole USING gt_filter-bukrs
+                                gt_filter-werks
+                                gt_filter-btrtl
+                                ld_fullpath
+                       CHANGING lv_bin_file.
+  ENDLOOP.
+
+ENDFORM.
+
+*&---------------------------------------------------------------------*
+*& Form set_excel_ole
+*&---------------------------------------------------------------------*
+FORM set_excel_ole USING pv_bukrs
+                         pv_werks
+                         pv_btrtl
+                         pv_fullpath TYPE string
+                CHANGING cv_bin_file.
+
+  DATA: topad  TYPE i,
+        tptar  TYPE maxbt,
+        lv_row TYPE i.
+
+  DATA: BEGIN OF ls_head,
+          krmkd TYPE char100,
+          sbkod TYPE char100,
+          hesap TYPE char100,
+          topad TYPE char100,
+          tptar TYPE char100,
+          dvkur TYPE char100,
+          odtrh TYPE char100,
+          odmtp TYPE char100,
+          brciz TYPE char100,
+        END OF ls_head.
+
+  DATA: lt_out TYPE TABLE OF zbyhr_s011.
+
+  READ TABLE gt_t001 INTO DATA(ls_t001) WITH KEY bukrs = pv_bukrs werks = pv_werks btrtl = pv_btrtl.
+  IF sy-subrc NE 0.
+    READ TABLE gt_t001 INTO ls_t001 WITH KEY bukrs = pv_bukrs werks = pv_werks.
+    IF sy-subrc NE 0.
+      READ TABLE gt_t001 INTO ls_t001 WITH KEY bukrs = pv_bukrs.
+    ENDIF.
+  ENDIF.
+
+  READ TABLE gt_t002 INTO DATA(ls_t002) WITH KEY bukrs = pernr-bukrs werks = ls_t001-werks btrtl = ls_t001-btrtl.
+  READ TABLE gt_izah INTO DATA(ls_izah) WITH KEY domvalue_l = p_odtip.
+
+  REFRESH lt_out.
+  CLEAR: topad, tptar.
+
+  LOOP AT go_report->gt_out INTO DATA(ls_out).
+    IF pv_bukrs IS NOT INITIAL. CHECK ls_out-bukrs EQ pv_bukrs. ENDIF.
+    IF pv_werks IS NOT INITIAL. CHECK ls_out-werks EQ pv_werks. ENDIF.
+    IF pv_btrtl IS NOT INITIAL. CHECK ls_out-btrtl EQ pv_btrtl. ENDIF.
+
+    ls_head-krmkd    = ls_t001-kurkod.
+    SHIFT ls_head-krmkd LEFT DELETING LEADING '0'.
+    ls_head-sbkod    = ls_t001-subkod.
+    SHIFT ls_head-sbkod LEFT DELETING LEADING '0'.
+    ls_head-hesap    = ls_t001-hspno.
+    SHIFT ls_head-hesap LEFT DELETING LEADING '0'.
+    ls_head-dvkur    = 'TL'.
+    ls_head-odmtp    = p_odtip.
+    ls_head-brciz    = ls_out-bizah.
+    ADD 1 TO topad.
+    ADD ls_out-betrg TO tptar.
+    APPEND ls_out TO lt_out.
+  ENDLOOP.
+
+  ls_head-topad = topad.
+  WRITE tptar TO ls_head-tptar CURRENCY ls_out-waers.
+  SHIFT ls_head-topad LEFT DELETING LEADING space.
+  SHIFT ls_head-tptar LEFT DELETING LEADING space.
+  ls_head-odtrh = p_pdate+6(2) && p_pdate+4(2) && p_pdate(4).
+
+
+  CREATE OBJECT go_excel 'EXCEL.APPLICATION'.
+  SET PROPERTY OF go_excel 'Visible'       = 0.
+  SET PROPERTY OF go_excel 'DisplayAlerts' = 0.
+
+  CALL METHOD OF go_excel 'Workbooks' = go_books.
+  CALL METHOD OF go_books 'Add' = go_book.
+  CALL METHOD OF go_excel 'ActiveSheet' = go_sheet.
+
+  " Tüm sayfanın standart fontunu Times New Roman yapıyoruz
+  CALL METHOD OF go_excel 'Cells' = go_cell.
+  CALL METHOD OF go_cell 'Font' = go_font.
+  SET PROPERTY OF go_font 'Name' = 'Times New Roman'.
+  SET PROPERTY OF go_font 'Size' = 10.
+
+  m_col_width 1 '14.29'. " A Sütunu
+  m_col_width 2 '21.14'. " B Sütunu
+  m_col_width 3 '15.71'. " C Sütunu
+  m_col_width 4 '11.86'. " D Sütunu
+  m_col_width 5 '20.29'. " E Sütunu
+  m_col_width 6 '28.86'. " F Sütunu
+  m_col_width 7 '22.71'. " G Sütunu
+  m_col_width 8 '23.86'. " H Sütunu
+  m_col_width 9 '14.71'. " I Sütunu
+  m_col_width 10 '13.71'. " J Sütunu
+  m_col_width 11 '7.14'.  " K Sütunu
+  m_col_width 12 '17.14'. " L Sütunu
+
+  "$. Region   1. Başlık Bilgileri, Renklendirmeler ve B Sütunu Formatlamaları
+
+  m_format_col_b 1. m_set_cell 1 1 'Kurum Kodu'.   m_color_green 1 1. m_set_cell 1 2 ls_head-krmkd.
+  m_format_col_b 2. m_set_cell 2 1 'Şube Kodu'.    m_color_green 2 1. m_set_cell 2 2 ls_head-sbkod.
+  m_format_col_b 3. m_set_cell 3 1 'Hesap'.        m_color_green 3 1. m_set_cell 3 2 ls_head-hesap.
+  m_format_col_b 4. m_set_cell 4 1 'Toplam Adet'.  m_color_green 4 1. m_set_cell 4 2 ls_head-topad.
+  m_format_col_b 5. m_set_cell 5 1 'Toplam Tutar'. m_color_green 5 1. m_set_cell 5 2 ls_head-tptar.
+  m_format_col_b 6. m_set_cell 6 1 'Döviz Kodu'.   m_color_green 6 1. m_set_cell 6 2 ls_head-dvkur.
+  m_format_col_b 7. m_set_cell 7 1 'Ödeme Tarihi'. m_color_green 7 1. m_set_cell 7 2 ls_head-odtrh.
+  m_format_col_b 8. m_set_cell 8 1 'Ödeme Tipi'.   m_color_green 8 1. m_set_cell 8 2 ls_head-odmtp.
+  m_format_col_b 9. m_set_cell 9 1 'Borç İzahat'.  m_color_green 9 1. m_set_cell 9 2 ls_head-brciz.
+
+  "$. Endregion   1. Başlık Bilgileri, Renklendirmeler ve B Sütunu Formatlamaları
+
+  "$. Region 2. C ve H Sütunlarını Birleştirme ve Açıklama Metinleri (Mavi)
+
+  m_merge_cells 'C1' 'H1'. m_set_cell 1 3 'Garanti Bankası tarafından verilen kurum kodunuz.'. m_color_blue_text 1 3.
+  m_merge_cells 'C2' 'H2'. m_set_cell 2 3 'Şubenizden öğreniniz'. m_color_blue_text 2 3.
+  m_merge_cells 'C3' 'H3'. m_set_cell 3 3 'Maaş ödemesinde kullanacağınız hesap. 1299998-2 şeklinde kontrol digiti girmeyiniz.'. m_color_blue_text 3 3.
+  m_merge_cells 'C4' 'H4'. m_set_cell 4 3 'Toplam maaş adedi. (Giriş yapıldıkça otomatik olarak hesaplanır.)'. m_color_blue_text 4 3.
+  m_merge_cells 'C5' 'H5'. m_set_cell 5 3 'Toplam ödeme tutarı. (Giriş yapıldıkça otomatik olarak hesaplanır.)'. m_color_blue_text 5 3.
+  m_merge_cells 'C6' 'H6'. m_set_cell 6 3 'Döviz kodunu listeden seçiniz.'. m_color_blue_text 6 3.
+  m_merge_cells 'C7' 'H7'. m_set_cell 7 3 'GGAAYYYY formatında. (Örnek: 04032001 giriniz.)'. m_color_blue_text 7 3.
+  m_merge_cells 'C8' 'H8'. m_set_cell 8 3 'Ödeme tiplerini yandaki tabloda görebilirsiniz.'. m_color_blue_text 8 3.
+  m_merge_cells 'C9' 'H9'. m_set_cell 9 3 ''.
+
+  "$. Endregion 2. C ve H Sütunlarını Birleştirme ve Açıklama Metinleri (Mavi)
+
+  "$. Region 3. 10. Satır Düzenlemesi (Bilgilendirme Metni)
+  " 3. 10. Satır Düzenlemesi (Bilgilendirme Metni)
+  CALL METHOD OF go_excel 'Rows' = go_row EXPORTING #1 = '10:10'.
+  SET PROPERTY OF go_row 'RowHeight' = 35.
+  m_merge_cells 'A10' 'H10'.
+
+  DATA(lv_bilgi_metni) = |BİLGİLENDİRME : Dosyanızdaki bilgiler banka sistemine |
+                      && |otomatik olarak yüklenecektir. Banka kodu boş veya  62 ise havale, 62'den |
+                      && |farklı ise EFT'dir. Kayıtlar içinde EFT varsaödeme tarihi işgünü olmalıdır. |
+                      && |Başka bir excel dosyasından kopyalama yapmak istiyorsanız Edit/Paste Spacial |
+                      && |seçeneğini Values seçerek kullanınız.|.
+
+  m_set_cell 10 1 lv_bilgi_metni.
+
+  " Temel Hizalama ve Rengi Mavi Yapma (Bold kapalı)
+  CALL METHOD OF go_excel 'Cells' = go_cell EXPORTING #1 = 10 #2 = 1.
+  SET PROPERTY OF go_cell 'WrapText' = 1.
+  SET PROPERTY OF go_cell 'HorizontalAlignment' = -4108.
+  SET PROPERTY OF go_cell 'VerticalAlignment' = -4108.
+  CALL METHOD OF go_cell 'Font' = go_font.
+  SET PROPERTY OF go_font 'Color' = 16711680. " Temel renk Mavi
+  SET PROPERTY OF go_font 'Bold' = 0. " Kalınlığı kapat
+
+
+  " a) BİLGİLENDİRME : -> Kırmızı ve Kalın
+  FIND FIRST OCCURRENCE OF 'BİLGİLENDİRME :' IN lv_bilgi_metni MATCH OFFSET lv_off MATCH LENGTH lv_len.
+  IF sy-subrc = 0.
+    lv_start = lv_off + 1. " OLE 1'den başlar, ABAP offset 0'dan
+    CALL METHOD OF go_cell 'Characters' = go_chars EXPORTING #1 = lv_start #2 = lv_len.
+    CALL METHOD OF go_chars 'Font' = go_font.
+    SET PROPERTY OF go_font 'Color' = 255. " Kırmızı
+    SET PROPERTY OF go_font 'Bold' = 1.
+  ENDIF.
+
+  " b) İlk EFT yazısı -> Kalın ve Altı Çizili
+  FIND FIRST OCCURRENCE OF 'EFT' IN lv_bilgi_metni MATCH OFFSET lv_off MATCH LENGTH lv_len.
+  IF sy-subrc = 0.
+    lv_start = lv_off + 1.
+    CALL METHOD OF go_cell 'Characters' = go_chars EXPORTING #1 = lv_start #2 = lv_len.
+    CALL METHOD OF go_chars 'Font' = go_font.
+    SET PROPERTY OF go_font 'Bold' = 1.
+    SET PROPERTY OF go_font 'Underline' = 2. " Altı çizili
+  ENDIF.
+
+  " c) Kayıtlar içinde EFT varsa -> Kalın ve Altı Çizili
+  FIND FIRST OCCURRENCE OF 'Kayıtlar içinde EFT varsa' IN lv_bilgi_metni MATCH OFFSET lv_off MATCH LENGTH lv_len.
+  IF sy-subrc = 0.
+    lv_start = lv_off + 1.
+    CALL METHOD OF go_cell 'Characters' = go_chars EXPORTING #1 = lv_start #2 = lv_len.
+    CALL METHOD OF go_chars 'Font' = go_font.
+    SET PROPERTY OF go_font 'Bold' = 1.
+    SET PROPERTY OF go_font 'Underline' = 2.
+  ENDIF.
+
+  " d) ödeme tarihi işgünü olmalıdır -> Kalın
+  FIND FIRST OCCURRENCE OF 'ödeme tarihi işgünü olmalıdır' IN lv_bilgi_metni MATCH OFFSET lv_off MATCH LENGTH lv_len.
+  IF sy-subrc = 0.
+    lv_start = lv_off + 1.
+    CALL METHOD OF go_cell 'Characters' = go_chars EXPORTING #1 = lv_start #2 = lv_len.
+    CALL METHOD OF go_chars 'Font' = go_font.
+    SET PROPERTY OF go_font 'Bold' = 1.
+  ENDIF.
+
+  " e) Edit/Paste -> Kalın
+  FIND FIRST OCCURRENCE OF 'Edit/Paste' IN lv_bilgi_metni MATCH OFFSET lv_off MATCH LENGTH lv_len.
+  IF sy-subrc = 0.
+    lv_start = lv_off + 1.
+    CALL METHOD OF go_cell 'Characters' = go_chars EXPORTING #1 = lv_start #2 = lv_len.
+    CALL METHOD OF go_chars 'Font' = go_font.
+    SET PROPERTY OF go_font 'Bold' = 1.
+  ENDIF.
+
+  "$. Endregion 3. 10. Satır Düzenlemesi (Bilgilendirme Metni)
+
+  " 4. Kalem Başlıkları (12. Satır)
+  m_set_cell 12 1 'İsim'.             m_color_green 12 1.
+  m_set_cell 12 2 'TCKN (Opsiyonel)'. m_color_green 12 2.
+  m_set_cell 12 3 'Banka Kodu'.       m_color_green 12 3.
+  m_set_cell 12 4 'Şube Kodu'.        m_color_green 12 4.
+  m_set_cell 12 5 'Hesap'.            m_color_green 12 5.
+  m_set_cell 12 6 'IBAN (Boşluksuz 26 Karakter)'. m_color_green 12 6.
+  m_set_cell 12 7 'Tutar'.            m_color_green 12 7.
+  m_set_cell 12 8 'Borç İzahat'.      m_color_green 12 8.
+  m_set_cell 12 9 'Alacak izahat'.    m_color_green 12 9.
+
+  "$. Region 5. Dinamik Kalem Verilerinin Basılması
+
+  lv_row = 13.
+  LOOP AT lt_out INTO DATA(ls_item).
+    " Not: zbyhr_s011 yapısındaki kendi alan isimlerini (isim, tckn vb.) buradan teyit et
+    m_set_cell lv_row 1 ls_item-ename.
+    m_set_cell lv_row 2 ls_item-merni.
+    m_set_cell lv_row 3 ls_item-bankl.
+    m_set_cell_text lv_row 4 ls_item-subkod.  " 4: Şube Kodu
+    m_set_cell_text lv_row 5 ls_item-bankn.      " 5: Hesap
+*    m_set_cell lv_row 4 ls_item-subkod.
+*    m_set_cell lv_row 5 ls_item-bankn.
+    m_set_cell lv_row 6 ls_item-iban.
+    DATA(lv_tutar_str) = CONV string( ls_item-vbetrg ).
+    m_set_cell lv_row 7 lv_tutar_str.
+
+    m_set_cell lv_row 8 ls_item-bizah.
+    m_set_cell lv_row 9 ls_item-aizah.
+
+    lv_row = lv_row + 1.
+  ENDLOOP.
+  "$. Endregion 5. Dinamik Kalem Verilerinin Basılması
+
+
+  "$. Region " --- ÖDEME TİPLERİ TABLOSU (I, J, K, L SÜTUNLARI) ---
+
+  " 1. Tablo Başlığı: I1:L1 Birleştirme ve Yazma
+  m_merge_cells 'I1' 'L1'.
+  m_set_cell 1 9 'Ödeme Tipleri'. " I sütunu 9. indistir
+  m_center_cell 1 9.
+  CALL METHOD OF go_excel 'Cells' = go_cell EXPORTING #1 = 1 #2 = 9.
+  CALL METHOD OF go_cell 'Font' = go_font.
+  SET PROPERTY OF go_font 'Bold' = 1.
+
+  " 2. Tablo İçeriği (Kodlar ve Açıklamalar)
+  " Sol Taraf (I ve J Sütunları)      " Sağ Taraf (K ve L Sütunları)
+  m_set_cell 2 9  'O'. m_center_cell 2 9. m_set_cell 2 10 'SOSYAL YARDIM'.      m_set_cell 2 11 'G'. m_center_cell 2 11. m_set_cell 2 12 'PROMOSYON'.
+  m_set_cell 3 9  'D'. m_center_cell 3 9. m_set_cell 3 10 'DÖNER SERMAYE'.     m_set_cell 3 11 'R'. m_center_cell 3 11. m_set_cell 3 12 'PRİM ÖDEMESİ'.
+  m_set_cell 4 9  'C'. m_center_cell 4 9. m_set_cell 4 10 'KOMİSYON'.          m_set_cell 4 11 'S'. m_center_cell 4 11. m_set_cell 4 12 'EK DERS ÜCRETİ'.
+  m_set_cell 5 9  'F'. m_center_cell 5 9. m_set_cell 5 10 'FAZLA MESAİ'.       m_set_cell 5 11 'H'. m_center_cell 5 11. m_set_cell 5 12 'HUZUR HAKKI'.
+  m_set_cell 6 9  'I'. m_center_cell 6 9. m_set_cell 6 10 'İKRAMİYE'.          m_set_cell 6 11 'V'. m_center_cell 6 11. m_set_cell 6 12 'ASGARİ GEÇİM İNDİRİMİ'.
+  m_set_cell 7 9  'K'. m_center_cell 7 9. m_set_cell 7 10 'KIDEM TAZMİNATI'.   m_set_cell 7 11 'Y'. m_center_cell 7 11. m_set_cell 7 12 'YOLLUK'.
+  m_set_cell 8 9  'M'. m_center_cell 8 9. m_set_cell 8 10 'MAAŞ'.              m_set_cell 8 11 'Z'. m_center_cell 8 11. m_set_cell 8 12 'DİĞER'.
+  m_set_cell 9 9  'N'. m_center_cell 9 9. m_set_cell 9 10 'AVANS'.             m_set_cell 9 11 'X'. m_center_cell 9 11. m_set_cell 9 12 'KESİNTİ'.
+
+  " 3. Tüm Tabloya Kenarlık Ekleme (I1'den L9'a kadar)
+  m_range_border 'I1' 'L9'.
+
+  " 1. Tüm tablonun (I1:L9) Fontunu Trebuchet MS yap
+  CALL METHOD OF go_excel 'Range' = go_range EXPORTING #1 = 'I1' #2 = 'L9'.
+  CALL METHOD OF go_range 'Font' = go_font.
+  SET PROPERTY OF go_font 'Name' = 'Trebuchet MS'.
+
+  " 2. SADECE veri kısmının (I2:L9 - başlık hariç) boyutunu 8 yap
+  CALL METHOD OF go_excel 'Range' = go_range EXPORTING #1 = 'I2' #2 = 'L9'.
+  CALL METHOD OF go_range 'Font' = go_font.
+  SET PROPERTY OF go_font 'Size' = 8.
+
+
+*" I1'den L9'a kadar olan tablonun Fontunu Trebuchet MS yapma
+*  CALL METHOD OF go_excel 'Range' = go_range EXPORTING #1 = 'I1' #2 = 'L9'.
+*  CALL METHOD OF go_range 'Font' = go_font.
+*  SET PROPERTY OF go_font 'Name' = 'Trebuchet MS'.
+
+  " Açıklama: I ve K sütunlarını (Kod sütunları) daha dar yapabiliriz (Opsiyonel)
+*  CALL METHOD OF go_excel 'Columns' = go_range EXPORTING #1 = 9. " I Sütunu
+*  SET PROPERTY OF go_range 'ColumnWidth' = 4.
+*  CALL METHOD OF go_excel 'Columns' = go_range EXPORTING #1 = 11. " K Sütunu
+*  SET PROPERTY OF go_range 'ColumnWidth' = 4.
+
+
+  "$. Endregion "  ÖDEME TİPLERİ TABLOSU (I, J, K, L SÜTUNLARI)
+
+  " --- C. DOSYAYI GERÇEK .XLSX OLARAK KAYDETME VE HAFIZAYI TEMİZLEME ---
+  " 51 parametresi xlOpenXMLWorkbook demektir ve uzantının içini .xlsx (ZIP) formatında örer.
+  CALL METHOD OF go_sheet 'SaveAs'
+    EXPORTING
+      #1 = pv_fullpath
+      #2 = 51.
+
+  DATA: lt_bin TYPE solix_tab.
+  DATA: filelength TYPE int4.
+
+  CALL FUNCTION 'GUI_UPLOAD'
+    EXPORTING
+      filename                = pv_fullpath
+      filetype                = 'BIN'
+    IMPORTING
+      filelength              = filelength
+    TABLES
+      data_tab                = lt_bin[]
+    EXCEPTIONS
+      file_open_error         = 1
+      file_read_error         = 2
+      no_batch                = 3
+      gui_refuse_filetransfer = 4
+      invalid_type            = 5
+      no_authority            = 6
+      unknown_error           = 7
+      bad_data_format         = 8
+      header_not_allowed      = 9
+      separator_not_allowed   = 10
+      header_too_long         = 11
+      unknown_dp_error        = 12
+      access_denied           = 13
+      dp_out_of_memory        = 14
+      disk_full               = 15
+      dp_timeout              = 16
+      OTHERS                  = 17.
+
+  CALL FUNCTION 'SCMS_BINARY_TO_XSTRING'
+    EXPORTING
+      input_length = filelength
+    IMPORTING
+      buffer       = lv_xstring
+    TABLES
+      binary_tab   = lt_bin[]
+    EXCEPTIONS
+      failed       = 1
+      OTHERS       = 2.
+  cv_bin_file = lv_xstring.
+
+
+  CALL METHOD OF go_excel 'Quit'.
+  FREE OBJECT: go_int, go_font, go_cell, go_sheet, go_book, go_books, go_excel.
+
 ENDFORM.
 *&---------------------------------------------------------------------*
 *& Form download_excel_oaor
@@ -990,19 +1445,26 @@ FORM send_document.
 *            e_data   = s_file-data_file
           ).
         WHEN 'E'.
-          PERFORM set_excel TABLES xml_table
-                               USING gt_filter-bukrs
-                                     gt_filter-werks
-                                     gt_filter-btrtl.
-          CHECK xml_table[] IS NOT INITIAL  .
-          READ TABLE xml_table INTO xml INDEX 1 .
-          CALL FUNCTION 'SCMS_STRING_TO_XSTRING'
-            EXPORTING
-              text     = xml
-              encoding = 'UTF-8'
-*             mimetype = 'application/xml'
-            IMPORTING
-              buffer   = s_file-bin_file.
+
+          PERFORM set_excel_ole USING gt_filter-bukrs
+                                      gt_filter-werks
+                                      gt_filter-btrtl
+                                      ld_fullpath
+                             CHANGING s_file-bin_file .
+
+*          PERFORM set_excel TABLES xml_table
+*                               USING gt_filter-bukrs
+*                                     gt_filter-werks
+*                                     gt_filter-btrtl.
+*          CHECK xml_table[] IS NOT INITIAL  .
+*          READ TABLE xml_table INTO xml INDEX 1 .
+*          CALL FUNCTION 'SCMS_STRING_TO_XSTRING'
+*            EXPORTING
+*              text     = xml
+*              encoding = 'UTF-8'
+**             mimetype = 'application/xml'
+*            IMPORTING
+*              buffer   = s_file-bin_file.
           s_file-pname = ls_t002-pname &&
                          p_pdate &&
                          gv_name &&
@@ -1198,6 +1660,7 @@ ENDFORM.
 *& Form set_excel
 *&---------------------------------------------------------------------*
 FORM set_excel  TABLES   xml_table
+
                     USING pv_bukrs
                           pv_werks
                           pv_btrtl    .
@@ -1243,10 +1706,11 @@ FORM set_excel  TABLES   xml_table
       CHECK ls_out-btrtl EQ pv_btrtl.
     ENDIF.
 
-    ls_head-krmkd    = ls_out-kurkod.
-    ls_head-sbkod    = ls_out-subkod.
-    ls_head-hesap    = ls_out-hspno.
-    ls_head-dvkur    = ls_out-waers.
+    ls_head-krmkd    = ls_t001-kurkod.
+    ls_head-sbkod    = ls_t001-subkod.
+    ls_head-hesap    = ls_t001-hspno.
+*    ls_head-dvkur    = ls_out-waers.
+    ls_head-dvkur    = 'TL'.
     ls_head-odmtp    = p_odtip.
     ls_head-brciz    = ls_out-bizah.
     ADD 1 TO topad.

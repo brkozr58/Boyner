@@ -9,12 +9,7 @@ FORM fill_personel_data .
   cd-key-pernr = pernr-pernr.
   rp-imp-c2-cd.
 
-
-
   LOOP AT period.
-
-
-
 *---Check p0001
     LOOP AT p0001 WHERE begda LE period-endda
                   AND   endda GE period-begda.
@@ -1564,7 +1559,11 @@ FORM fill_wages_to_son2 TABLES pt_w STRUCTURE w
       pt_w-anagr = gt005-anagr." Ana Grup
       pt_w-altgr = gt005-altgr." Alt Grup
       pt_w-slga  = gt005-slga ." Ucret Turu
-      pt_w-amt = s_rt-betrg * <kpr> / 100.  " Ucret
+
+      IF NOT ( gt005-altgr EQ 'DU' AND s_rt-lgart EQ '/101'
+            AND ( p0001-persg = '5' OR p0001-persg = '6' ) ).
+        pt_w-amt = s_rt-betrg * <kpr> / 100.  " Ucret
+      ENDIF.
 
       pt_w-lgtxt = gt005-lgtxt .
       pt_w-seqno = gt005-siran." Sıra Numarası
@@ -1623,6 +1622,10 @@ FORM fill_wages_to_son2 TABLES pt_w STRUCTURE w
                 ls_temp-betpe TO s_rt-betpe .
         ENDLOOP.
 
+
+        IF gt005-pdate  EQ 'X'. s_rt-anzhl  = s_rt-anzhl * <kpr> / 100.ENDIF." Gun
+        IF gt005-phour  EQ 'X'. s_rt-betpe  = s_rt-betpe * <kpr> / 100.ENDIF." Saat
+
         READ TABLE ssort INTO ls_1 INDEX 1 .
         IF sy-subrc EQ 0 AND  ls_1-fnam = 'P-KOSTL'..
           lv_kostl = pt_kostl-val01.
@@ -1634,7 +1637,7 @@ FORM fill_wages_to_son2 TABLES pt_w STRUCTURE w
 
         IF gt006-person EQ 'X' . "w-count = 1.endif.
           IF NOT ( gt006-altgr EQ 'DU' AND s_rt-lgart EQ '/101'
-              AND ( p0001-persg = '5' OR p0001-persg = '6' )  ).
+            AND ( p0001-persg = '5' OR p0001-persg = '6' ) ).
             READ TABLE personel WITH KEY pernr = pernr-pernr
                            kostl = lv_kostl
                           anagr = gt005-anagr
@@ -1662,19 +1665,25 @@ FORM fill_wages_to_son2 TABLES pt_w STRUCTURE w
         pt_w-anagr = gt005-anagr." Ana Grup
         pt_w-altgr = gt005-altgr." Alt Grup
         pt_w-slga  = gt005-slga ." Ucret Turu
-        pt_w-amt = s_rt-betrg * <kpr> / 100.  " Ucret
+        IF NOT ( gt005-altgr EQ 'DU' AND s_rt-lgart EQ '/101'
+            AND ( p0001-persg = '5' OR p0001-persg = '6' ) ).
+          pt_w-amt = s_rt-betrg * <kpr> / 100.  " Ucret
 
-        pt_w-lgtxt = gt005-lgtxt .
-        pt_w-seqno = gt005-siran." Sıra Numarası
+          pt_w-lgtxt = gt005-lgtxt .
+          pt_w-seqno = gt005-siran." Sıra Numarası
 
-        IF gt006-sumwt NE 'X' .
-          pt_w-amt = pt_w-amt * -1 .
+          IF gt006-sumwt NE 'X' .
+            pt_w-amt = pt_w-amt * -1 .
+            pt_w-num   = s_rt-anzhl * -1 .
+            pt_w-saat  = s_rt-betpe * -1 .
+
 *          pt_w-count = -1 .
-        ENDIF.
+          ENDIF.
 
-        IF gt005-sumwt EQ 'X'.
-          MOVE-CORRESPONDING pt_w TO pt_total.
-          COLLECT pt_total .
+          IF gt005-sumwt EQ 'X'.
+            MOVE-CORRESPONDING pt_w TO pt_total.
+            COLLECT pt_total .
+          ENDIF.
         ENDIF.
 
 

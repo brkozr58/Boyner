@@ -200,12 +200,14 @@ FORM group_of_end .
 
       IF w-num   IS  NOT INITIAL.
         gun   = w-num.
+*        WRITE w-num TO gun.
       ELSE.
         CLEAR : gun.
       ENDIF.
 
       IF w-saat  IS  NOT INITIAL.
-        saat  = w-saat.
+        saat   = w-saat.
+*        WRITE w-saat TO saat.
       ELSE.
         CLEAR : saat.
       ENDIF.

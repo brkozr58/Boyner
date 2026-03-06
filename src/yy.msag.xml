@@ -1,0 +1,718 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<abapGit version="v1.0.0" serializer="LCL_OBJECT_MSAG" serializer_version="v1.0.0">
+ <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
+  <asx:values>
+   <T100A>
+    <ARBGB>YY</ARBGB>
+    <MASTERLANG>T</MASTERLANG>
+    <STEXT>Personel giris - cıkıs</STEXT>
+   </T100A>
+   <T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YY</ARBGB>
+     <MSGNR>000</MSGNR>
+     <TEXT> &amp; &amp; &amp; &amp;.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YY</ARBGB>
+     <MSGNR>001</MSGNR>
+     <TEXT>Belgenin çıkış tarihi doğum tarihinden küçük olamaz.! &amp; &lt; &amp;</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YY</ARBGB>
+     <MSGNR>002</MSGNR>
+     <TEXT>TTF başlama tarihi 01.04.1988 den küçük olamaz.! &amp; &lt; &amp;</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YY</ARBGB>
+     <MSGNR>003</MSGNR>
+     <TEXT>Bitiş tarihi işe başlama tarihinden bir gün önce olmalı.! &amp; &lt; &amp;.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YY</ARBGB>
+     <MSGNR>004</MSGNR>
+     <TEXT>Ay sayısı &amp; ( &amp; - &amp; ) den fazla olamaz.!</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YY</ARBGB>
+     <MSGNR>005</MSGNR>
+     <TEXT>Bitiş tarihi &amp; den sonra olamaz.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YY</ARBGB>
+     <MSGNR>006</MSGNR>
+     <TEXT>Tarih &amp; bitiş tarihinden &amp; sonra olmalı.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YY</ARBGB>
+     <MSGNR>007</MSGNR>
+     <TEXT>Başlangıç tarihi; ayın ilk günü olmalıdır.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YY</ARBGB>
+     <MSGNR>008</MSGNR>
+     <TEXT>Vergi dilimlerinin tanımlandığı tablo &amp; boş.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YY</ARBGB>
+     <MSGNR>009</MSGNR>
+     <TEXT>Etkin bir versiyon yok. 1</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YY</ARBGB>
+     <MSGNR>010</MSGNR>
+     <TEXT>Lütfen önce seçiminizi yapın.!</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YY</ARBGB>
+     <MSGNR>011</MSGNR>
+     <TEXT>Program TEST amaçlı çalıştırıldı.!</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YY</ARBGB>
+     <MSGNR>012</MSGNR>
+     <TEXT>Yanlış işlev seçildi.!</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YY</ARBGB>
+     <MSGNR>013</MSGNR>
+     <TEXT>İşten ayrılış tarihi &amp; bu tarihten &amp; büyük olmalı.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YY</ARBGB>
+     <MSGNR>014</MSGNR>
+     <TEXT>Aile bilgileri : Lütfen önce 21 numaralı bilgi tipini doldurun.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YY</ARBGB>
+     <MSGNR>015</MSGNR>
+     <TEXT>Önce ücret türünü belirleyiniz.!</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YY</ARBGB>
+     <MSGNR>016</MSGNR>
+     <TEXT>T511K içinde &amp; tanımlanmadı.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YY</ARBGB>
+     <MSGNR>017</MSGNR>
+     <TEXT>Conversation hatası.! &amp;</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YY</ARBGB>
+     <MSGNR>018</MSGNR>
+     <TEXT>Kıdem hesaplaması için azami tutarı girin.!</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YY</ARBGB>
+     <MSGNR>019</MSGNR>
+     <TEXT>PC Dosyası okunamıyor.! &amp;</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YY</ARBGB>
+     <MSGNR>020</MSGNR>
+     <TEXT>Geçersiz tablo uzunluğu.! &amp;</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YY</ARBGB>
+     <MSGNR>021</MSGNR>
+     <TEXT>geçersiz Tip hatası.! &amp;</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YY</ARBGB>
+     <MSGNR>022</MSGNR>
+     <TEXT>Batch hatası.! &amp;</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YY</ARBGB>
+     <MSGNR>023</MSGNR>
+     <TEXT>Bilinmiyen bir hata.! &amp;</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YY</ARBGB>
+     <MSGNR>024</MSGNR>
+     <TEXT>Bu seçim için bir personel verisi bulunamadı.!</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YY</ARBGB>
+     <MSGNR>025</MSGNR>
+     <TEXT>&amp; için veri yoktur.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YY</ARBGB>
+     <MSGNR>026</MSGNR>
+     <TEXT>Bilgi tipi &amp; güncellendi.!</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YY</ARBGB>
+     <MSGNR>027</MSGNR>
+     <TEXT>Parametre &amp; başlangıç durumunda.!</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YY</ARBGB>
+     <MSGNR>028</MSGNR>
+     <TEXT>Lütfen ekranda ücret tipi girin.!</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YY</ARBGB>
+     <MSGNR>029</MSGNR>
+     <TEXT>Lütfen Tarih giriniz.!</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YY</ARBGB>
+     <MSGNR>030</MSGNR>
+     <TEXT>&amp; toplu girdi oturumu oluşturuldu.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YY</ARBGB>
+     <MSGNR>031</MSGNR>
+     <TEXT>Program test amaçlı çalıştırıldı.!</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YY</ARBGB>
+     <MSGNR>032</MSGNR>
+     <TEXT>Geçerli bir tarih girin.!</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YY</ARBGB>
+     <MSGNR>033</MSGNR>
+     <TEXT>Tarih &amp; , verilen tarihten &amp; küçüktür.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YY</ARBGB>
+     <MSGNR>034</MSGNR>
+     <TEXT>9009 numaralı bilgi tipi &amp; için değiştirildi.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YY</ARBGB>
+     <MSGNR>035</MSGNR>
+     <TEXT>Yalnızca ocak ayında giren personel için veri girişi yapılabilir.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YY</ARBGB>
+     <MSGNR>036</MSGNR>
+     <TEXT>T9YD1 tablosunda kayıt yoktur</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YY</ARBGB>
+     <MSGNR>037</MSGNR>
+     <TEXT>Girdiğiniz Dönem &amp; ( &amp; - &amp; ) arasında olmalı.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YY</ARBGB>
+     <MSGNR>038</MSGNR>
+     <TEXT>Personel alt alanına da girmelisiniz</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YY</ARBGB>
+     <MSGNR>039</MSGNR>
+     <TEXT>Personel alanında girmelisiniz</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YY</ARBGB>
+     <MSGNR>040</MSGNR>
+     <TEXT>&amp; girişi yanlış. (Yanlış girdi)</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YY</ARBGB>
+     <MSGNR>041</MSGNR>
+     <TEXT>Ay sayısı &amp; doğru değildir - &amp;</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YY</ARBGB>
+     <MSGNR>042</MSGNR>
+     <TEXT>&amp; TTF kesintileri toplamı yanlıştır - &amp;</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YY</ARBGB>
+     <MSGNR>043</MSGNR>
+     <TEXT>Sadece personel alanı-alt alanı veya TTF işyeri numarası girebilirsiniz.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YY</ARBGB>
+     <MSGNR>044</MSGNR>
+     <TEXT>Bu kriterde işyeri bilgileri bulunamadı.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YY</ARBGB>
+     <MSGNR>045</MSGNR>
+     <TEXT>Girilen değerler 1 ile 3 arasında olmak zorundadır!</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YY</ARBGB>
+     <MSGNR>046</MSGNR>
+     <TEXT>Değerler birbirinden farklı olmak zorundadır!</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YY</ARBGB>
+     <MSGNR>047</MSGNR>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YY</ARBGB>
+     <MSGNR>048</MSGNR>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YY</ARBGB>
+     <MSGNR>049</MSGNR>
+     <TEXT>&amp; dönemine ait veriler &amp; tablosunun üstüne yazılacaktır.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YY</ARBGB>
+     <MSGNR>050</MSGNR>
+     <TEXT>Tablodaki T9Y30 &amp; &amp; kayıdı silindi.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YY</ARBGB>
+     <MSGNR>051</MSGNR>
+     <TEXT>Tablodaki T9Y30 &amp; &amp; kaydı silinemedi.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YY</ARBGB>
+     <MSGNR>052</MSGNR>
+     <TEXT>Tablodaki T9Y30 &amp; &amp; kaydı değiştirildi.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YY</ARBGB>
+     <MSGNR>053</MSGNR>
+     <TEXT>Kayıt T9Y30 &amp; &amp; tablosuna işlendi.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YY</ARBGB>
+     <MSGNR>054</MSGNR>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YY</ARBGB>
+     <MSGNR>055</MSGNR>
+     <TEXT>Deneme</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YY</ARBGB>
+     <MSGNR>056</MSGNR>
+     <TEXT>Henüz bordrosu hesaplanmamış.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YY</ARBGB>
+     <MSGNR>057</MSGNR>
+     <TEXT>İşe girişi &amp; sene sonundan &amp; sonra.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YY</ARBGB>
+     <MSGNR>058</MSGNR>
+     <TEXT>Vergi matrahı veya kesintisi &lt;=0</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YY</ARBGB>
+     <MSGNR>059</MSGNR>
+     <TEXT>&amp; çıkışı geçen sene &amp; içinde gerçekleşmemiş.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YY</ARBGB>
+     <MSGNR>060</MSGNR>
+     <TEXT>Çıkışı &amp; sene sonundan &amp; küçük.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YY</ARBGB>
+     <MSGNR>063</MSGNR>
+     <TEXT>&amp; nema başlangıç tarihi &amp; bitiş tarihinden büyük</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YY</ARBGB>
+     <MSGNR>064</MSGNR>
+     <TEXT>Tasarruf teşvik işyeri bulunamdı.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YY</ARBGB>
+     <MSGNR>065</MSGNR>
+     <TEXT>Nema oranları girilmemiş</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YY</ARBGB>
+     <MSGNR>066</MSGNR>
+     <TEXT>Girdiğiniz alan tabloda bulunamadı</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YY</ARBGB>
+     <MSGNR>067</MSGNR>
+     <TEXT>Tablo bulunamadı. &amp;</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YY</ARBGB>
+     <MSGNR>068</MSGNR>
+     <TEXT>Tabloda alan bulunamadı: &amp;</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YY</ARBGB>
+     <MSGNR>069</MSGNR>
+     <TEXT>Nema dökümünün başlangıç yılı &amp; bitiş yılına &amp; eşit değil.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YY</ARBGB>
+     <MSGNR>070</MSGNR>
+     <TEXT>Girilen alan veri tabanında bulunamadı. &amp;.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YY</ARBGB>
+     <MSGNR>071</MSGNR>
+     <TEXT>Alan boş olamaz.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YY</ARBGB>
+     <MSGNR>072</MSGNR>
+     <TEXT>&amp; alan uzunluğu sıfır olamaz.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YY</ARBGB>
+     <MSGNR>073</MSGNR>
+     <TEXT>&amp; alanının, hem sağa dayalı hemde esnek uzunlukta bulunması olamaz.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YY</ARBGB>
+     <MSGNR>080</MSGNR>
+     <TEXT>Alan tipi C, T, S olabilir.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YY</ARBGB>
+     <MSGNR>081</MSGNR>
+     <TEXT>Bu tür tanımlama &amp; değer alamaz.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YY</ARBGB>
+     <MSGNR>082</MSGNR>
+     <TEXT>Girilen &amp; alan adı proje içinde bulunamadı.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YY</ARBGB>
+     <MSGNR>083</MSGNR>
+     <TEXT>Bu tür alan sayılamaz. &amp;</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YY</ARBGB>
+     <MSGNR>084</MSGNR>
+     <TEXT>Yazma yeri 500 den büyük olamaz</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YY</ARBGB>
+     <MSGNR>085</MSGNR>
+     <TEXT>Uzunluk 100 den büyük olamaz.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YY</ARBGB>
+     <MSGNR>086</MSGNR>
+     <TEXT>Yazdırma yeri sıfırdan küçük olamaz.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YY</ARBGB>
+     <MSGNR>087</MSGNR>
+     <TEXT>Yazdırma uzunluğu sıfır olamaz.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YY</ARBGB>
+     <MSGNR>088</MSGNR>
+     <TEXT>Bu alanın tipi NUMB cinsinden olmalıdır. &amp; olamaz!</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YY</ARBGB>
+     <MSGNR>089</MSGNR>
+     <TEXT>Format şekli yanlış &amp;.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YY</ARBGB>
+     <MSGNR>090</MSGNR>
+     <TEXT>K tipi girişte sistem değişkenlerini(SYST) kullanmalısınız!</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YY</ARBGB>
+     <MSGNR>091</MSGNR>
+     <TEXT>&amp; alanı sistem değişkeni değildir!</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YY</ARBGB>
+     <MSGNR>092</MSGNR>
+     <TEXT>&amp; alanı &amp; tipindedir. &amp; formatlaması için uygun değildir!</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YY</ARBGB>
+     <MSGNR>093</MSGNR>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YY</ARBGB>
+     <MSGNR>094</MSGNR>
+     <TEXT>Merkez onayına göndermeden önce Referans kontrolü yapınız.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YY</ARBGB>
+     <MSGNR>400</MSGNR>
+     <TEXT>Girdiğiniz Form bulunamdı! &amp;.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YY</ARBGB>
+     <MSGNR>800</MSGNR>
+     <TEXT>&amp; satır seçtiniz. Sadece 1 satır seçiniz.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YY</ARBGB>
+     <MSGNR>801</MSGNR>
+     <TEXT>Yapacağınız işlem için bir satır seçiniz!</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YY</ARBGB>
+     <MSGNR>802</MSGNR>
+     <TEXT>Bilinmeyen işlem veya program hatası!</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YY</ARBGB>
+     <MSGNR>803</MSGNR>
+     <TEXT>Kayıtlar silindi!</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YY</ARBGB>
+     <MSGNR>804</MSGNR>
+     <TEXT>Tablo başka kullanıcı tarafından kilitlenmiş!</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YY</ARBGB>
+     <MSGNR>805</MSGNR>
+     <TEXT>&amp; projesine &amp; seçilmiştir! Önce projeyi başlıklı hale getirin.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YY</ARBGB>
+     <MSGNR>806</MSGNR>
+     <TEXT>&amp; adet satır silindi</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YY</ARBGB>
+     <MSGNR>807</MSGNR>
+     <TEXT>&amp; alanı genel alanlar tablosunda bulunamadı!</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YY</ARBGB>
+     <MSGNR>808</MSGNR>
+     <TEXT>&amp; alanı zaten kullanmışsınız. Bir daha kullanamazsınız!</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YY</ARBGB>
+     <MSGNR>809</MSGNR>
+     <TEXT>&amp; alanının boyu sıfırdan büyük olmalı!</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YY</ARBGB>
+     <MSGNR>810</MSGNR>
+     <TEXT>&amp; alanının boyu 100 den büyük olamaz!</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YY</ARBGB>
+     <MSGNR>811</MSGNR>
+     <TEXT>Boş alan. silinecek!</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YY</ARBGB>
+     <MSGNR>812</MSGNR>
+     <TEXT>&amp; alan formatı yanlış!</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YY</ARBGB>
+     <MSGNR>813</MSGNR>
+     <TEXT>&amp; tablosu sistemde bulunamadı.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YY</ARBGB>
+     <MSGNR>814</MSGNR>
+     <TEXT>&amp; tablo üzerinde işlem yapamazsınız!</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YY</ARBGB>
+     <MSGNR>815</MSGNR>
+     <TEXT>&amp; alanı &amp; tablosunda bulunamadı!</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YY</ARBGB>
+     <MSGNR>816</MSGNR>
+     <TEXT>&amp; alanının veri tipi &amp; dur. &amp; formatıyla uyumsuz!</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YY</ARBGB>
+     <MSGNR>817</MSGNR>
+     <TEXT>&amp; projesi zaten mevcuttur!</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YY</ARBGB>
+     <MSGNR>818</MSGNR>
+     <TEXT>&amp; bankası sistemde mevcut değildir!</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YY</ARBGB>
+     <MSGNR>819</MSGNR>
+     <TEXT>Açıklama girmek zorundasınız!</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YY</ARBGB>
+     <MSGNR>820</MSGNR>
+     <TEXT>Bir alan adı girmek zorundasınız!</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YY</ARBGB>
+     <MSGNR>821</MSGNR>
+     <TEXT>&amp; alanı bir sistem alanı değildir!</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YY</ARBGB>
+     <MSGNR>822</MSGNR>
+     <TEXT>&amp; alanı veri alanları içinde bulunamadı!</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YY</ARBGB>
+     <MSGNR>823</MSGNR>
+     <TEXT>&amp; alanı veri tipi &amp; olduğu için toplama işlemi yapılamaz!</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YY</ARBGB>
+     <MSGNR>824</MSGNR>
+     <TEXT>&amp; formatı sayısal işlemler için kullanılamaz!</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YY</ARBGB>
+     <MSGNR>825</MSGNR>
+     <TEXT>C tipi alanlarda format girilemez!</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YY</ARBGB>
+     <MSGNR>826</MSGNR>
+     <TEXT>İlk önce alan tipini seçiniz!</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YY</ARBGB>
+     <MSGNR>827</MSGNR>
+     <TEXT>&amp; değiştirme değerini zaten kullanmışsınız!</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YY</ARBGB>
+     <MSGNR>828</MSGNR>
+     <TEXT>&amp; esas değeri ile değiştirme değeri aynı olamaz!</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>T</SPRSL>
+     <ARBGB>YY</ARBGB>
+     <MSGNR>829</MSGNR>
+     <TEXT>Kaydedildi</TEXT>
+    </T100>
+   </T100>
+  </asx:values>
+ </asx:abap>
+</abapGit>

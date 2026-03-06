@@ -340,13 +340,13 @@
    <Column ss:StyleID="s98" ss:Width="93.75"/>
    <Row ss:Height="15">
     <Cell ss:StyleID="s115"><Data ss:Type="String">Kurum Kodu</Data></Cell>
-    <Cell ss:StyleID="s116"><Data ss:Type="String"><tt:value ref=".KRMKD"/></Data></Cell>
+    <Cell ss:StyleID="s116"><Data ss:Type="Number"><tt:value ref=".KRMKD"/></Data></Cell>
     <Cell ss:MergeAcross="5" ss:StyleID="m359490244"><Data ss:Type="String">Garanti Bankası tarafından verilen kurum kodunuz.</Data></Cell>
     <Cell ss:MergeAcross="3" ss:StyleID="m359490224"><Data ss:Type="String">Ödeme Tipleri</Data></Cell>
    </Row>
    <Row ss:Height="14.25">
     <Cell ss:StyleID="s119"><Data ss:Type="String">Şube Kodu</Data></Cell>
-    <Cell ss:StyleID="s120"><Data ss:Type="String"><tt:value ref=".SBKOD"/></Data></Cell>
+    <Cell ss:StyleID="s120"><Data ss:Type="Number"><tt:value ref=".SBKOD"/></Data></Cell>
     <Cell ss:MergeAcross="5" ss:StyleID="m359490264"><Data ss:Type="String">Şubenizden öğreniniz</Data></Cell>
     <Cell ss:StyleID="s153"><Data ss:Type="String">O</Data></Cell>
     <Cell ss:StyleID="s152"><Data ss:Type="String">SOSYAL YARDIM</Data></Cell>
