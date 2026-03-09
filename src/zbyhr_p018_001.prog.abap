@@ -1377,20 +1377,6 @@ FORM send_document.
     EXPORTING
       tcode = sy-tcode. "Garanti Bankası Disketi
 
-  READ TABLE gt_t001 INTO DATA(ls_t001) WITH KEY bukrs = pernr-bukrs werks = pernr-werks btrtl = pernr-btrtl.
-  IF sy-subrc NE 0 .
-    READ TABLE gt_t001 INTO ls_t001 WITH KEY bukrs = pernr-bukrs werks = pernr-werks.
-    IF sy-subrc NE 0 .
-      READ TABLE gt_t001 INTO ls_t001 WITH KEY bukrs = pernr-bukrs.
-
-    ENDIF.
-  ENDIF.
-  READ TABLE lo_sftp->mt_t002 INTO DATA(ls_t002) WITH KEY bukrs = pernr-bukrs werks = ls_t001-werks btrtl = ls_t001-btrtl.
-  IF sy-subrc NE 0 OR ls_t002-pfile IS INITIAL .
-    s_file-return = 'Dosya yolunu uyarlama tablosuna giriniz.'.
-    MESSAGE s_file-return TYPE 'E' DISPLAY LIKE 'I'.
-    EXIT.
-  ENDIF.
 
   SELECT SINGLE * FROM t000 INTO @DATA(ls_t000)
       WHERE mandt EQ @sy-mandt.
@@ -1423,6 +1409,20 @@ FORM send_document.
 
     LOOP AT gt_filter .
 
+      READ TABLE gt_t001 INTO DATA(ls_t001) WITH KEY bukrs = gt_filter-bukrs werks = gt_filter-werks btrtl = gt_filter-btrtl.
+      IF sy-subrc NE 0 .
+        READ TABLE gt_t001 INTO ls_t001 WITH KEY bukrs = gt_filter-bukrs werks = gt_filter-werks.
+        IF sy-subrc NE 0 .
+          READ TABLE gt_t001 INTO ls_t001 WITH KEY bukrs = gt_filter-bukrs.
+        ENDIF.
+      ENDIF.
+      READ TABLE lo_sftp->mt_t002 INTO DATA(ls_t002) WITH KEY bukrs = ls_t001-bukrs werks = ls_t001-werks btrtl = ls_t001-btrtl.
+      IF sy-subrc NE 0 OR ls_t002-pfile IS INITIAL .
+        s_file-return = 'Dosya yolunu uyarlama tablosuna giriniz.'.
+        MESSAGE s_file-return TYPE 'E' DISPLAY LIKE 'I'.
+        EXIT.
+      ENDIF.
+      gv_name = ls_t002-pfile.
       CASE ls_t001-ftype.
         WHEN 'T'.
           PERFORM create_txt2 TABLES lt_text[]
@@ -1430,7 +1430,7 @@ FORM send_document.
                                      gt_filter-werks
                                      gt_filter-btrtl .
 
-          s_file-pname = ls_t002-pname &&
+          s_file-pname = ls_t002-pname && '\' &&
                          p_pdate &&
                          gv_name &&
                          gt_filter-bukrs &&

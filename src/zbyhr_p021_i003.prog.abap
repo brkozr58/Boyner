@@ -366,56 +366,60 @@ CLASS lcl_report IMPLEMENTATION.
     DATA : ls_2010 TYPE p2010.
     DATA: ls_mess   TYPE bapireturn1.
 
-    SELECT SINGLE begda FROM pa0000
-                        INTO @DATA(lv_begda)
+    SELECT SINGLE * FROM pa0000
+                        INTO @DATA(ls_00)
                         WHERE pernr EQ @gs_alv-pernr
                           AND begda LE @s_datum-high
                           AND endda GE @s_datum-low
                           AND stat2 EQ '0'.
 
-    IF lv_begda IS NOT INITIAL.
-      ls_2010-begda = lv_begda - 1.
-    ELSE.
-      ls_2010-begda = s_datum-high.
-    ENDIF.
+    IF ls_00-endda NE '99991231'.
 
-    ls_2010-anzhl = gs_alv-anzhl.
-    ls_2010-lgart = gs_alv-lgart.
-    ls_2010-pernr = gs_alv-pernr.
-    ls_2010-infty = '2010'.
-
-
-    CALL FUNCTION 'BAPI_EMPLOYEE_ENQUEUE'
-      EXPORTING
-        number = ls_2010-pernr
-      IMPORTING
-        return = ls_mess.
-    IF ls_mess IS INITIAL.
-      CALL FUNCTION 'HR_INFOTYPE_OPERATION'
-        EXPORTING
-          infty         = '2010'
-          number        = ls_2010-pernr
-          validitybegin = ls_2010-begda
-          record        = ls_2010
-          operation     = 'INS'
-        IMPORTING
-          return        = ls_mess.
-
-      IF ls_mess IS INITIAL.
-        gs_alv-message = 'Başarılı'.
+      IF ls_00-begda IS NOT INITIAL.
+        ls_2010-begda = ls_00-begda - 1.
       ELSE.
-        gs_alv-message = ls_mess-message.
+        ls_2010-begda = s_datum-high.
       ENDIF.
 
-      CALL FUNCTION 'BAPI_EMPLOYEE_DEQUEUE'
+      ls_2010-anzhl = gs_alv-anzhl.
+      ls_2010-lgart = gs_alv-lgart.
+      ls_2010-pernr = gs_alv-pernr.
+      ls_2010-infty = '2010'.
+
+
+      CALL FUNCTION 'BAPI_EMPLOYEE_ENQUEUE'
         EXPORTING
           number = ls_2010-pernr
         IMPORTING
           return = ls_mess.
-    ELSE.
-      gs_alv-message = ls_mess-message.
-    ENDIF.
+      IF ls_mess IS INITIAL.
+        CALL FUNCTION 'HR_INFOTYPE_OPERATION'
+          EXPORTING
+            infty         = '2010'
+            number        = ls_2010-pernr
+            validitybegin = ls_2010-begda
+            record        = ls_2010
+            operation     = 'INS'
+          IMPORTING
+            return        = ls_mess.
 
+        IF ls_mess IS INITIAL.
+          gs_alv-message = 'Başarılı'.
+        ELSE.
+          gs_alv-message = ls_mess-message.
+        ENDIF.
+
+        CALL FUNCTION 'BAPI_EMPLOYEE_DEQUEUE'
+          EXPORTING
+            number = ls_2010-pernr
+          IMPORTING
+            return = ls_mess.
+      ELSE.
+        gs_alv-message = ls_mess-message.
+      ENDIF.
+    ELSE.
+      gs_alv-message = 'Kişi Pasif durumdadır'.
+    ENDIF.
 *    ENDIF.
     CLEAR : ls_mess,ls_2010.
   ENDMETHOD.
