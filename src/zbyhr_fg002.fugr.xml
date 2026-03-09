@@ -282,6 +282,82 @@
      </DOCUMENTATION>
     </item>
     <item>
+     <FUNCNAME>ZBYHR_FG002_004</FUNCNAME>
+     <SHORT_TEXT>HR: Prüfen, existiert ein Bild für Personalnummer</SHORT_TEXT>
+     <IMPORT>
+      <RSIMP>
+       <PARAMETER>P_PERNR</PARAMETER>
+       <DBFIELD>PERNR-PERNR</DBFIELD>
+      </RSIMP>
+      <RSIMP>
+       <PARAMETER>P_TCLAS</PARAMETER>
+       <DBFIELD>PSPAR-TCLAS</DBFIELD>
+       <DEFAULT>&apos;A&apos;</DEFAULT>
+       <OPTIONAL>X</OPTIONAL>
+      </RSIMP>
+      <RSIMP>
+       <PARAMETER>P_BEGDA</PARAMETER>
+       <DEFAULT>&apos;18000101&apos;</DEFAULT>
+       <OPTIONAL>X</OPTIONAL>
+       <TYP>D</TYP>
+      </RSIMP>
+      <RSIMP>
+       <PARAMETER>P_ENDDA</PARAMETER>
+       <DEFAULT>&apos;99991231&apos;</DEFAULT>
+       <OPTIONAL>X</OPTIONAL>
+       <TYP>D</TYP>
+      </RSIMP>
+     </IMPORT>
+     <EXPORT>
+      <RSEXP>
+       <PARAMETER>P_EXISTS</PARAMETER>
+       <TYP>C</TYP>
+      </RSEXP>
+      <RSEXP>
+       <PARAMETER>P_CONNECT_INFO</PARAMETER>
+       <DBFIELD>TOAV0</DBFIELD>
+      </RSEXP>
+     </EXPORT>
+     <EXCEPTION>
+      <RSEXC>
+       <EXCEPTION>ERROR_CONNECTIONTABLE</EXCEPTION>
+      </RSEXC>
+     </EXCEPTION>
+     <DOCUMENTATION>
+      <RSFDO>
+       <PARAMETER>P_PERNR</PARAMETER>
+       <KIND>P</KIND>
+       <STEXT>Personel numarası</STEXT>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>P_TCLAS</PARAMETER>
+       <KIND>P</KIND>
+       <STEXT>Veri saklama için işlem sınıfı</STEXT>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>P_BEGDA</PARAMETER>
+       <KIND>P</KIND>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>P_ENDDA</PARAMETER>
+       <KIND>P</KIND>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>P_EXISTS</PARAMETER>
+       <KIND>P</KIND>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>P_CONNECT_INFO</PARAMETER>
+       <KIND>P</KIND>
+       <STEXT>SAP ArchiveLink: Link table</STEXT>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>ERROR_CONNECTIONTABLE</PARAMETER>
+       <KIND>X</KIND>
+      </RSFDO>
+     </DOCUMENTATION>
+    </item>
+    <item>
      <FUNCNAME>ZHR_ISYERI_SSKNO_URET</FUNCNAME>
      <SHORT_TEXT>HR-TR: İşyeri SSKNO alanı üretilmesi</SHORT_TEXT>
      <IMPORT>

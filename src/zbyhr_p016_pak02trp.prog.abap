@@ -60,7 +60,7 @@ FORM tarihfarki USING   p_begda        "value(p_begda)
   p0endda = p_endda.
   p0begda = p_begda.
   IF artikyil EQ space.
-    gun = p0endda+6(2) - p0begda+6(2).
+    gun = ( p0endda+6(2) - p0begda+6(2) ) + 1 .
     ay  = p0endda+4(2) - p0begda+4(2).
     yil = p0endda+0(4) - p0begda+0(4).
     IF  gun LT 0.
@@ -80,7 +80,7 @@ FORM tarihfarki USING   p_begda        "value(p_begda)
   ELSE.
 
 *___Yukarıdaki işlem ileriye taşındı.  TP. 13.01.2003
-    gunfarki =  p0endda - p0begda.
+    gunfarki =  ( p0endda - p0begda ) + 1 .
   ENDIF.
   p_fark = gunfarki.
 ENDFORM.                               " tarihfarki
@@ -794,11 +794,16 @@ FORM count_p0001.
       CASE lt_t028-persk.
         WHEN 'P'.
           IF lt_t028-begda LT lt_t028-endda.
-            lv_pday = lv_pday + ( lt_t028-endda - lt_t028-begda ) + 1 .
+            PERFORM tarihfarki USING lt_t028-begda lt_t028-endda temptarh.
+            PERFORM tarihtoplami  USING iper-ptime temptarh.
+
+*            lv_pday = lv_pday + ( lt_t028-endda - lt_t028-begda ) + 1 .
           ENDIF.
         WHEN OTHERS.
           IF lt_t028-begda LT lt_t028-endda.
-            lv_fday = lv_fday + ( lt_t028-endda - lt_t028-begda ) + 1 .
+            PERFORM tarihfarki USING lt_t028-begda lt_t028-endda temptarh.
+            PERFORM tarihtoplami  USING iper-ftime temptarh.
+*            lv_fday = lv_fday + ( lt_t028-endda - lt_t028-begda ) + 1 .
           ENDIF.
       ENDCASE.
       lv_begda = lt_t028-endda.
@@ -827,21 +832,31 @@ FORM count_p0001.
                                      AND persk EQ p0001-persk.
         IF sy-subrc EQ 0.
           IF p0001-begda LT p0001-endda.
-            lv_pday = lv_pday + ( p0001-endda - p0001-begda ) + 1 .
+            PERFORM tarihfarki USING p0001-begda p0001-endda temptarh.
+            PERFORM tarihtoplami  USING iper-ptime temptarh.
+*            lv_pday = lv_pday + ( p0001-endda - p0001-begda ) + 1 .
           ENDIF.
         ENDIF.
       WHEN OTHERS.
         IF p0001-begda LT p0001-endda.
-          lv_fday = lv_fday + ( p0001-endda - p0001-begda ) + 1 .
+          PERFORM tarihfarki USING p0001-begda p0001-endda temptarh.
+          PERFORM tarihtoplami  USING iper-ftime temptarh.
+*          lv_fday = lv_fday + ( p0001-endda - p0001-begda ) + 1 .
         ENDIF.
     ENDCASE.
   ENDPROVIDE.
 
-  PERFORM conv_per USING lv_pday iper-ptime temptarh2.
-  PERFORM conv_per USING lv_fday iper-ftime temptarh2.
+*  IF iper-fchire IS NOT INITIAL .
+*    temptarh2 = iper-fchire.
+*  ELSE.
+*    temptarh2 = iper-hire.
+*  ENDIF.
+*
+*
+*  PERFORM conv_per USING lv_pday iper-ptime temptarh2.
+*  PERFORM conv_per USING lv_fday iper-ftime temptarh2.
 
 *  convert_xtime : 'PART' lv_pday iper-ptime.
-
 *  convert_xtime : 'FULL' lv_fday iper-ftime.
 
 
@@ -898,7 +913,7 @@ FORM count_grevg.
 
   IF iper-gtime < iper-ftime.
     iper-esast = iper-ftime.
-    PERFORM tarihfarki USING iper-gtime iper-ftime iper-ftime.
+*    PERFORM tarihfarki USING iper-gtime iper-ftime iper-ftime.
 *     PERFORM tarihfarki USING iper-gtime iper-esast iper-esast.
   ENDIF.
 
@@ -5046,8 +5061,8 @@ FORM conv_per USING fday
         lv_gun        TYPE i,
         lv_gecici_tar TYPE d.
 
-lv_toplam_gun = fday.
-lv_gecici_tar = lv_gec.
+  lv_toplam_gun = fday.
+  lv_gecici_tar = lv_gec.
 
 *   Yılları hesapla
   WHILE lv_toplam_gun >= 365.
@@ -5063,13 +5078,13 @@ lv_gecici_tar = lv_gec.
 
 * Ayları hesapla
   DO 12 TIMES.
-    DATA(lv_ay_gun) = 0.
-    CASE lv_gecici_tar+4(2).
-      WHEN '01' OR '03' OR '05' OR '07' OR '08' OR '10' OR '12'. lv_ay_gun = 31.
-      WHEN '04' OR '06' OR '09' OR '11'.                 lv_ay_gun = 30.
-      WHEN '02'.
-        IF ( lv_gecici_tar+0(4) MOD 4 = 0 ). lv_ay_gun = 29. ELSE. lv_ay_gun = 28. ENDIF.
-    ENDCASE.
+    DATA(lv_ay_gun) = 30.
+*    CASE lv_gecici_tar+4(2).
+*      WHEN '01' OR '03' OR '05' OR '07' OR '08' OR '10' OR '12'. lv_ay_gun = 31.
+*      WHEN '04' OR '06' OR '09' OR '11'.                 lv_ay_gun = 30.
+*      WHEN '02'.
+*        IF ( lv_gecici_tar+0(4) MOD 4 = 0 ). lv_ay_gun = 29. ELSE. lv_ay_gun = 28. ENDIF.
+*    ENDCASE.
 
     IF lv_toplam_gun >= lv_ay_gun.
       lv_toplam_gun = lv_toplam_gun - lv_ay_gun.
@@ -5082,6 +5097,7 @@ lv_gecici_tar = lv_gec.
         lv_gecici_tar+4(2) = lv_gecici_tar+4(2) + 1.
       ENDIF.
     ELSE.
+      lv_gecici_tar = lv_gecici_tar + lv_toplam_gun.
       EXIT.
     ENDIF.
   ENDDO.
@@ -5092,5 +5108,7 @@ lv_gecici_tar = lv_gec.
   lv_date+0(4) = lv_yil.
   lv_date+4(2) = lv_ay.
   lv_date+6(2) = lv_gun.
+
+  lv_gec = lv_gecici_tar.
 
 ENDFORM.                               " TARIHTOPLAMI

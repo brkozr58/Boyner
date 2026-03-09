@@ -13,3 +13,6 @@ TYPES : BEGIN OF ts_person,
           flag     TYPE flag,
         END OF ts_person,
         tt_person TYPE TABLE OF ts_person.
+
+CONSTANTS: c_sap_object_employee LIKE toaom-sap_object VALUE 'PREL',
+           c_sap_object_applicant LIKE toaom-sap_object VALUE 'PAPL'.

@@ -1900,16 +1900,6 @@
     </HIER_TEXTS>
     <HIER_TEXTS>
      <SPRAS>T</SPRAS>
-     <NODE_ID>E53AFB36F7E41FE184C8B31BB774C6D2</NODE_ID>
-     <TEXT>Kayıt çalıştırması yarat</TEXT>
-    </HIER_TEXTS>
-    <HIER_TEXTS>
-     <SPRAS>T</SPRAS>
-     <NODE_ID>E53AFB36F7E41FE184C8B31BB774E6D2</NODE_ID>
-     <TEXT>Kayıt çalıştırmaları düzenlemesi</TEXT>
-    </HIER_TEXTS>
-    <HIER_TEXTS>
-     <SPRAS>T</SPRAS>
      <NODE_ID>E53AFB36F7E41FE184C8BC93361AC70F</NODE_ID>
      <TEXT>HR-FI Entegrasyonu Sembolik Değiştirme</TEXT>
     </HIER_TEXTS>
@@ -1922,6 +1912,21 @@
      <SPRAS>T</SPRAS>
      <NODE_ID>E53AFB36F7E41FE185C7673394B20DB8</NODE_ID>
      <TEXT>Bordro Zarfı Mail Gönderimi</TEXT>
+    </HIER_TEXTS>
+    <HIER_TEXTS>
+     <SPRAS>T</SPRAS>
+     <NODE_ID>E53AFB36F7E41FE186AD3EAE66691B3A</NODE_ID>
+     <TEXT>Muhasebe Entegrasyonu</TEXT>
+    </HIER_TEXTS>
+    <HIER_TEXTS>
+     <SPRAS>T</SPRAS>
+     <NODE_ID>E53AFB36F7E41FE186AD414ED6291B3B</NODE_ID>
+     <TEXT>Kayıt çalıştırması yarat</TEXT>
+    </HIER_TEXTS>
+    <HIER_TEXTS>
+     <SPRAS>T</SPRAS>
+     <NODE_ID>E53AFB36F7E41FE186AD414ED6293B3B</NODE_ID>
+     <TEXT>Kayıt çalıştırmaları düzenlemesi</TEXT>
     </HIER_TEXTS>
     <HIER_TEXTS>
      <SPRAS>T</SPRAS>
