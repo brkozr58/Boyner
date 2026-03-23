@@ -1900,6 +1900,12 @@
     </item>
     <item>
      <ID>S</ID>
+     <KEY>S_ABKRS</KEY>
+     <ENTRY>Bordro Alt Birimi</ENTRY>
+     <LENGTH>25</LENGTH>
+    </item>
+    <item>
+     <ID>S</ID>
      <KEY>S_DATUM</KEY>
      <ENTRY>Tarih</ENTRY>
      <LENGTH>16</LENGTH>

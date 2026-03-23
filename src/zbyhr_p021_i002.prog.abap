@@ -3,10 +3,10 @@
 *&---------------------------------------------------------------------*
 
 SELECTION-SCREEN BEGIN OF BLOCK b1 WITH FRAME TITLE TEXT-001.
-  SELECT-OPTIONS : s_pernr FOR pa0001-pernr MATCHCODE OBJECT prem NO INTERVALS.
+  SELECT-OPTIONS : s_pernr FOR pa0001-pernr MATCHCODE OBJECT prem NO INTERVALS,
 *                   s_stat2 FOR pa0000-stat2 NO INTERVALS.
 *                   s_bukrs FOR pa0001-bukrs NO INTERVALS,
-*                   s_abkrs FOR pa0001-abkrs NO INTERVALS,
+                   s_abkrs FOR pa0001-abkrs NO INTERVALS.
 *                   s_werks FOR pa0001-werks NO INTERVALS,
 *                   s_btrtl FOR pa0001-btrtl NO INTERVALS,
 *                   s_persg FOR pa0001-persg NO INTERVALS,

@@ -60,17 +60,31 @@ FORM tarihfarki USING   p_begda        "value(p_begda)
   p0endda = p_endda.
   p0begda = p_begda.
   IF artikyil EQ space.
-    gun = ( p0endda+6(2) - p0begda+6(2) ) + 1 .
-    ay  = p0endda+4(2) - p0begda+4(2).
-    yil = p0endda+0(4) - p0begda+0(4).
-    IF  gun LT 0.
-      ay  =   ay - 1.
-      gun = 30 + gun.
-    ENDIF.
-    IF  ay  LT 0.
-      yil =  yil - 1.
-      ay  =  12 + ay.
-    ENDIF.
+**    gun = ( p0endda+6(2) - p0begda+6(2) ) + 1 .
+*    ay  = p0endda+4(2) - p0begda+4(2).
+*    yil = p0endda+0(4) - p0begda+0(4).
+
+    CALL FUNCTION 'HR_SGPBS_YRS_MTHS_DAYS'
+      EXPORTING
+        beg_da        = p0begda
+        end_da        = p0endda
+      IMPORTING
+        no_day        = gun
+        no_month      = ay
+        no_year       = yil
+*       no_cal_day    =
+      EXCEPTIONS
+        dateint_error = 1
+        OTHERS        = 2.
+
+*    IF  gun LT 0.
+*      ay  =   ay - 1.
+*      gun = 30 + gun.
+*    ENDIF.
+*    IF  ay  LT 0.
+*      yil =  yil - 1.
+*      ay  =  12 + ay.
+*    ENDIF.
     IF  yil LE 0.
       hataturu = 'Y'.
     ENDIF.
@@ -103,6 +117,62 @@ FORM tarihtoplami USING tarih1
   tarih1 = p_tarih1.
 
 ENDFORM.                               " TARIHTOPLAMI
+
+*&---------------------------------------------------------------------*
+*&      Form  TARIHTOPLAMI2
+*&---------------------------------------------------------------------*
+FORM tarihtoplami2 USING tarih1
+                        tarih2
+                        cevir.
+  DATA: p_tarih1 LIKE sy-datum,
+        p_tarih2 LIKE sy-datum.
+  DATA: gun TYPE i,
+        ay  TYPE i,
+        yil TYPE i.
+  p_tarih1 = tarih1.
+  p_tarih2 = tarih2.
+  gun = p_tarih1+6(2) + p_tarih2+6(2).
+  ay  = p_tarih1+4(2) + p_tarih2+4(2).
+  yil = p_tarih1+0(4) + p_tarih2+0(4).
+  IF cevir EQ 'X'.
+    PERFORM tarihecevir22 USING gun ay yil p_tarih1.
+  ELSE.
+    p_tarih1+6(2) = gun.
+    p_tarih1+4(2) =  ay.
+    p_tarih1+0(4) = yil.
+  ENDIF.
+  tarih1 = p_tarih1.
+
+ENDFORM.                               " TARIHTOPLAMI
+*&---------------------------------------------------------------------*
+*&      Form  TARIHECEVIR
+*&---------------------------------------------------------------------*
+FORM tarihecevir22 USING    gun1
+                          ay1
+                          yil1
+                          p_tarih1.
+  DATA gun    TYPE i.
+  DATA ay     TYPE i.
+  DATA yil    TYPE i.
+  DATA tarih1 LIKE sy-datum.
+  gun = gun1.
+  ay  = ay1.
+  yil = yil1.
+  IF gun GE 30.
+    ay  = ay  + ( gun DIV 30 ).
+*    gun = ( gun MOD 30 )  .
+    " normalde olması gereken üstteki ama :)
+    gun = ( gun MOD 30 ) - 1 .
+  ENDIF.
+  IF ay GE 12.
+    yil = yil + ( ay DIV 12 ).
+    ay  = ay MOD 12.
+  ENDIF.
+  tarih1+6(2) = gun.
+  tarih1+4(2) =  ay.
+  tarih1+0(4) = yil.
+  p_tarih1 = tarih1.
+ENDFORM.                               " tarihecevir22
 *&---------------------------------------------------------------------*
 *&      Form  TARIHECEVIR
 *&---------------------------------------------------------------------*
@@ -119,12 +189,24 @@ FORM tarihecevir USING    gun1
   yil = yil1.
   IF gun GE 30.
     ay  = ay  + ( gun DIV 30 ).
-    gun = gun MOD 30.
+    gun =   gun MOD 30   .
   ENDIF.
   IF ay GE 12.
     yil = yil + ( ay DIV 12 ).
     ay  = ay MOD 12.
   ENDIF.
+*
+*  " eğer begda ayın başı ile başlıyorsa ve endda ayın son günü ile bitiyorsa,
+*  " orada gün olmaz, ay sayısı tam olur.O yüzden günden 1 çıkarıldı.
+*  " elseif kısmı ise spesifik şubat ayı için eklendi.
+*  IF p0001-begda+6(2) EQ '01' AND p0001-endda+6(2) EQ '31'.
+*    gun = 0.
+*  ELSEIF p0001-begda+6(2) EQ '01' AND
+*       ( p0001-endda+4(4) EQ '0228' OR p0001-endda+4(4) EQ '0229' ).
+*    ay = ay + 1.
+*    gun = 0.
+*  ENDIF.
+
   tarih1+6(2) = gun.
   tarih1+4(2) =  ay.
   tarih1+0(4) = yil.
@@ -401,6 +483,7 @@ ENDFORM.                               " CHECK_UNCHECK_LINE
 FORM  top_of_page_line.
   NEW-PAGE.
   CASE sy-ucomm.
+
     WHEN 'TRAN'.
 
       IF potkidem = 'X' AND ozet NE 'X'.
@@ -420,13 +503,13 @@ FORM  top_of_page_line.
                    sy-vline NO-GAP, ' İşegiriş '       NO-GAP,
                    sy-vline NO-GAP, 'Devamsızlk'       NO-GAP,
                    sy-vline NO-GAP, 'KıdemSüre.'       NO-GAP,
-                   sy-vline NO-GAP, '      Aylık Brüt' NO-GAP,
-                   sy-vline NO-GAP, '       Yan Gelir' NO-GAP,
-                   sy-vline NO-GAP, ' Topl.Kıdem Taz.' NO-GAP,
-                   sy-vline NO-GAP, ' 1Yıl Kıdem Taz.' NO-GAP,
-                   sy-vline NO-GAP, ' Topl.Kıdem Taz.' NO-GAP,
-                   sy-vline NO-GAP, ' Trans.Önce Taz.' NO-GAP,
-                   sy-vline NO-GAP, ' İhbar Tazminatı' NO-GAP,
+                   sy-vline NO-GAP, (26)'      Aylık Brüt' NO-GAP,
+                   sy-vline NO-GAP, (26)'       Yan Gelir' NO-GAP,
+                   sy-vline NO-GAP, (26)' Topl.Kıdem Taz.' NO-GAP,
+                   sy-vline NO-GAP, (26)' 1Yıl Kıdem Taz.' NO-GAP,
+                   sy-vline NO-GAP, (26)' Topl.Kıdem Taz.' NO-GAP,
+                   sy-vline NO-GAP, (26)' Trans.Önce Taz.' NO-GAP,
+                   sy-vline NO-GAP, (26)' İhbar Tazminatı' NO-GAP,
                    sy-vline.
         ULINE AT /(c_259).
       ELSE.
@@ -446,10 +529,10 @@ FORM  top_of_page_line.
                    sy-vline NO-GAP, ' İşegiriş '       NO-GAP,
                    sy-vline NO-GAP, 'Devamsızlk'       NO-GAP,
                    sy-vline NO-GAP, 'KıdemSüre.'       NO-GAP,
-                   sy-vline NO-GAP, ' 1Yıl Kıdem Taz.' NO-GAP,
-                   sy-vline NO-GAP, ' Topl.Kıdem Taz.' NO-GAP,
-                   sy-vline NO-GAP, ' Trans.Önce Taz.' NO-GAP,
-                   sy-vline NO-GAP, ' İhbar Tazminatı' NO-GAP,
+                   sy-vline NO-GAP, (26)' 1Yıl Kıdem Taz.' NO-GAP,
+                   sy-vline NO-GAP, (26)' Topl.Kıdem Taz.' NO-GAP,
+                   sy-vline NO-GAP, (26)' Trans.Önce Taz.' NO-GAP,
+                   sy-vline NO-GAP, (26)' İhbar Tazminatı' NO-GAP,
                    sy-vline.
         ULINE AT /(c_208).
 
@@ -480,7 +563,7 @@ FORM  top_of_page_line.
       ULINE AT /(69).
 
 
-    WHEN 'WTYP' OR 'PERS' OR 'BUKR'.
+    WHEN 'WTYP' OR 'PERS' OR 'BUKR' OR 'COSC'.
 
       FORMAT COLOR COL_POSITIVE INTENSIFIED OFF.
       IF potkidem = 'X' AND ozet NE 'X'.
@@ -488,20 +571,20 @@ FORM  top_of_page_line.
         IF sy-ucomm EQ 'WTYP'.
           WRITE : / sy-vline, kidendda,
                  'TARIHINE GÖRE POTANSIYEL KIDEM TAZMINATI',
-                 '- PERSONEL ALT ALANI', 259 sy-vline.
+                 '- PERSONEL ALT ALANI', 329 sy-vline.
         ELSEIF sy-ucomm EQ 'BUKR'.
           WRITE : / sy-vline, kidendda,
                  'TARIHINE GÖRE POTANSIYEL KIDEM TAZMINATI',
-                 '- ŞİRKET', AT 259 sy-vline.
+                 '- ŞİRKET', AT 329 sy-vline.
         ELSEIF sy-ucomm EQ 'PERS'.
 
           WRITE : / sy-vline, kidendda,
                  'TARİHİNE GÖRE POTANSİYEL KIDEM TAZMİNATI',
-                 '- ÇALIŞAN ALT GRUBU', 259 sy-vline.
+                 '- ÇALIŞAN ALT GRUBU', 329 sy-vline.
         ELSEIF sy-ucomm EQ 'COSC'.
           WRITE : / sy-vline, kidendda,
                          'TARİHİNE GÖRE POTANSİYEL KIDEM TAZMİNATI',
-                         '- MASRAF YERİ', 259 sy-vline.
+                         '- MASRAF YERİ', 329 sy-vline.
 
         ENDIF.
       ELSE.
@@ -509,7 +592,7 @@ FORM  top_of_page_line.
         IF sy-ucomm EQ 'WTYP'.
           WRITE : / sy-vline, kidendda,
                  'TARIHINE GÖRE POTANSIYEL KIDEM TAZMINATI',
-                 '- PERSONEL ALT ALANI', 208 sy-vline.
+                 '- PERSONEL ALT ALANI', 248 sy-vline.
         ELSEIF sy-ucomm EQ 'BUKR'.
           WRITE : / sy-vline, kidendda,
                  'TARIHINE GÖRE POTANSIYEL KIDEM TAZMINATI',
@@ -518,11 +601,11 @@ FORM  top_of_page_line.
 
           WRITE : / sy-vline, kidendda,
                  'TARİHİNE GÖRE POTANSİYEL KIDEM TAZMİNATI',
-                 '- ÇALIŞAN ALT GRUBU', 208 sy-vline.
+                 '- ÇALIŞAN ALT GRUBU', 248 sy-vline.
         ELSEIF sy-ucomm EQ 'COSC'.
           WRITE : / sy-vline, kidendda,
                          'TARİHİNE GÖRE POTANSİYEL KIDEM TAZMİNATI',
-                         '- MASRAF YERİ', 208 sy-vline.
+                         '- MASRAF YERİ', 248 sy-vline.
         ENDIF.
       ENDIF.
 
@@ -540,13 +623,13 @@ FORM  top_of_page_line.
                    sy-vline NO-GAP, ' İşegiriş '       NO-GAP,
                    sy-vline NO-GAP, 'Devamsızlk'       NO-GAP,
                    sy-vline NO-GAP, 'KıdemSüre.'       NO-GAP,
-                   sy-vline NO-GAP, '      Aylık Brüt' NO-GAP,
-                   sy-vline NO-GAP, '       Yan Gelir' NO-GAP,
-                   sy-vline NO-GAP, ' Topl.Kıdem Taz.' NO-GAP,
-                   sy-vline NO-GAP, ' 1Yıl Kıdem Taz.' NO-GAP,
-                   sy-vline NO-GAP, ' Topl.Kıdem Taz.' NO-GAP,
-                   sy-vline NO-GAP, ' Trans.Önce Taz.' NO-GAP,
-                   sy-vline NO-GAP, ' İhbar Tazminatı' NO-GAP,
+                   sy-vline NO-GAP, (26)'      Aylık Brüt' NO-GAP,
+                   sy-vline NO-GAP, (26)'       Yan Gelir' NO-GAP,
+                   sy-vline NO-GAP, (26)' Topl.Kıdem Taz.' NO-GAP,
+                   sy-vline NO-GAP, (26)' 1Yıl Kıdem Taz.' NO-GAP,
+                   sy-vline NO-GAP, (26)' Topl.Kıdem Taz.' NO-GAP,
+                   sy-vline NO-GAP, (26)' Trans.Önce Taz.' NO-GAP,
+                   sy-vline NO-GAP, (26)' İhbar Tazminatı' NO-GAP,
                    sy-vline.
         ULINE AT /(c_259).
       ELSE.
@@ -561,10 +644,10 @@ FORM  top_of_page_line.
                    sy-vline NO-GAP, ' İşegiriş '       NO-GAP,
                    sy-vline NO-GAP, 'Devamsızlk'       NO-GAP,
                    sy-vline NO-GAP, 'KıdemSüre.'       NO-GAP,
-                   sy-vline NO-GAP, ' 1Yıl Kıdem Taz.' NO-GAP,
-                   sy-vline NO-GAP, ' Topl.Kıdem Taz.' NO-GAP,
-                   sy-vline NO-GAP, ' Trans.Önce Taz.' NO-GAP,
-                   sy-vline NO-GAP, ' İhbar Tazminatı' NO-GAP,
+                   sy-vline NO-GAP, (26)' 1Yıl Kıdem Taz.' NO-GAP,
+                   sy-vline NO-GAP, (26)' Topl.Kıdem Taz.' NO-GAP,
+                   sy-vline NO-GAP, (26)' Trans.Önce Taz.' NO-GAP,
+                   sy-vline NO-GAP, (26)' İhbar Tazminatı' NO-GAP,
                    sy-vline.
         ULINE AT /(c_208).
 
@@ -795,14 +878,14 @@ FORM count_p0001.
         WHEN 'P'.
           IF lt_t028-begda LT lt_t028-endda.
             PERFORM tarihfarki USING lt_t028-begda lt_t028-endda temptarh.
-            PERFORM tarihtoplami  USING iper-ptime temptarh.
+            PERFORM tarihtoplami2  USING iper-ptime temptarh '' .
 
 *            lv_pday = lv_pday + ( lt_t028-endda - lt_t028-begda ) + 1 .
           ENDIF.
         WHEN OTHERS.
           IF lt_t028-begda LT lt_t028-endda.
             PERFORM tarihfarki USING lt_t028-begda lt_t028-endda temptarh.
-            PERFORM tarihtoplami  USING iper-ftime temptarh.
+            PERFORM tarihtoplami2  USING iper-ftime temptarh '' .
 *            lv_fday = lv_fday + ( lt_t028-endda - lt_t028-begda ) + 1 .
           ENDIF.
       ENDCASE.
@@ -833,18 +916,23 @@ FORM count_p0001.
         IF sy-subrc EQ 0.
           IF p0001-begda LT p0001-endda.
             PERFORM tarihfarki USING p0001-begda p0001-endda temptarh.
-            PERFORM tarihtoplami  USING iper-ptime temptarh.
+            PERFORM tarihtoplami2  USING iper-ptime temptarh '' .
 *            lv_pday = lv_pday + ( p0001-endda - p0001-begda ) + 1 .
           ENDIF.
         ENDIF.
       WHEN OTHERS.
         IF p0001-begda LT p0001-endda.
           PERFORM tarihfarki USING p0001-begda p0001-endda temptarh.
-          PERFORM tarihtoplami  USING iper-ftime temptarh.
+          PERFORM tarihtoplami2  USING iper-ftime temptarh '' .
 *          lv_fday = lv_fday + ( p0001-endda - p0001-begda ) + 1 .
         ENDIF.
     ENDCASE.
   ENDPROVIDE.
+
+  temptarh = iper-ftime. CLEAR iper-ftime.
+  PERFORM tarihtoplami2  USING iper-ftime temptarh 'X' .
+  temptarh = iper-ptime. CLEAR iper-ptime.
+  PERFORM tarihtoplami2  USING iper-ptime temptarh 'X' .
 
 *  IF iper-fchire IS NOT INITIAL .
 *    temptarh2 = iper-fchire.
@@ -1444,7 +1532,21 @@ FORM append_iper.
                     AND norml EQ 'N'.
   ENDLOOP.
   IF sy-subrc NE 0.
-    COLLECT iper.
+
+    READ TABLE it7trg01 WITH KEY werks = iper-werks
+                                 btrtl = iper-btrtl.
+    CHECK sy-subrc EQ 0 .
+*    COLLECT iper.
+    IF potkidem = 'X' AND hakeden = 'X'.
+      IF iper-ktime+0(4) GT 0.
+        COLLECT iper.
+      ENDIF.
+    ELSE.
+      COLLECT iper.
+    ENDIF.
+
+
+
   ENDIF.
 
 ENDFORM.                               " APPEND_IPER
@@ -1480,14 +1582,25 @@ FORM end_of_selection.
   ENDIF.
 
 * Toplama dahil olup olmama kontrolü - "IS 20.01.2003
-  CLEAR iper.
-  LOOP AT iper WHERE ktime GE '00010000'.
-*    if iper-ktime ge '00010000'.
-    MOVE '1' TO iper-topdahil.
-    MODIFY iper.
-*      exit.
-*    endif.
-  ENDLOOP.
+*  CLEAR iper.
+*  LOOP AT iper WHERE ktime GE '00010000'.
+**    if iper-ktime ge '00010000'.
+*    MOVE '1' TO iper-topdahil.
+*    MODIFY iper.
+**      exit.
+**    endif.
+*  ENDLOOP.
+  CLEAR iper .
+  iper-topdahil = '1'.
+  MODIFY iper TRANSPORTING topdahil WHERE ktime GE '00010000'.
+
+
+  IF NOT biryil IS INITIAL. "Sadece 1 yılını doldurmuş olanlar
+    CLEAR iper .
+    iper-kidem = 0 .
+    MODIFY iper TRANSPORTING kidem WHERE topdahil IS INITIAL.
+  ENDIF.
+
 
 * Volkan AYHAN - PA-PAA-Masraf Yeri ... 10.08.08
   LOOP AT iper.
@@ -1497,7 +1610,7 @@ FORM end_of_selection.
       DELETE iper.
     ENDIF.
   ENDLOOP.
-*
+**
 
   LOOP AT it7trg01.
     READ TABLE iper WITH KEY werks = it7trg01-werks
@@ -1552,21 +1665,28 @@ FORM at_user_command.
         END OF lt_p.
 *        hrpaymx_cfdi_total
 
-*  DATA: topbetrg    TYPE ptr_amaas, gentopbetrg TYPE ptr_amaas.
-*        topekucr    TYPE ptr_amaas, gentopekucr TYPE ptr_amaas,
-*        toptopla    TYPE ptr_amaas, gentoptopla TYPE ptr_amaas,
-*        topk1yil    TYPE ptr_amaas, gentopk1yil TYPE ptr_amaas,
-*        topkidem    TYPE ptr_amaas, gentopkidem TYPE ptr_amaas,
-*        topihbar    TYPE ptr_amaas, gentopihbar TYPE ptr_amaas,
-*        topkiton    TYPE ptr_amaas, gentopkiton TYPE ptr_amaas .
+  DATA: topbetrg    TYPE ptr_amaas, gentopbetrg TYPE ptr_amaas,
+        topekucr    TYPE ptr_amaas, gentopekucr TYPE ptr_amaas,
+        toptopla    TYPE ptr_amaas, gentoptopla TYPE ptr_amaas,
+        topk1yil    TYPE ptr_amaas, gentopk1yil TYPE ptr_amaas,
+        topkidem    TYPE ptr_amaas, gentopkidem TYPE ptr_amaas,
+        topihbar    TYPE ptr_amaas, gentopihbar TYPE ptr_amaas,
+        topkiton    TYPE ptr_amaas, gentopkiton TYPE ptr_amaas .
+*
+*  DATA: topbetrg    TYPE decfloat34, gentopbetrg TYPE decfloat34,
+*        topekucr    TYPE decfloat34, gentopekucr TYPE decfloat34,
+*        toptopla    TYPE decfloat34, gentoptopla TYPE decfloat34,
+*        topk1yil    TYPE decfloat34, gentopk1yil TYPE decfloat34,
+*        topkidem    TYPE decfloat34, gentopkidem TYPE decfloat34,
+*        topihbar    TYPE decfloat34, gentopihbar TYPE decfloat34,
+*        topkiton    TYPE decfloat34, gentopkiton TYPE decfloat34.
 
-  DATA: topbetrg    TYPE decfloat34, gentopbetrg TYPE decfloat34,
-        topekucr    TYPE decfloat34, gentopekucr TYPE decfloat34,
-        toptopla    TYPE decfloat34, gentoptopla TYPE decfloat34,
-        topk1yil    TYPE decfloat34, gentopk1yil TYPE decfloat34,
-        topkidem    TYPE decfloat34, gentopkidem TYPE decfloat34,
-        topihbar    TYPE decfloat34, gentopihbar TYPE decfloat34,
-        topkiton    TYPE decfloat34, gentopkiton TYPE decfloat34.
+  IF sy-uname EQ 'D_BOZER'.
+    PERFORM chek_alv_list.
+    CHECK 1 = 2.
+
+  ENDIF.
+
 
   CASE sy-ucomm.
     WHEN 'OLDK'.
@@ -1611,23 +1731,43 @@ FORM at_user_command.
 
                 PERFORM write_potkidembtrtl_is USING it7trg01-werks
                                                      it7trg01-btrtl
-                CHANGING gentopbetrg gentopekucr gentoptopla gentopk1yil
-                         gentopkidem gentopkiton gentopihbar.
+*                CHANGING gentopbetrg gentopekucr gentoptopla gentopk1yil
+*                         gentopkidem gentopkiton gentopihbar
+                         .
+
+
+                PERFORM sum USING it7trg01-werks
+                                  it7trg01-btrtl
+                                  ''
+                         CHANGING gentopbetrg gentopekucr gentoptopla
+                         gentopk1yil gentopkidem gentopihbar gentopkiton.
 
               WHEN 'BUKR'.
                 PERFORM set_gui_02.
                 SELECT SINGLE bukrs INTO lt_b-bukrs
                 FROM t500p WHERE persa EQ it7trg01-werks.
                 IF sy-subrc EQ 0.
+                  READ TABLE lt_b TRANSPORTING NO FIELDS
+                    WITH KEY bukrs = lt_b-bukrs.
+                  CHECK sy-subrc NE 0 .
+
                   COLLECT lt_b.
                 ENDIF.
 
                 LOOP AT lt_b.
                   PERFORM write_potkidembukrs USING lt_b-bukrs
-                          CHANGING gentopbetrg gentopekucr
-                                   gentoptopla gentopk1yil
-                                   gentopkidem gentopihbar
-                                   gentopkiton.
+*                          CHANGING gentopbetrg gentopekucr
+*                                   gentoptopla gentopk1yil
+*                                   gentopkidem gentopihbar
+*                                   gentopkiton
+.
+
+                  PERFORM sum USING ''
+                                    ''
+                                    lt_b-bukrs
+                           CHANGING gentopbetrg gentopekucr gentoptopla
+                           gentopk1yil gentopkidem gentopihbar gentopkiton.
+
                 ENDLOOP.
 
               WHEN 'NORM'.
@@ -1642,7 +1782,7 @@ FORM at_user_command.
 
 
 
-        IF NOT gentopbetrg IS INITIAL.
+        IF NOT gentopbetrg IS INITIAL ."AND lt_b-bukrs NE 'BUKRS'.
 
           IF potkidem = 'X' AND ozet NE 'X'.
             ULINE AT /1(c_259).
@@ -1651,6 +1791,7 @@ FORM at_user_command.
           ENDIF.
 *          ULINE AT /1(199).
           FORMAT COLOR COL_NEGATIVE INTENSIFIED OFF.
+
           PERFORM write_potkidem_gt USING 'GENEL TOPLAM'
           CHANGING gentopbetrg gentopekucr gentoptopla
                    gentopk1yil gentopkidem gentopihbar gentopkiton.
@@ -1891,6 +2032,17 @@ FORM at_user_command.
     WHEN OTHERS.
       MESSAGE w012.
   ENDCASE.
+  CLEAR : gentopbetrg ,topbetrg,
+          gentopekucr ,topekucr,
+          gentoptopla ,toptopla,
+          gentopk1yil ,topk1yil,
+          gentopkidem ,topkidem,
+          gentopihbar ,topihbar,
+          gentopkiton ,topkiton.
+
+
+
+
 ENDFORM.                               " AT_USER_COMMAND
 
 *---------------------------------------------------------------------*
@@ -2070,8 +2222,8 @@ FORM call_list_viewer.
         i_save             = 'A'
 *--- end of change 04022007
       TABLES
-*       t_outtab           = iper.
-        t_outtab           = eiper.
+        t_outtab           = iper.
+*        t_outtab           = eiper.
   ENDIF.
 ENDFORM.                    "call_list_viewer
 
@@ -2292,21 +2444,21 @@ FORM write_potline.
   IF potkidem = 'X' AND ozet NE 'X'.
     IF h_fact EQ 100.
       WRITE:
-             (16) iper-betrg CURRENCY h_curr NO-ZERO NO-GAP, sy-vline NO-GAP,
-             (16) iper-ekucr CURRENCY h_curr NO-ZERO NO-GAP, sy-vline NO-GAP,
-             (16) iper-topla CURRENCY h_curr NO-ZERO NO-GAP, sy-vline NO-GAP,
-             (16) iper-k1yil CURRENCY h_curr NO-ZERO NO-GAP, sy-vline NO-GAP,
-             (16) iper-kidem CURRENCY h_curr NO-ZERO NO-GAP, sy-vline NO-GAP,
-             (16) iper-kiton CURRENCY h_curr NO-ZERO NO-GAP, sy-vline NO-GAP,
-             (16) iper-ihbar CURRENCY h_curr NO-ZERO NO-GAP, sy-vline.
+             (26) iper-betrg CURRENCY h_curr NO-ZERO NO-GAP, sy-vline NO-GAP,
+             (26) iper-ekucr CURRENCY h_curr NO-ZERO NO-GAP, sy-vline NO-GAP,
+             (26) iper-topla CURRENCY h_curr NO-ZERO NO-GAP, sy-vline NO-GAP,
+             (26) iper-k1yil CURRENCY h_curr NO-ZERO NO-GAP, sy-vline NO-GAP,
+             (26) iper-kidem CURRENCY h_curr NO-ZERO NO-GAP, sy-vline NO-GAP,
+             (26) iper-kiton CURRENCY h_curr NO-ZERO NO-GAP, sy-vline NO-GAP,
+             (26) iper-ihbar CURRENCY h_curr NO-ZERO NO-GAP, sy-vline.
     ELSE.
-      WRITE:  (16) iper-betrg CURRENCY h_curr NO-GAP, sy-vline NO-GAP,
-              (16) iper-ekucr CURRENCY h_curr NO-GAP, sy-vline NO-GAP,
-              (16) iper-topla CURRENCY h_curr NO-GAP, sy-vline NO-GAP,
-              (16) iper-k1yil CURRENCY h_curr NO-GAP, sy-vline NO-GAP,
-              (16) iper-kidem CURRENCY h_curr NO-GAP, sy-vline NO-GAP,
-              (16) iper-kiton CURRENCY h_curr NO-GAP, sy-vline NO-GAP,
-              (16) iper-ihbar CURRENCY h_curr NO-GAP, sy-vline.
+      WRITE:  (26) iper-betrg CURRENCY h_curr NO-GAP, sy-vline NO-GAP,
+              (26) iper-ekucr CURRENCY h_curr NO-GAP, sy-vline NO-GAP,
+              (26) iper-topla CURRENCY h_curr NO-GAP, sy-vline NO-GAP,
+              (26) iper-k1yil CURRENCY h_curr NO-GAP, sy-vline NO-GAP,
+              (26) iper-kidem CURRENCY h_curr NO-GAP, sy-vline NO-GAP,
+              (26) iper-kiton CURRENCY h_curr NO-GAP, sy-vline NO-GAP,
+              (26) iper-ihbar CURRENCY h_curr NO-GAP, sy-vline.
     ENDIF.
 
   ELSE.
@@ -2315,19 +2467,19 @@ FORM write_potline.
 *             (16) iper-betrg CURRENCY h_curr NO-ZERO NO-GAP, sy-vline NO-GAP,
 *             (16) iper-ekucr CURRENCY h_curr NO-ZERO NO-GAP, sy-vline NO-GAP,
 *             (16) iper-topla CURRENCY h_curr NO-ZERO NO-GAP, sy-vline NO-GAP,
-             (16) iper-k1yil CURRENCY h_curr NO-ZERO NO-GAP, sy-vline NO-GAP,
-             (16) iper-kidem CURRENCY h_curr NO-ZERO NO-GAP, sy-vline NO-GAP,
-             (16) iper-kiton CURRENCY h_curr NO-ZERO NO-GAP, sy-vline NO-GAP,
-             (16) iper-ihbar CURRENCY h_curr NO-ZERO NO-GAP, sy-vline.
+             (26) iper-k1yil CURRENCY h_curr NO-ZERO NO-GAP, sy-vline NO-GAP,
+             (26) iper-kidem CURRENCY h_curr NO-ZERO NO-GAP, sy-vline NO-GAP,
+             (26) iper-kiton CURRENCY h_curr NO-ZERO NO-GAP, sy-vline NO-GAP,
+             (26) iper-ihbar CURRENCY h_curr NO-ZERO NO-GAP, sy-vline.
     ELSE.
       WRITE:
 *              (16) iper-betrg CURRENCY h_curr NO-GAP, sy-vline NO-GAP,
 *              (16) iper-ekucr CURRENCY h_curr NO-GAP, sy-vline NO-GAP,
 *              (16) iper-topla CURRENCY h_curr NO-GAP, sy-vline NO-GAP,
-              (16) iper-k1yil CURRENCY h_curr NO-GAP, sy-vline NO-GAP,
-              (16) iper-kidem CURRENCY h_curr NO-GAP, sy-vline NO-GAP,
-              (16) iper-kiton CURRENCY h_curr NO-GAP, sy-vline NO-GAP,
-              (16) iper-ihbar CURRENCY h_curr NO-GAP, sy-vline.
+              (26) iper-k1yil CURRENCY h_curr NO-GAP, sy-vline NO-GAP,
+              (26) iper-kidem CURRENCY h_curr NO-GAP, sy-vline NO-GAP,
+              (26) iper-kiton CURRENCY h_curr NO-GAP, sy-vline NO-GAP,
+              (26) iper-ihbar CURRENCY h_curr NO-GAP, sy-vline.
     ENDIF.
   ENDIF .
   HIDE iper.
@@ -2348,24 +2500,24 @@ FORM write_pottoplam USING  p_tptext p_kisi
     IF h_fact EQ 100.
       WRITE: / sy-vline, p_tptext, p_kisi, 'Kişi',
           AT c_140(1)  ''  NO-GAP,
-             (16) $betrg CURRENCY h_curr NO-ZERO NO-GAP,
-             (16) $ekucr CURRENCY h_curr NO-ZERO NO-GAP,
-             (16) $topla CURRENCY h_curr NO-ZERO NO-GAP,
-             (16) $k1yil CURRENCY h_curr NO-ZERO NO-GAP,
-             (16) $kidem CURRENCY h_curr NO-ZERO NO-GAP,
-             (16) $kiton CURRENCY h_curr NO-ZERO NO-GAP,
-             (16) $ihbar CURRENCY h_curr NO-ZERO NO-GAP,
+             (26) $betrg CURRENCY h_curr NO-ZERO NO-GAP,
+             (26) $ekucr CURRENCY h_curr NO-ZERO NO-GAP,
+             (26) $topla CURRENCY h_curr NO-ZERO NO-GAP,
+             (26) $k1yil CURRENCY h_curr NO-ZERO NO-GAP,
+             (26) $kidem CURRENCY h_curr NO-ZERO NO-GAP,
+             (26) $kiton CURRENCY h_curr NO-ZERO NO-GAP,
+             (26) $ihbar CURRENCY h_curr NO-ZERO NO-GAP,
         AT c_259 sy-vline.
     ELSE.
       WRITE: / sy-vline, p_tptext, p_kisi, 'Kişi',
           AT c_140(1)  ''  NO-GAP,
-              (16) $betrg CURRENCY h_curr NO-ZERO NO-GAP,
-              (16) $ekucr CURRENCY h_curr NO-ZERO NO-GAP,
-              (16) $topla CURRENCY h_curr NO-ZERO NO-GAP,
-              (16) $k1yil CURRENCY h_curr NO-ZERO NO-GAP,
-              (16) $kidem CURRENCY h_curr NO-ZERO NO-GAP,
-              (16) $kiton CURRENCY h_curr NO-ZERO NO-GAP,
-              (16) $ihbar CURRENCY h_curr NO-ZERO NO-GAP,
+              (26) $betrg CURRENCY h_curr NO-ZERO NO-GAP,
+              (26) $ekucr CURRENCY h_curr NO-ZERO NO-GAP,
+              (26) $topla CURRENCY h_curr NO-ZERO NO-GAP,
+              (26) $k1yil CURRENCY h_curr NO-ZERO NO-GAP,
+              (26) $kidem CURRENCY h_curr NO-ZERO NO-GAP,
+              (26) $kiton CURRENCY h_curr NO-ZERO NO-GAP,
+              (26) $ihbar CURRENCY h_curr NO-ZERO NO-GAP,
         AT c_259 sy-vline.
     ENDIF.
 
@@ -2377,10 +2529,10 @@ FORM write_pottoplam USING  p_tptext p_kisi
 *             (16) iper-betrg CURRENCY h_curr NO-ZERO NO-GAP, sy-vline NO-GAP,
 *             (16) iper-ekucr CURRENCY h_curr NO-ZERO NO-GAP, sy-vline NO-GAP,
 *             (16) iper-topla CURRENCY h_curr NO-ZERO NO-GAP, sy-vline NO-GAP,
-             (16) $k1yil CURRENCY h_curr NO-ZERO NO-GAP,
-             (16) $kidem CURRENCY h_curr NO-ZERO NO-GAP,
-             (16) $kiton CURRENCY h_curr NO-ZERO NO-GAP,
-             (16) $ihbar CURRENCY h_curr NO-ZERO NO-GAP,
+             (26) $k1yil CURRENCY h_curr NO-ZERO NO-GAP,
+             (26) $kidem CURRENCY h_curr NO-ZERO NO-GAP,
+             (26) $kiton CURRENCY h_curr NO-ZERO NO-GAP,
+             (26) $ihbar CURRENCY h_curr NO-ZERO NO-GAP,
         AT c_208 sy-vline.
     ELSE.
       WRITE: / sy-vline, p_tptext, p_kisi, 'Kişi',
@@ -2388,10 +2540,10 @@ FORM write_pottoplam USING  p_tptext p_kisi
 *              (16) iper-betrg CURRENCY h_curr NO-GAP, sy-vline NO-GAP,
 *              (16) iper-ekucr CURRENCY h_curr NO-GAP, sy-vline NO-GAP,
 *              (16) iper-topla CURRENCY h_curr NO-GAP, sy-vline NO-GAP,
-              (16) $k1yil CURRENCY h_curr NO-ZERO NO-GAP,
-              (16) $kidem CURRENCY h_curr NO-ZERO NO-GAP,
-              (16) $kiton CURRENCY h_curr NO-ZERO NO-GAP,
-              (16) $ihbar CURRENCY h_curr NO-ZERO NO-GAP,
+              (26) $k1yil CURRENCY h_curr NO-ZERO NO-GAP,
+              (26) $kidem CURRENCY h_curr NO-ZERO NO-GAP,
+              (26) $kiton CURRENCY h_curr NO-ZERO NO-GAP,
+              (26) $ihbar CURRENCY h_curr NO-ZERO NO-GAP,
         AT c_208 sy-vline.
     ENDIF.
     ULINE AT /1(c_208).
@@ -3110,6 +3262,14 @@ FORM fieldcat_init USING rt_fieldcat TYPE slis_t_fieldcat_alv.
   ls_fieldcat-outputlen       =   c_len.
   APPEND ls_fieldcat TO rt_fieldcat.
 
+
+  CLEAR ls_fieldcat.
+  ls_fieldcat-fieldname       =  'KITON'.
+  ls_fieldcat-currency        =  h_curr.
+  ls_fieldcat-seltext_l       =  'Toplam kıdem '.
+  ls_fieldcat-outputlen       =   c_len.
+  APPEND ls_fieldcat TO rt_fieldcat.
+
 ENDFORM.                               " fieldcat_init
 
 
@@ -3209,36 +3369,36 @@ FORM write_potline_ca.
   IF potkidem = 'X' AND ozet NE 'X'.
     IF h_fact EQ 100.
       WRITE:
-             (16) iperc-betrg CURRENCY h_curr NO-ZERO NO-GAP, sy-vline NO-GAP,
-             (16) iperc-ekucr CURRENCY h_curr NO-ZERO NO-GAP, sy-vline NO-GAP,
-             (16) iperc-topla CURRENCY h_curr NO-ZERO NO-GAP, sy-vline NO-GAP,
-             (16) iperc-k1yil CURRENCY h_curr NO-ZERO NO-GAP, sy-vline NO-GAP,
-             (16) iperc-kidem CURRENCY h_curr NO-ZERO NO-GAP, sy-vline NO-GAP,
-             (16) iperc-kiton CURRENCY h_curr NO-ZERO NO-GAP, sy-vline NO-GAP,
-             (16) iperc-ihbar CURRENCY h_curr NO-ZERO NO-GAP, sy-vline.
+             (26) iperc-betrg CURRENCY h_curr NO-ZERO NO-GAP, sy-vline NO-GAP,
+             (26) iperc-ekucr CURRENCY h_curr NO-ZERO NO-GAP, sy-vline NO-GAP,
+             (26) iperc-topla CURRENCY h_curr NO-ZERO NO-GAP, sy-vline NO-GAP,
+             (26) iperc-k1yil CURRENCY h_curr NO-ZERO NO-GAP, sy-vline NO-GAP,
+             (26) iperc-kidem CURRENCY h_curr NO-ZERO NO-GAP, sy-vline NO-GAP,
+             (26) iperc-kiton CURRENCY h_curr NO-ZERO NO-GAP, sy-vline NO-GAP,
+             (26) iperc-ihbar CURRENCY h_curr NO-ZERO NO-GAP, sy-vline.
     ELSE.
-      WRITE:  (16) iperc-betrg CURRENCY h_curr NO-GAP, sy-vline NO-GAP,
-              (16) iperc-ekucr CURRENCY h_curr NO-GAP, sy-vline NO-GAP,
-              (16) iperc-topla CURRENCY h_curr NO-GAP, sy-vline NO-GAP,
-              (16) iperc-k1yil CURRENCY h_curr NO-GAP, sy-vline NO-GAP,
-              (16) iperc-kidem CURRENCY h_curr NO-GAP, sy-vline NO-GAP,
-              (16) iperc-kiton CURRENCY h_curr NO-GAP, sy-vline NO-GAP,
-              (16) iperc-ihbar CURRENCY h_curr NO-GAP, sy-vline.
+      WRITE:  (26) iperc-betrg CURRENCY h_curr NO-GAP, sy-vline NO-GAP,
+              (26) iperc-ekucr CURRENCY h_curr NO-GAP, sy-vline NO-GAP,
+              (26) iperc-topla CURRENCY h_curr NO-GAP, sy-vline NO-GAP,
+              (26) iperc-k1yil CURRENCY h_curr NO-GAP, sy-vline NO-GAP,
+              (26) iperc-kidem CURRENCY h_curr NO-GAP, sy-vline NO-GAP,
+              (26) iperc-kiton CURRENCY h_curr NO-GAP, sy-vline NO-GAP,
+              (26) iperc-ihbar CURRENCY h_curr NO-GAP, sy-vline.
     ENDIF.
 
   ELSE.
     IF h_fact EQ 100.
       WRITE:
-             (16) iperc-k1yil CURRENCY h_curr NO-ZERO NO-GAP, sy-vline NO-GAP,
-             (16) iperc-kidem CURRENCY h_curr NO-ZERO NO-GAP, sy-vline NO-GAP,
-             (16) iperc-kiton CURRENCY h_curr NO-ZERO NO-GAP, sy-vline NO-GAP,
-             (16) iperc-ihbar CURRENCY h_curr NO-ZERO NO-GAP, sy-vline.
+             (26) iperc-k1yil CURRENCY h_curr NO-ZERO NO-GAP, sy-vline NO-GAP,
+             (26) iperc-kidem CURRENCY h_curr NO-ZERO NO-GAP, sy-vline NO-GAP,
+             (26) iperc-kiton CURRENCY h_curr NO-ZERO NO-GAP, sy-vline NO-GAP,
+             (26) iperc-ihbar CURRENCY h_curr NO-ZERO NO-GAP, sy-vline.
     ELSE.
       WRITE:
-              (16) iperc-k1yil CURRENCY h_curr NO-GAP, sy-vline NO-GAP,
-              (16) iperc-kidem CURRENCY h_curr NO-GAP, sy-vline NO-GAP,
-              (16) iperc-kiton CURRENCY h_curr NO-GAP, sy-vline NO-GAP,
-              (16) iperc-ihbar CURRENCY h_curr NO-GAP, sy-vline.
+              (26) iperc-k1yil CURRENCY h_curr NO-GAP, sy-vline NO-GAP,
+              (26) iperc-kidem CURRENCY h_curr NO-GAP, sy-vline NO-GAP,
+              (26) iperc-kiton CURRENCY h_curr NO-GAP, sy-vline NO-GAP,
+              (26) iperc-ihbar CURRENCY h_curr NO-GAP, sy-vline.
     ENDIF.
   ENDIF .
   HIDE iperc.
@@ -3267,24 +3427,24 @@ FORM write_potkidem_ca USING p_tptext
     IF h_fact EQ 100.
       WRITE: / sy-vline, p_tptext,
            AT c_140(1)  ''  NO-GAP,
-                   (16) topbetrg CURRENCY h_curr NO-ZERO NO-GAP ,
-                   (16) topekucr CURRENCY h_curr NO-ZERO NO-GAP ,
-                   (16) toptopla CURRENCY h_curr NO-ZERO NO-GAP ,
-                   (16) topk1yil CURRENCY h_curr NO-ZERO NO-GAP ,
-                   (16) topkidem CURRENCY h_curr NO-ZERO NO-GAP ,
-                   (16) topkiton CURRENCY h_curr NO-ZERO NO-GAP ,
-                   (16) topihbar CURRENCY h_curr NO-ZERO NO-GAP ,
+                   (26) topbetrg CURRENCY h_curr NO-ZERO NO-GAP ,
+                   (26) topekucr CURRENCY h_curr NO-ZERO NO-GAP ,
+                   (26) toptopla CURRENCY h_curr NO-ZERO NO-GAP ,
+                   (26) topk1yil CURRENCY h_curr NO-ZERO NO-GAP ,
+                   (26) topkidem CURRENCY h_curr NO-ZERO NO-GAP ,
+                   (26) topkiton CURRENCY h_curr NO-ZERO NO-GAP ,
+                   (26) topihbar CURRENCY h_curr NO-ZERO NO-GAP ,
           AT c_scnb sy-vline.
     ELSE.
       WRITE: / sy-vline, p_tptext,
            AT c_140(1)  ''  NO-GAP,
-                   (16) topbetrg CURRENCY h_curr   NO-GAP ,
-                   (16) topekucr CURRENCY h_curr   NO-GAP ,
-                   (16) toptopla CURRENCY h_curr   NO-GAP ,
-                   (16) topk1yil CURRENCY h_curr   NO-GAP ,
-                   (16) topkidem CURRENCY h_curr   NO-GAP ,
-                   (16) topkiton CURRENCY h_curr   NO-GAP ,
-                   (16) topihbar CURRENCY h_curr   NO-GAP ,
+                   (26) topbetrg CURRENCY h_curr   NO-GAP ,
+                   (26) topekucr CURRENCY h_curr   NO-GAP ,
+                   (26) toptopla CURRENCY h_curr   NO-GAP ,
+                   (26) topk1yil CURRENCY h_curr   NO-GAP ,
+                   (26) topkidem CURRENCY h_curr   NO-GAP ,
+                   (26) topkiton CURRENCY h_curr   NO-GAP ,
+                   (26) topihbar CURRENCY h_curr   NO-GAP ,
           AT c_scnb sy-vline.
     ENDIF.
 
@@ -3292,18 +3452,18 @@ FORM write_potkidem_ca USING p_tptext
     IF h_fact EQ 100.
       WRITE: / sy-vline, p_tptext,
            AT c_140(1) '' NO-GAP,
-                   (16) topk1yil CURRENCY h_curr NO-ZERO NO-GAP,
-                   (16) topkidem CURRENCY h_curr NO-ZERO NO-GAP,
-                   (16) topkiton CURRENCY h_curr NO-ZERO NO-GAP,
-                   (16) topihbar CURRENCY h_curr NO-ZERO NO-GAP,
+                   (26) topk1yil CURRENCY h_curr NO-ZERO NO-GAP,
+                   (26) topkidem CURRENCY h_curr NO-ZERO NO-GAP,
+                   (26) topkiton CURRENCY h_curr NO-ZERO NO-GAP,
+                   (26) topihbar CURRENCY h_curr NO-ZERO NO-GAP,
           AT c_scnb sy-vline.
     ELSE.
       WRITE: / sy-vline, p_tptext,
            AT c_140(1) '' NO-GAP,
-                   (16) topk1yil CURRENCY h_curr  NO-GAP,
-                   (16) topkidem CURRENCY h_curr  NO-GAP,
-                   (16) topkiton CURRENCY h_curr  NO-GAP,
-                   (16) topihbar CURRENCY h_curr  NO-GAP,
+                   (26) topk1yil CURRENCY h_curr  NO-GAP,
+                   (26) topkidem CURRENCY h_curr  NO-GAP,
+                   (26) topkiton CURRENCY h_curr  NO-GAP,
+                   (26) topihbar CURRENCY h_curr  NO-GAP,
           AT c_scnb sy-vline.
     ENDIF.
   ENDIF.
@@ -3323,43 +3483,52 @@ FORM write_potkidem_gt USING p_tptext
   DATA : lv_space LIKE iper-betrg.
 
   IF potkidem = 'X' AND ozet NE 'X'.
-    WRITE: / sy-vline, p_tptext,
+    WRITE: / sy-vline, p_tptext, top_kisi, 'Kişi',
          AT c_140(1)  ''  NO-GAP,
-                 (16) gentopbetrg CURRENCY h_curr NO-ZERO NO-GAP ,
-                 (16) lv_space    CURRENCY h_curr NO-ZERO NO-GAP ,
-                 (16) gentoptopla CURRENCY h_curr NO-ZERO NO-GAP ,
-                 (16) lv_space    CURRENCY h_curr NO-ZERO NO-GAP ,
-                 (16) gentopkidem CURRENCY h_curr NO-ZERO NO-GAP ,
-                 (16) lv_space    CURRENCY h_curr NO-ZERO NO-GAP ,
-                 (16) gentopihbar CURRENCY h_curr NO-ZERO NO-GAP ,
+                 (26) gentopbetrg CURRENCY h_curr NO-ZERO NO-GAP ,
+                 (26) lv_space    CURRENCY h_curr NO-ZERO NO-GAP ,
+                 (26) gentoptopla CURRENCY h_curr NO-ZERO NO-GAP ,
+                 (26) lv_space    CURRENCY h_curr NO-ZERO NO-GAP ,
+                 (26) gentopkidem CURRENCY h_curr NO-ZERO NO-GAP ,
+                 (26) lv_space    CURRENCY h_curr NO-ZERO NO-GAP ,
+                 (26) gentopihbar CURRENCY h_curr NO-ZERO NO-GAP ,
         AT c_259 sy-vline.
     WRITE: / sy-vline, space,
          AT c_140(1)  ''  NO-GAP,
-                 (16) lv_space    CURRENCY h_curr NO-ZERO NO-GAP ,
-                 (16) gentopekucr CURRENCY h_curr NO-ZERO NO-GAP ,
-                 (16) lv_space    CURRENCY h_curr NO-ZERO NO-GAP ,
-                 (16) gentopk1yil CURRENCY h_curr NO-ZERO NO-GAP ,
-                 (16) lv_space    CURRENCY h_curr NO-ZERO NO-GAP ,
-                 (16) gentopkiton CURRENCY h_curr NO-ZERO NO-GAP ,
-                 (16) lv_space    CURRENCY h_curr NO-ZERO NO-GAP ,
+                 (26) lv_space    CURRENCY h_curr NO-ZERO NO-GAP ,
+                 (26) gentopekucr CURRENCY h_curr NO-ZERO NO-GAP ,
+                 (26) lv_space    CURRENCY h_curr NO-ZERO NO-GAP ,
+                 (26) gentopk1yil CURRENCY h_curr NO-ZERO NO-GAP ,
+                 (26) lv_space    CURRENCY h_curr NO-ZERO NO-GAP ,
+                 (26) gentopkiton CURRENCY h_curr NO-ZERO NO-GAP ,
+                 (26) lv_space    CURRENCY h_curr NO-ZERO NO-GAP ,
         AT c_259 sy-vline.
   ELSE.
     WRITE: / sy-vline, p_tptext,
          AT c_140(1) '' NO-GAP,
-                 (16) gentopk1yil CURRENCY h_curr NO-ZERO NO-GAP,
-                 (16) lv_space    CURRENCY h_curr NO-ZERO NO-GAP,
-                 (16) gentopkiton CURRENCY h_curr NO-ZERO NO-GAP,
-                 (16) lv_space    CURRENCY h_curr NO-ZERO NO-GAP,
+                 (26) gentopk1yil CURRENCY h_curr NO-ZERO NO-GAP,
+                 (26) lv_space    CURRENCY h_curr NO-ZERO NO-GAP,
+                 (26) gentopkiton CURRENCY h_curr NO-ZERO NO-GAP,
+                 (26) lv_space    CURRENCY h_curr NO-ZERO NO-GAP,
         AT c_208 sy-vline.
     WRITE: / sy-vline, space,
          AT c_140(1) '' NO-GAP,
-                 (16) lv_space    CURRENCY h_curr NO-ZERO NO-GAP,
-                 (16) gentopkidem CURRENCY h_curr NO-ZERO NO-GAP,
-                 (16) lv_space    CURRENCY h_curr NO-ZERO NO-GAP,
-                 (16) gentopihbar CURRENCY h_curr NO-ZERO NO-GAP,
+                 (26) lv_space    CURRENCY h_curr NO-ZERO NO-GAP,
+                 (26) gentopkidem CURRENCY h_curr NO-ZERO NO-GAP,
+                 (26) lv_space    CURRENCY h_curr NO-ZERO NO-GAP,
+                 (26) gentopihbar CURRENCY h_curr NO-ZERO NO-GAP,
         AT c_208 sy-vline.
 
   ENDIF.
+
+  CLEAR :gentopbetrg,
+        gentopekucr,
+        gentoptopla,
+        gentopk1yil,
+        gentopkidem,
+        gentopihbar,
+        gentopkiton.
+
 
 
 ENDFORM.                                                    " b
@@ -3378,6 +3547,7 @@ FORM persb.
 * "IS 30.10.2002 read table iper index 1.
   LOOP AT iper.
   ENDLOOP.
+  DATA : paa_kisi(5).
   DATA: topbetrg    LIKE iperc-betrg, gentopbetrg LIKE iperc-betrg,
         topekucr    LIKE iperc-ekucr, gentopekucr LIKE iperc-ekucr,
         toptopla    LIKE iperc-topla, gentoptopla LIKE iperc-topla,
@@ -3416,6 +3586,7 @@ FORM persb.
                            topihbar
                            topkiton
                            .
+    paa_kisi = paa_kisi + 1.
 
     FORMAT COLOR COL_KEY INTENSIFIED OFF.
     ULINE AT /1(c_scnb).
@@ -3549,7 +3720,8 @@ ENDFORM.                               " WRITE_POTKIDEMPERSK
 *&---------------------------------------------------------------------*
 FORM write_potkidembtrtl_is USING    $werks
                                      $btrtl
- CHANGING topbetrg  topekucr  toptopla topk1yil topkidem topkiton topihbar.
+* CHANGING topbetrg  topekucr  toptopla topk1yil topkidem topkiton topihbar
+   .
 
 *  DATA: btrbetrg LIKE iper-betrg,
 *        btrekucr LIKE iper-ekucr,
@@ -3567,21 +3739,25 @@ FORM write_potkidembtrtl_is USING    $werks
         btrkiton TYPE decfloat34,
         btrihbar TYPE decfloat34.
 
-  SORT iper BY werks btrtl pernr.
+  DATA : lv_sayac TYPE i.
+
+  SORT iper BY werks btrtl .
   CLEAR iper.
 
-  IF NOT biryil IS INITIAL. "Sadece 1 yılını doldurmuş olanlar
-    LOOP AT iper WHERE  topdahil IS INITIAL.
-*      DELETE iper.
-      iper-kidem = 0 .
-    ENDLOOP.
-  ENDIF.
-
+  DATA(lv_size) = REDUCE i(
+  INIT x = 0
+  FOR wa IN iper WHERE ( werks EQ $werks AND btrtl EQ $btrtl )
+  NEXT x = x + 1
+).
+*  DESCRIBE TABLE iper LINES DATA(lv_size).
   LOOP AT iper WHERE werks EQ $werks
-                AND btrtl EQ $btrtl.
+                AND btrtl EQ $btrtl  .
 
+*    lv_sayac = lv_sayac + 1.
+    lv_size = lv_size - 1 .
+    lv_sayac = sy-tabix.
 
-    AT NEW btrtl.
+    ON CHANGE OF iper-btrtl.
       SELECT * FROM t001p
              WHERE werks = iper-werks
              AND   btrtl = iper-btrtl.
@@ -3607,65 +3783,138 @@ FORM write_potkidembtrtl_is USING    $werks
              AT c_208 sy-vline.
         ULINE AT /1(c_208).
       ENDIF.
-    ENDAT.
+    ENDON.
 
     PERFORM write_potline.
 
     paa_kisi = paa_kisi + 1.
     pa_kisi = pa_kisi + 1.
     top_kisi = top_kisi + 1.
-    AT END OF btrtl.
-      SUM.
+
+    lv_betrg_paa = lv_betrg_paa + iper-betrg.
+    lv_ekucr_paa = lv_ekucr_paa + iper-ekucr.
+    lv_topla_paa = lv_topla_paa + iper-topla.
+    lv_k1yil_paa = lv_k1yil_paa + iper-k1yil.
+    lv_kidem_paa = lv_kidem_paa + iper-kidem.
+    lv_kiton_paa = lv_kiton_paa + iper-kiton.
+    lv_ihbar_paa = lv_ihbar_paa + iper-ihbar.
+
+    READ TABLE iper INTO DATA(wa_next) INDEX lv_sayac + 1.
+    IF wa_next-btrtl <> iper-btrtl OR lv_size EQ 0.
+*      SUM.
       IF potkidem = 'X' AND ozet NE 'X'.
         ULINE AT /1(c_259).
         FORMAT COLOR COL_TOTAL.
         PERFORM write_pottoplam2
-                USING 'PERSONEL ALT ALANI TOPLAMI :' paa_kisi.
+                USING 'PERSONEL ALT ALANI TOPLAMI :' paa_kisi
+                       lv_betrg_paa lv_ekucr_paa lv_topla_paa
+                       lv_k1yil_paa lv_kidem_paa lv_kiton_paa
+                       lv_ihbar_paa.
         CLEAR paa_kisi.
         ULINE AT /1(c_259).
       ELSE.
         ULINE AT /1(c_208).
         FORMAT COLOR COL_TOTAL.
         PERFORM write_pottoplam2
-                USING 'PERSONEL ALT ALANI TOPLAMI :' paa_kisi.
+                USING 'PERSONEL ALT ALANI TOPLAMI :' paa_kisi
+                       lv_betrg_paa lv_ekucr_paa lv_topla_paa
+                       lv_k1yil_paa lv_kidem_paa lv_kiton_paa
+                       lv_ihbar_paa.
         CLEAR paa_kisi.
         ULINE AT /1(c_208).
       ENDIF.
-    ENDAT.
-    AT END OF werks.
-      SUM.
+      CLEAR: lv_betrg_paa, lv_ekucr_paa,lv_topla_paa,lv_k1yil_paa,
+             lv_kidem_paa,lv_kiton_paa,lv_ihbar_paa.
+
+      CLEAR paa_kisi.
+    ENDIF.
+
+    lv_betrg_pa = lv_betrg_pa + iper-betrg.
+    lv_ekucr_pa = lv_ekucr_pa + iper-ekucr.
+    lv_topla_pa = lv_topla_pa + iper-topla.
+    lv_k1yil_pa = lv_k1yil_pa + iper-k1yil.
+    lv_kidem_pa = lv_kidem_pa + iper-kidem.
+    lv_kiton_pa = lv_kiton_pa + iper-kiton.
+    lv_ihbar_pa = lv_ihbar_pa + iper-ihbar.
+
+    IF wa_next-werks <> iper-werks OR lv_size EQ 0.
       IF potkidem = 'X' AND ozet NE 'X'.
         ULINE AT /1(c_259).
         FORMAT COLOR COL_GROUP.
         PERFORM write_pottoplam2
-                USING 'PERSONEL ALANI TOPLAMI :' pa_kisi.
+                USING 'PERSONEL ALANI TOPLAMI :' pa_kisi
+                       lv_betrg_pa lv_ekucr_pa lv_topla_pa
+                       lv_k1yil_pa lv_kidem_pa lv_kiton_pa
+                       lv_ihbar_pa.
         CLEAR pa_kisi.
         ULINE AT /1(c_259).
       ELSE.
         ULINE AT /1(c_208).
         FORMAT COLOR COL_GROUP.
         PERFORM write_pottoplam2
-                USING 'PERSONEL ALANI TOPLAMI :' pa_kisi.
+                USING 'PERSONEL ALANI TOPLAMI :' pa_kisi
+                       lv_betrg_pa lv_ekucr_pa lv_topla_pa
+                       lv_k1yil_pa lv_kidem_pa lv_kiton_pa
+                       lv_ihbar_pa.
         CLEAR pa_kisi.
         ULINE AT /1(c_208).
       ENDIF.
-    ENDAT.
-    AT LAST.
-      SUM.
-      IF potkidem = 'X' AND ozet NE 'X'.
-        ULINE AT /1(c_259).
-        FORMAT COLOR COL_GROUP.
-        PERFORM write_pottoplam2 USING 'GENEL TOPLAM :' top_kisi.
-        CLEAR top_kisi.
-        ULINE AT /1(c_259).
-      ELSE.
-        ULINE AT /1(c_208).
-        FORMAT COLOR COL_GROUP.
-        PERFORM write_pottoplam2 USING 'GENEL TOPLAM :' top_kisi.
-        CLEAR top_kisi.
-        ULINE AT /1(c_208).
-      ENDIF.
-    ENDAT.
+      CLEAR: lv_betrg_pa,lv_ekucr_pa,lv_topla_pa,lv_k1yil_pa,
+             lv_kidem_pa,lv_kiton_pa,lv_ihbar_pa.
+      CLEAR pa_kisi.
+    ENDIF.
+*    AT END OF btrtl.
+*      SUM.
+*      IF potkidem = 'X' AND ozet NE 'X'.
+*        ULINE AT /1(c_259).
+*        FORMAT COLOR COL_TOTAL.
+*        PERFORM write_pottoplam2
+*                USING 'PERSONEL ALT ALANI TOPLAMI :' paa_kisi.
+*        CLEAR paa_kisi.
+*        ULINE AT /1(c_259).
+*      ELSE.
+*        ULINE AT /1(c_208).
+*        FORMAT COLOR COL_TOTAL.
+*        PERFORM write_pottoplam2
+*                USING 'PERSONEL ALT ALANI TOPLAMI :' paa_kisi.
+*        CLEAR paa_kisi.
+*        ULINE AT /1(c_208).
+*      ENDIF.
+*    ENDAT.
+*    AT END OF werks.
+*      SUM.
+*      IF potkidem = 'X' AND ozet NE 'X'.
+*        ULINE AT /1(c_259).
+*        FORMAT COLOR COL_GROUP.
+*        PERFORM write_pottoplam2
+*                USING 'PERSONEL ALANI TOPLAMI :' pa_kisi.
+*        CLEAR pa_kisi.
+*        ULINE AT /1(c_259).
+*      ELSE.
+*        ULINE AT /1(c_208).
+*        FORMAT COLOR COL_GROUP.
+*        PERFORM write_pottoplam2
+*                USING 'PERSONEL ALANI TOPLAMI :' pa_kisi.
+*        CLEAR pa_kisi.
+*        ULINE AT /1(c_208).
+*      ENDIF.
+*    ENDAT.
+*    AT LAST.
+*      SUM.
+*      IF potkidem = 'X' AND ozet NE 'X'.
+*        ULINE AT /1(c_259).
+*        FORMAT COLOR COL_GROUP.
+*        PERFORM write_pottoplam2 USING 'GENEL TOPLAM :' top_kisi.
+*        CLEAR top_kisi.
+*        ULINE AT /1(c_259).
+*      ELSE.
+*        ULINE AT /1(c_208).
+*        FORMAT COLOR COL_GROUP.
+*        PERFORM write_pottoplam2 USING 'GENEL TOPLAM :' top_kisi.
+*        CLEAR top_kisi.
+*        ULINE AT /1(c_208).
+*      ENDIF.
+*    ENDAT.
     IF iper-topdahil EQ 1.
       ADD:   iper-betrg TO btrbetrg ,
              iper-ekucr TO btrekucr ,
@@ -3674,11 +3923,11 @@ FORM write_potkidembtrtl_is USING    $werks
              iper-kidem TO btrkidem ,
              iper-kiton TO btrkiton ,
              iper-ihbar TO btrihbar .
-
-      ADD:   btrbetrg TO topbetrg , btrekucr TO topekucr ,
-             btrtopla TO toptopla , btrk1yil TO topk1yil ,
-             btrkidem TO topkidem , btrihbar TO topihbar,
-             btrkiton TO topkiton.
+*
+*      ADD:   btrbetrg TO topbetrg , btrekucr TO topekucr ,
+*             btrtopla TO toptopla , btrk1yil TO topk1yil ,
+*             btrkidem TO topkidem , btrihbar TO topihbar,
+*             btrkiton TO topkiton.
     ENDIF.
 
   ENDLOOP.
@@ -3691,22 +3940,54 @@ ENDFORM.                               " WRITE_POTKIDEMPERSK_IS
 *&---------------------------------------------------------------------*
 *&      Form  SUM
 *&---------------------------------------------------------------------*
-FORM sum USING $werks $btrtl $pernr CHANGING
-         $betrg $ekucr $topla $k1yil $kidem $ihbar.
+FORM sum USING $werks $btrtl
+      CHANGING $bukrs
+          $betrg
+          $ekucr
+          $topla
+          $k1yil
+          $kidem
+          $ihbar
+          $kiton.
+*  CLEAR : $betrg,
+*          $ekucr,
+*          $topla,
+*          $k1yil,
+*          $kidem,
+*          $ihbar,
+*          $kiton.
 
-  LOOP AT iper WHERE topdahil  EQ 1
-        AND werks EQ $werks AND btrtl EQ $btrtl AND pernr EQ $pernr.
-    $betrg = $betrg + iper-betrg.
-    $ekucr = $ekucr + iper-ekucr.
-    $topla = $topla + iper-topla.
-    $k1yil = $k1yil + iper-k1yil.
-    $kidem = $kidem + iper-kidem.
+  IF $bukrs IS INITIAL .
 
-  ENDLOOP.
-  LOOP AT iper WHERE
-          werks EQ $werks AND btrtl EQ $btrtl AND pernr EQ $pernr.
-    $ihbar = $ihbar + iper-ihbar.
-  ENDLOOP.
+    LOOP AT iper WHERE topdahil  EQ 1
+          AND werks EQ $werks AND btrtl EQ $btrtl .
+      $betrg = $betrg + iper-betrg.
+      $ekucr = $ekucr + iper-ekucr.
+      $topla = $topla + iper-topla.
+      $k1yil = $k1yil + iper-k1yil.
+      $kidem = $kidem + iper-kidem.
+      $ihbar = $ihbar + iper-ihbar.
+      $kiton = $kiton + iper-kiton.
+
+    ENDLOOP.
+  ELSE.
+
+    LOOP AT iper WHERE topdahil  EQ 1
+          AND bukrs EQ $bukrs.
+      $betrg = $betrg + iper-betrg.
+      $ekucr = $ekucr + iper-ekucr.
+      $topla = $topla + iper-topla.
+      $k1yil = $k1yil + iper-k1yil.
+      $kidem = $kidem + iper-kidem.
+      $ihbar = $ihbar + iper-ihbar.
+      $kiton = $kiton + iper-kiton.
+
+    ENDLOOP.
+  ENDIF.
+*  LOOP AT iper WHERE
+*          werks EQ $werks AND btrtl EQ $btrtl AND pernr EQ $pernr.
+*    $ihbar = $ihbar + iper-ihbar.
+*  ENDLOOP.
 
 
 ENDFORM.                               " SUM
@@ -3969,8 +4250,12 @@ FORM kostl.
 *                                     persg EQ ipery-persg.
 *    IF sy-subrc NE 0. CLEAR t501t. ENDIF.
 *    ULINE AT /1(171).
+
+    SELECT SINGLE * FROM cskt WHERE kostl EQ iperk-kostl
+                                AND spras EQ sy-langu
+                                AND datbi GE sy-datum .
     FORMAT COLOR COL_KEY INTENSIFIED .
-    WRITE : / 'MASRAF YERİ ', iperk-kostl.
+    WRITE : / 'MASRAF YERİ ', iperk-kostl , cskt-ltext.
 *    t501t-ctext.
     ULINE AT /1(c_scnb).
 
@@ -4019,6 +4304,7 @@ FORM write_potkidemkostl USING    $kostl
    topbetrg  topekucr  toptopla topk1yil topkidem topihbar topkiton .
 
   DATA : c_scnb TYPE i.
+  DATA : lv_kisi(5).
   DATA: cagbetrg LIKE iper-betrg, cagk1yil LIKE iper-k1yil,
         cagekucr LIKE iper-ekucr, cagkidem LIKE iper-kidem,
         cagtopla LIKE iper-topla, cagihbar LIKE iper-ihbar,
@@ -4059,6 +4345,7 @@ FORM write_potkidemkostl USING    $kostl
                cagkidem , cagihbar,cagkiton .
     ENDON.
 
+    lv_kisi = lv_kisi + 1.
     PERFORM write_potline_cc.
 
 
@@ -4078,10 +4365,10 @@ FORM write_potkidemkostl USING    $kostl
   ENDLOOP.
   FORMAT COLOR COL_GROUP INTENSIFIED .
   PERFORM write_potkidem_ca USING
-               'MASRAF YERİ TOPLAMI   :' CHANGING
-            cagbetrg cagekucr cagtopla cagk1yil cagkidem cagihbar cagkiton.
-
-
+               'MASRAF YERİ TOPLAMI   :'
+               CHANGING cagbetrg cagekucr cagtopla
+                        cagk1yil cagkidem cagihbar
+                        cagkiton.
 ENDFORM.                    " write_potkidemkostl
 *&---------------------------------------------------------------------*
 *&      Form  write_potline_cc
@@ -4089,39 +4376,71 @@ ENDFORM.                    " write_potkidemkostl
 
 FORM write_potline_cc.
 
-  WRITE: / sy-vline       , m1 AS CHECKBOX ,
-           sy-vline NO-GAP, iper-pernr NO-GAP COLOR COL_KEY,
+  DATA: lv_atext TYPE abktx.
+
+
+  SELECT SINGLE atext INTO lv_atext FROM t549t
+            WHERE sprsl EQ sy-langu
+             AND abkrs EQ iper-abkrs.
+
+  WRITE: / sy-vline       , m1             AS CHECKBOX ,
+           sy-vline NO-GAP, iper-pernr     NO-GAP COLOR COL_KEY,
            sy-vline NO-GAP, iper-ename(21) NO-GAP COLOR COL_KEY,
+           sy-vline NO-GAP, iper-kostl     NO-GAP COLOR COL_KEY,
+           sy-vline NO-GAP, lv_atext       NO-GAP COLOR COL_KEY,
+           sy-vline NO-GAP, iper-gbdat     NO-GAP COLOR COL_KEY,
 * Geliştirme Taner 23.12.2005
            sy-vline NO-GAP, iper-sskno(18) NO-GAP COLOR COL_KEY.
   IF iper-gesch EQ '1'.
-    WRITE:     sy-vline NO-GAP, ' Erkek  ' NO-GAP COLOR COL_KEY.
+    WRITE: sy-vline NO-GAP, ' Erkek  '     NO-GAP COLOR COL_KEY.
   ELSE.
-    WRITE:     sy-vline NO-GAP, ' Kadın  ' NO-GAP COLOR COL_KEY.
+    WRITE: sy-vline NO-GAP, ' Kadın  '     NO-GAP COLOR COL_KEY.
   ENDIF.
-  WRITE :
+  WRITE :  sy-vline NO-GAP, iper-hire      NO-GAP,
+           sy-vline NO-GAP, iper-gtime     NO-GAP,
+           sy-vline NO-GAP, iper-ktime     NO-GAP, sy-vline NO-GAP.
 
-         sy-vline NO-GAP, iper-hire NO-GAP,
-         sy-vline NO-GAP, iper-gtime NO-GAP,
-         sy-vline NO-GAP, iper-ktime NO-GAP, sy-vline NO-GAP.
-  IF h_fact EQ 100.
-    WRITE : (16) iper-betrg CURRENCY h_curr NO-ZERO NO-GAP, sy-vline
-    NO-GAP,
-    (16) iper-ekucr CURRENCY h_curr NO-ZERO NO-GAP, sy-vline NO-GAP,
-    (16) iper-topla CURRENCY h_curr NO-ZERO NO-GAP, sy-vline NO-GAP,
-    (16) iper-k1yil CURRENCY h_curr NO-ZERO NO-GAP, sy-vline NO-GAP,
-    (16) iper-kidem CURRENCY h_curr NO-ZERO NO-GAP, sy-vline NO-GAP,
-    (16) iper-kiton CURRENCY h_curr NO-ZERO NO-GAP, sy-vline NO-GAP,
-    (16) iper-ihbar CURRENCY h_curr NO-ZERO NO-GAP, sy-vline.
+  IF potkidem = 'X' AND ozet NE 'X'.
+    IF h_fact EQ 100.
+      WRITE:
+             (26) iper-betrg CURRENCY h_curr NO-ZERO NO-GAP, sy-vline NO-GAP,
+             (26) iper-ekucr CURRENCY h_curr NO-ZERO NO-GAP, sy-vline NO-GAP,
+             (26) iper-topla CURRENCY h_curr NO-ZERO NO-GAP, sy-vline NO-GAP,
+             (26) iper-k1yil CURRENCY h_curr NO-ZERO NO-GAP, sy-vline NO-GAP,
+             (26) iper-kidem CURRENCY h_curr NO-ZERO NO-GAP, sy-vline NO-GAP,
+             (26) iper-kiton CURRENCY h_curr NO-ZERO NO-GAP, sy-vline NO-GAP,
+             (26) iper-ihbar CURRENCY h_curr NO-ZERO NO-GAP, sy-vline.
+    ELSE.
+      WRITE:  (26) iper-betrg CURRENCY h_curr NO-GAP, sy-vline NO-GAP,
+              (26) iper-ekucr CURRENCY h_curr NO-GAP, sy-vline NO-GAP,
+              (26) iper-topla CURRENCY h_curr NO-GAP, sy-vline NO-GAP,
+              (26) iper-k1yil CURRENCY h_curr NO-GAP, sy-vline NO-GAP,
+              (26) iper-kidem CURRENCY h_curr NO-GAP, sy-vline NO-GAP,
+              (26) iper-kiton CURRENCY h_curr NO-GAP, sy-vline NO-GAP,
+              (26) iper-ihbar CURRENCY h_curr NO-GAP, sy-vline.
+    ENDIF.
+
   ELSE.
-    WRITE : (16) iper-betrg CURRENCY h_curr NO-GAP, sy-vline NO-GAP,
-    (16) iper-ekucr CURRENCY h_curr NO-GAP, sy-vline NO-GAP,
-    (16) iper-topla CURRENCY h_curr NO-GAP, sy-vline NO-GAP,
-    (16) iper-k1yil CURRENCY h_curr NO-GAP, sy-vline NO-GAP,
-    (16) iper-kidem CURRENCY h_curr NO-GAP, sy-vline NO-GAP,
-    (16) iper-kiton CURRENCY h_curr NO-GAP, sy-vline NO-GAP,
-    (16) iper-ihbar CURRENCY h_curr NO-GAP, sy-vline.
-  ENDIF.
+    IF h_fact EQ 100.
+      WRITE:
+*             (16) iper-betrg CURRENCY h_curr NO-ZERO NO-GAP, sy-vline NO-GAP,
+*             (16) iper-ekucr CURRENCY h_curr NO-ZERO NO-GAP, sy-vline NO-GAP,
+*             (16) iper-topla CURRENCY h_curr NO-ZERO NO-GAP, sy-vline NO-GAP,
+             (26) iper-k1yil CURRENCY h_curr NO-ZERO NO-GAP, sy-vline NO-GAP,
+             (26) iper-kidem CURRENCY h_curr NO-ZERO NO-GAP, sy-vline NO-GAP,
+             (26) iper-kiton CURRENCY h_curr NO-ZERO NO-GAP, sy-vline NO-GAP,
+             (26) iper-ihbar CURRENCY h_curr NO-ZERO NO-GAP, sy-vline.
+    ELSE.
+      WRITE:
+*              (16) iper-betrg CURRENCY h_curr NO-GAP, sy-vline NO-GAP,
+*              (16) iper-ekucr CURRENCY h_curr NO-GAP, sy-vline NO-GAP,
+*              (16) iper-topla CURRENCY h_curr NO-GAP, sy-vline NO-GAP,
+              (26) iper-k1yil CURRENCY h_curr NO-GAP, sy-vline NO-GAP,
+              (26) iper-kidem CURRENCY h_curr NO-GAP, sy-vline NO-GAP,
+              (26) iper-kiton CURRENCY h_curr NO-GAP, sy-vline NO-GAP,
+              (26) iper-ihbar CURRENCY h_curr NO-GAP, sy-vline.
+    ENDIF.
+  ENDIF .
   HIDE iper.
 
 ENDFORM.                    " write_potline_cc
@@ -4627,26 +4946,40 @@ ENDFORM.                    " ikramiye_zam
 *&---------------------------------------------------------------------*
 *&      Form  WRITE_POTTOPLAM
 *&---------------------------------------------------------------------*
-FORM write_pottoplam2 USING  p_tptext p_kisi.
+FORM write_pottoplam2 USING  p_tptext p_kisi
+                             lv_betrg lv_ekucr lv_topla
+                             lv_k1yil lv_kidem lv_kiton
+                             lv_ihbar.
 
   IF potkidem = 'X' AND ozet NE 'X'.
     WRITE: / sy-vline, p_tptext, p_kisi, 'Kişi',
          AT c_140(1)  ''  NO-GAP,
-                 (16) iper-betrg CURRENCY h_curr NO-ZERO NO-GAP ,
-                 (16) iper-ekucr CURRENCY h_curr NO-ZERO NO-GAP ,
-                 (16) iper-topla CURRENCY h_curr NO-ZERO NO-GAP ,
-                 (16) iper-k1yil CURRENCY h_curr NO-ZERO NO-GAP ,
-                 (16) iper-kidem CURRENCY h_curr NO-ZERO NO-GAP ,
-                 (16) iper-kiton CURRENCY h_curr NO-ZERO NO-GAP ,
-                 (16) iper-ihbar CURRENCY h_curr NO-ZERO NO-GAP ,
+*                 (16) iper-betrg CURRENCY h_curr NO-ZERO NO-GAP ,
+*                 (16) iper-ekucr CURRENCY h_curr NO-ZERO NO-GAP ,
+*                 (16) iper-topla CURRENCY h_curr NO-ZERO NO-GAP ,
+*                 (16) iper-k1yil CURRENCY h_curr NO-ZERO NO-GAP ,
+*                 (16) iper-kidem CURRENCY h_curr NO-ZERO NO-GAP ,
+*                 (16) iper-kiton CURRENCY h_curr NO-ZERO NO-GAP ,
+*                 (16) iper-ihbar CURRENCY h_curr NO-ZERO NO-GAP ,
+                 (26) lv_betrg CURRENCY h_curr NO-ZERO NO-GAP ,
+                 (26) lv_ekucr CURRENCY h_curr NO-ZERO NO-GAP ,
+                 (26) lv_topla CURRENCY h_curr NO-ZERO NO-GAP ,
+                 (26) lv_k1yil CURRENCY h_curr NO-ZERO NO-GAP ,
+                 (26) lv_kidem CURRENCY h_curr NO-ZERO NO-GAP ,
+                 (26) lv_kiton CURRENCY h_curr NO-ZERO NO-GAP ,
+                 (26) lv_ihbar CURRENCY h_curr NO-ZERO NO-GAP ,
         AT c_259 sy-vline.
   ELSE.
     WRITE: / sy-vline, p_tptext, p_kisi, 'Kişi',
          AT c_140(1) '' NO-GAP,
-                 (16) iper-k1yil CURRENCY h_curr NO-ZERO NO-GAP,
-                 (16) iper-kidem CURRENCY h_curr NO-ZERO NO-GAP,
-                 (16) iper-kiton CURRENCY h_curr NO-ZERO NO-GAP,
-                 (16) iper-ihbar CURRENCY h_curr NO-ZERO NO-GAP,
+*                 (16) iper-k1yil CURRENCY h_curr NO-ZERO NO-GAP,
+*                 (16) iper-kidem CURRENCY h_curr NO-ZERO NO-GAP,
+*                 (16) iper-kiton CURRENCY h_curr NO-ZERO NO-GAP,
+*                 (16) iper-ihbar CURRENCY h_curr NO-ZERO NO-GAP,
+                 (26) lv_k1yil CURRENCY h_curr NO-ZERO NO-GAP,
+                 (26) lv_kidem CURRENCY h_curr NO-ZERO NO-GAP,
+                 (26) lv_kiton CURRENCY h_curr NO-ZERO NO-GAP,
+                 (26) lv_ihbar CURRENCY h_curr NO-ZERO NO-GAP,
         AT c_208 sy-vline.
 
   ENDIF.
@@ -4675,10 +5008,19 @@ FORM mmer_yaz.
         yil TYPE i.
   SORT mmer BY kostl ASCENDING.
   LOOP AT mmer.
-    SELECT SINGLE * FROM cskt
-                WHERE kokrs EQ mmer-bukrs
-                AND   kostl EQ mmer-kostl
-    AND   datbi GE kidendda.
+    CASE mmer-bukrs.
+      WHEN 6000.
+        SELECT SINGLE * FROM cskt
+                    WHERE kokrs EQ '1000'
+                    AND   kostl EQ mmer-kostl
+        AND   datbi GE kidendda.
+      WHEN '1000' OR '1210' OR '2310' .
+        SELECT SINGLE * FROM cskt
+                    WHERE kokrs EQ 'BH01'
+                    AND   kostl EQ mmer-kostl
+        AND   datbi GE kidendda.
+
+    ENDCASE.
     CLEAR: gun, ay, yil.
     IF mmer-kgun GT 30.
       ay = mmer-kgun DIV 30 .
@@ -4743,11 +5085,24 @@ ENDFORM.                               " MMER_YAZ
 *&---------------------------------------------------------------------*
 FORM write_transfer_list USING $werks $btrtl.
 *  LOOP AT itemp WHERE secil NE space.
-  SORT iper BY werks btrtl pernr.
+
+  DATA : lv_sayac TYPE i.
+  SORT iper BY werks btrtl .
+  SORT ipersum BY werks btrtl .
+*  DESCRIBE TABLE ipersum LINES DATA(lv_size).
+
+  DATA(lv_size) = REDUCE i(
+  INIT x = 0
+  FOR wa IN ipersum WHERE ( werks EQ $werks AND btrtl EQ $btrtl )
+  NEXT x = x + 1
+).
   LOOP AT ipersum WHERE werks EQ $werks
                     AND btrtl EQ $btrtl.
+    lv_sayac = sy-tabix.
+    lv_size = lv_size - 1.
     iper = ipersum.
-    AT NEW btrtl.
+*    AT NEW btrtl.
+    ON CHANGE OF iper-btrtl.
       SELECT * FROM t001p
              WHERE werks = iper-werks
              AND   btrtl = iper-btrtl.
@@ -4773,67 +5128,139 @@ FORM write_transfer_list USING $werks $btrtl.
              AT c_208 sy-vline.
         ULINE AT /1(c_208).
       ENDIF.
-    ENDAT.
+    ENDON.
+*    ENDAT.
 
     PERFORM write_potline.
 
     paa_kisi = paa_kisi + 1.
     pa_kisi = pa_kisi + 1.
     top_kisi = top_kisi + 1.
-    AT END OF btrtl.
-      SUM.
+
+    lv_betrg_paa = lv_betrg_paa + iper-betrg.
+    lv_ekucr_paa = lv_ekucr_paa + iper-ekucr.
+    lv_topla_paa = lv_topla_paa + iper-topla.
+    lv_k1yil_paa = lv_k1yil_paa + iper-k1yil.
+    lv_kidem_paa = lv_kidem_paa + iper-kidem.
+    lv_kiton_paa = lv_kiton_paa + iper-kiton.
+    lv_ihbar_paa = lv_ihbar_paa + iper-ihbar.
+
+    READ TABLE ipersum INTO DATA(wa_next) INDEX lv_sayac + 1.
+    IF wa_next-btrtl <> iper-btrtl OR lv_size EQ 0.
+*      SUM.
       IF potkidem = 'X' AND ozet NE 'X'.
         ULINE AT /1(c_259).
         FORMAT COLOR COL_TOTAL.
         PERFORM write_pottoplam2
-                USING 'PERSONEL ALT ALANI TOPLAMI :' paa_kisi.
+                USING 'PERSONEL ALT ALANI TOPLAMI :' paa_kisi
+                       lv_betrg_paa lv_ekucr_paa lv_topla_paa
+                       lv_k1yil_paa lv_kidem_paa lv_kiton_paa
+                       lv_ihbar_paa.
         CLEAR paa_kisi.
         ULINE AT /1(c_259).
       ELSE.
         ULINE AT /1(c_208).
         FORMAT COLOR COL_TOTAL.
         PERFORM write_pottoplam2
-                USING 'PERSONEL ALT ALANI TOPLAMI :' paa_kisi.
+                USING 'PERSONEL ALT ALANI TOPLAMI :' paa_kisi
+                       lv_betrg_paa lv_ekucr_paa lv_topla_paa
+                       lv_k1yil_paa lv_kidem_paa lv_kiton_paa
+                       lv_ihbar_paa.
         CLEAR paa_kisi.
         ULINE AT /1(c_208).
       ENDIF.
-    ENDAT.
+      CLEAR: lv_betrg_paa, lv_ekucr_paa,lv_topla_paa,lv_k1yil_paa,
+             lv_kidem_paa,lv_kiton_paa,lv_ihbar_paa.
+    ENDIF.
 
-    AT END OF werks.
-      SUM.
+    lv_betrg_pa = lv_betrg_pa + iper-betrg.
+    lv_ekucr_pa = lv_ekucr_pa + iper-ekucr.
+    lv_topla_pa = lv_topla_pa + iper-topla.
+    lv_k1yil_pa = lv_k1yil_pa + iper-k1yil.
+    lv_kidem_pa = lv_kidem_pa + iper-kidem.
+    lv_kiton_pa = lv_kiton_pa + iper-kiton.
+    lv_ihbar_pa = lv_ihbar_pa + iper-ihbar.
+
+    IF wa_next-werks <> iper-werks OR lv_size EQ 0 .
       IF potkidem = 'X' AND ozet NE 'X'.
         ULINE AT /1(c_259).
         FORMAT COLOR COL_GROUP.
         PERFORM write_pottoplam2
-                USING 'PERSONEL ALANI TOPLAMI :' pa_kisi.
+                USING 'PERSONEL ALANI TOPLAMI :' pa_kisi
+                       lv_betrg_pa lv_ekucr_pa lv_topla_pa
+                       lv_k1yil_pa lv_kidem_pa lv_kiton_pa
+                       lv_ihbar_pa.
         CLEAR pa_kisi.
         ULINE AT /1(c_259).
       ELSE.
         ULINE AT /1(c_208).
         FORMAT COLOR COL_GROUP.
         PERFORM write_pottoplam2
-                USING 'PERSONEL ALANI TOPLAMI :' pa_kisi.
+                USING 'PERSONEL ALANI TOPLAMI :' pa_kisi
+                       lv_betrg_pa lv_ekucr_pa lv_topla_pa
+                       lv_k1yil_pa lv_kidem_pa lv_kiton_pa
+                       lv_ihbar_pa.
         CLEAR pa_kisi.
         ULINE AT /1(c_208).
       ENDIF.
-    ENDAT.
+      CLEAR: lv_betrg_pa,lv_ekucr_pa,lv_topla_pa,lv_k1yil_pa,
+             lv_kidem_pa,lv_kiton_pa,lv_ihbar_pa.
+    ENDIF.
 
-    AT LAST.
-      SUM.
-      IF potkidem = 'X' AND ozet NE 'X'.
-        ULINE AT /1(c_259).
-        FORMAT COLOR COL_GROUP.
-        PERFORM write_pottoplam2 USING 'GENEL TOPLAM :' top_kisi.
-        CLEAR top_kisi.
-        ULINE AT /1(c_259).
-      ELSE.
-        ULINE AT /1(c_208).
-        FORMAT COLOR COL_GROUP.
-        PERFORM write_pottoplam2 USING 'GENEL TOPLAM :' top_kisi.
-        CLEAR top_kisi.
-        ULINE AT /1(c_208).
-      ENDIF.
-    ENDAT.
+*    AT END OF btrtl.
+*      SUM.
+*      IF potkidem = 'X' AND ozet NE 'X'.
+*        ULINE AT /1(c_259).
+*        FORMAT COLOR COL_TOTAL.
+*        PERFORM write_pottoplam2
+*                USING 'PERSONEL ALT ALANI TOPLAMI :' paa_kisi.
+*        CLEAR paa_kisi.
+*        ULINE AT /1(c_259).
+*      ELSE.
+*        ULINE AT /1(c_208).
+*        FORMAT COLOR COL_TOTAL.
+*        PERFORM write_pottoplam2
+*                USING 'PERSONEL ALT ALANI TOPLAMI :' paa_kisi.
+*        CLEAR paa_kisi.
+*        ULINE AT /1(c_208).
+*      ENDIF.
+*    ENDAT.
+*
+*    AT END OF werks.
+*      SUM.
+*      IF potkidem = 'X' AND ozet NE 'X'.
+*        ULINE AT /1(c_259).
+*        FORMAT COLOR COL_GROUP.
+*        PERFORM write_pottoplam2
+*                USING 'PERSONEL ALANI TOPLAMI :' pa_kisi.
+*        CLEAR pa_kisi.
+*        ULINE AT /1(c_259).
+*      ELSE.
+*        ULINE AT /1(c_208).
+*        FORMAT COLOR COL_GROUP.
+*        PERFORM write_pottoplam2
+*                USING 'PERSONEL ALANI TOPLAMI :' pa_kisi.
+*        CLEAR pa_kisi.
+*        ULINE AT /1(c_208).
+*      ENDIF.
+*    ENDAT.
+*
+*    AT LAST.
+*      SUM.
+*      IF potkidem = 'X' AND ozet NE 'X'.
+*        ULINE AT /1(c_259).
+*        FORMAT COLOR COL_GROUP.
+*        PERFORM write_pottoplam2 USING 'GENEL TOPLAM :' top_kisi.
+*        CLEAR top_kisi.
+*        ULINE AT /1(c_259).
+*      ELSE.
+*        ULINE AT /1(c_208).
+*        FORMAT COLOR COL_GROUP.
+*        PERFORM write_pottoplam2 USING 'GENEL TOPLAM :' top_kisi.
+*        CLEAR top_kisi.
+*        ULINE AT /1(c_208).
+*      ENDIF.
+*    ENDAT.
 
   ENDLOOP.
 *  ENDLOOP.

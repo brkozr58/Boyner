@@ -316,7 +316,7 @@ CLASS ZBYHR_CL001 IMPLEMENTATION.
 *                    && |<tem:fileName>Garanti_Bankasi.txt</tem:fileName>|
                     && |<tem:fileName>{ s_file-pname }</tem:fileName>|
 *                    && |<tem:fileDirectory>/Garanti_BOYNERMAAS/MAAS/Outbox</tem:fileDirectory>|
-                    && |<tem:fileDirectory>{ ls_t002-pfile }</tem:fileDirectory>|
+                    && |<tem:fileDirectory>{ s_file-dname }</tem:fileDirectory>|
 
                     && |</tem:callUploadService>|
                     && |</soapenv:Body>|

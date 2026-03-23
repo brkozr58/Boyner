@@ -25,7 +25,7 @@ TABLES: pc260, "Cluster Directory for Payroll Results
 TABLES : zbyhr_t027 .
 TABLES : zbyhr_t028 .
 DATA  as-funco.
-  DATA: gt_t588a TYPE TABLE OF t558A.
+DATA: gt_t588a TYPE TABLE OF t558a.
 *        temptarh TYPE endda.
 *___Lokalizasyon tabloları/Localisation tables
 INCLUDE pcftbtr0.
@@ -64,7 +64,7 @@ INCLUDE pagentrc.         " General data definitions
 
 * Includes (Modules)
 * Payroll
-INCLUDE pagentrp.         " Payroll includes
+INCLUDE zbyhr_pagentrp.         " Payroll includes
 
 * Data element
 INCLUDE zbyhr_p016_pak01trd.
@@ -75,8 +75,8 @@ INCLUDE pak01trp.
 DATA : c_i01 TYPE i VALUE 176. "155
 DATA : c_i04 TYPE i VALUE 244. "223
 DATA : c_i05 TYPE i VALUE 103.
-DATA : c_259 TYPE i VALUE 259. "full list
-DATA : c_208 TYPE i VALUE 208. "özet list
+DATA : c_259 TYPE i VALUE 329. "full list
+DATA : c_208 TYPE i VALUE 248. "özet list
 DATA : c_121 TYPE i VALUE 129. "oldlist
 DATA : c_143 TYPE i VALUE 145. "oldlist
 DATA : c_140 TYPE i VALUE 140. "toplam başlangıcı
@@ -151,7 +151,7 @@ INITIALIZATION.
 *___START-OF-SELECTION______________________________________*
 START-OF-SELECTION.
 
-  SELECT * FROM t558A INTO TABLE @gt_t588a WHERE pernr IN @pnppernr.
+  SELECT * FROM t558a INTO TABLE @gt_t588a WHERE pernr IN @pnppernr.
   exitlgart = '/104'.
 
   PERFORM set_defaults.
@@ -227,11 +227,12 @@ GET pernr.
     APPEND iper TO ipersum.
   ENDIF.
 
-
+  CLEAR : iper, ipersum.
 *___END-OF-SELECTION_________________________________________________*
 
 END-OF-SELECTION.
 
+  SORT iper ASCENDING BY werks btrtl  .
   SORT rtab BY pernr.
   PERFORM end_of_selection.
 
@@ -250,7 +251,7 @@ AT USER-COMMAND.
 
 
   INCLUDE zbyhr_p016_htrbatch.
-
+  INCLUDE zbyhr_p016_alv_chek. " daha geliştirilmedi
 
 
 
@@ -471,7 +472,8 @@ ENDFORM.
 *&      Form  WRITE_POTKIDEMBUKRS
 *&---------------------------------------------------------------------*
 FORM write_potkidembukrs USING $bukrs
- CHANGING topbetrg  topekucr  toptopla topk1yil topkidem topkiton topihbar.
+* CHANGING topbetrg  topekucr  toptopla topk1yil topkidem topkiton topihbar
+   .
 
   DATA: btrbetrg LIKE iper-betrg,
         btrekucr LIKE iper-ekucr,
@@ -546,40 +548,40 @@ FORM write_potkidembukrs USING $bukrs
         ULINE AT /1(c_208).
       ENDIF.
     ENDAT.
-    AT LAST.
-      SUM.
-      IF potkidem = 'X' AND ozet NE 'X'.
-        ULINE AT /1(c_259).
-        FORMAT COLOR COL_GROUP.
-        PERFORM write_pottoplam USING 'GENEL TOPLAM :' top_kisi
-            CHANGING
-              btrbetrg
-              btrekucr
-              btrtopla
-              btrk1yil
-              btrkidem
-              btrkiton
-              btrihbar.
-
-        CLEAR top_kisi.
-        ULINE AT /1(c_259).
-      ELSE.
-        ULINE AT /1(c_208).
-        FORMAT COLOR COL_GROUP.
-        PERFORM write_pottoplam USING 'GENEL TOPLAM :' top_kisi
-            CHANGING
-              btrbetrg
-              btrekucr
-              btrtopla
-              btrk1yil
-              btrkidem
-              btrkiton
-              btrihbar.
-
-        CLEAR top_kisi.
-        ULINE AT /1(c_208).
-      ENDIF.
-    ENDAT.
+*    AT LAST.
+*      SUM.
+*      IF potkidem = 'X' AND ozet NE 'X'.
+*        ULINE AT /1(c_259).
+*        FORMAT COLOR COL_GROUP.
+*        PERFORM write_pottoplam USING 'GENEL TOPLAM :' top_kisi
+*            CHANGING
+*              btrbetrg
+*              btrekucr
+*              btrtopla
+*              btrk1yil
+*              btrkidem
+*              btrkiton
+*              btrihbar.
+*
+*        CLEAR top_kisi.
+*        ULINE AT /1(c_259).
+*      ELSE.
+*        ULINE AT /1(c_208).
+*        FORMAT COLOR COL_GROUP.
+*        PERFORM write_pottoplam USING 'GENEL TOPLAM :' top_kisi
+*            CHANGING
+*              btrbetrg
+*              btrekucr
+*              btrtopla
+*              btrk1yil
+*              btrkidem
+*              btrkiton
+*              btrihbar.
+*
+*        CLEAR top_kisi.
+*        ULINE AT /1(c_208).
+*      ENDIF.
+*    ENDAT.
 
 
     IF iper-topdahil EQ 1.
@@ -590,11 +592,11 @@ FORM write_potkidembukrs USING $bukrs
              iper-kidem TO btrkidem ,
              iper-kiton TO btrkiton ,
              iper-ihbar TO btrihbar .
-
-      ADD:   btrbetrg TO topbetrg , btrekucr TO topekucr ,
-             btrtopla TO toptopla , btrk1yil TO topk1yil ,
-             btrkidem TO topkidem , btrihbar TO topihbar,
-             btrkiton TO topkiton.
+*
+*      ADD:   btrbetrg TO topbetrg , btrekucr TO topekucr ,
+*             btrtopla TO toptopla , btrk1yil TO topk1yil ,
+*             btrkidem TO topkidem , btrihbar TO topihbar,
+*             btrkiton TO topkiton.
     ENDIF.
   ENDLOOP.
 *  ENDLOOP.

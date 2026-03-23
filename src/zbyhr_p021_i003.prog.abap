@@ -137,34 +137,53 @@ CLASS lcl_report IMPLEMENTATION.
                                                                     SEPARATED BY ':'.
     CONCATENATE ls_request-bitis     lv_saat INTO ls_request-bitis     SEPARATED BY space.
 
-    IF s_pernr-low IS INITIAL.
-      SELECT pernr FROM pa0000 INTO TABLE @DATA(lt_00)
-                                WHERE begda LE @s_datum-high
-                                  AND endda GE @s_datum-low
-                                  AND stat2 EQ '3'.
+    SELECT pa0001~abkrs,
+           pa0000~pernr
+           FROM pa0001
+     INNER JOIN pa0000
+             ON pa0000~pernr EQ pa0001~pernr
+       INTO TABLE @DATA(lt_00)
+       WHERE pa0000~begda LE @s_datum-high
+         AND pa0000~endda GE @s_datum-low
+         AND pa0001~begda LE @s_datum-high
+         AND pa0001~endda GE @s_datum-low
+         AND pa0001~pernr IN @s_pernr
+         AND pa0000~pernr IN @s_pernr
+         AND pa0001~abkrs IN @s_abkrs
+         AND pa0000~stat2 EQ '3'.
 
+*    IF s_pernr-low IS INITIAL.
+*      SELECT pernr FROM pa0000 INTO TABLE @DATA(lt_00)
+*                                WHERE begda LE @s_datum-high
+*                                  AND endda GE @s_datum-low
+*                                  AND stat2 EQ '3'.
 
-      LOOP AT lt_00 INTO DATA(ls_00).
+*      LOOP AT lt_00 INTO DATA(ls_00).
+*
+*        CLEAR s_pernr.
+*        s_pernr-sign   = 'I'.
+*        s_pernr-option = 'EQ'.
+*        s_pernr-low    = ls_00-pernr.
+*
+*        APPEND s_pernr TO s_pernr. CLEAR: ls_00.
+*      ENDLOOP.
+*    ENDIF.
 
-        CLEAR s_pernr.
-        s_pernr-sign   = 'I'.
-        s_pernr-option = 'EQ'.
-        s_pernr-low    = ls_00-pernr.
-
-        APPEND s_pernr TO s_pernr. CLEAR: ls_00.
-      ENDLOOP.
+    IF lt_00 IS NOT INITIAL.
+      SELECT * FROM pa2010
+         FOR ALL ENTRIES IN @lt_00
+                WHERE pernr EQ @lt_00-pernr
+                AND begda LE @s_datum-high
+                AND endda GE @s_datum-low
+                INTO TABLE @gt_2010.
 
     ENDIF.
 
-    SELECT * FROM pa2010 INTO TABLE @gt_2010
-                         WHERE pernr IN @s_pernr
-                           AND begda LE @s_datum-high
-                           AND endda GE @s_datum-low.
-
-    LOOP AT s_pernr INTO DATA(ls_pernr).
+*    LOOP AT s_pernr INTO DATA(ls_pernr).
+    LOOP AT lt_00 INTO DATA(ls_pernr).
 
 *      CONDENSE ls_pernr-low NO-GAPS.
-      ls_request-sicilNo   = ls_pernr-low. CLEAR ls_pernr-low.
+      ls_request-sicilNo   = ls_pernr-pernr. CLEAR ls_pernr-pernr.
 *      CONDENSE ls_request-sicilNo NO-GAPS.
       " JSON dönüşüm
       /ui2/cl_json=>serialize(
@@ -366,15 +385,24 @@ CLASS lcl_report IMPLEMENTATION.
     DATA : ls_2010 TYPE p2010.
     DATA: ls_mess   TYPE bapireturn1.
 
-    SELECT SINGLE * FROM pa0000
-                        INTO @DATA(ls_00)
-                        WHERE pernr EQ @gs_alv-pernr
-                          AND begda LE @s_datum-high
-                          AND endda GE @s_datum-low
-                          AND stat2 EQ '0'.
+*    SELECT SINGLE * FROM pa0000
+*                        INTO @DATA(ls_00)
+*                        WHERE pernr EQ @gs_alv-pernr
+*                          AND begda LE @s_datum-high
+*                          AND endda GE @s_datum-low
+*                          AND stat2 EQ '0'.
 
-    IF ls_00-endda NE '99991231'.
+    SELECT * FROM pa0000
+                     INTO TABLE @DATA(lt_00)
+                     WHERE pernr EQ @gs_alv-pernr
+                       AND begda LE @s_datum-high
+                       AND endda GE @s_datum-low.
+*                          AND stat2 EQ '0'.
 
+    READ TABLE lt_00 INTO DATA(ls_00) WITH KEY stat2 = '3'.
+
+    IF sy-subrc EQ 0.
+      READ TABLE lt_00 INTO ls_00 WITH KEY stat2 = '0'.
       IF ls_00-begda IS NOT INITIAL.
         ls_2010-begda = ls_00-begda - 1.
       ELSE.

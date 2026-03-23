@@ -68,35 +68,35 @@ DATA: BEGIN OF gt_itab OCCURS 0,
         sex              TYPE gesch,
         sexname          TYPE stext,
       END OF gt_itab.
-DATA : gw_itab         LIKE gt_itab,
+DATA : gw_itab        LIKE gt_itab,
 *       gw_itab_by_date LIKE gt_itab_by_date,
-       gv_objid_plans  TYPE hrobjid,
-       gv_objid_orgeh  TYPE hrobjid,
-       gv_objid_stell  TYPE hrobjid,
-       gt_result1      LIKE swhactor OCCURS 0 WITH HEADER LINE,
-       gt_result2      LIKE swhactor OCCURS 0 WITH HEADER LINE,
-       gt_result_top   LIKE swhactor OCCURS 0 WITH HEADER LINE,
-       gw_result       LIKE swhactor,
-       gt_objec        LIKE objec OCCURS 0 WITH HEADER LINE,
-       gt_struc        LIKE struc OCCURS 0 WITH HEADER LINE,
+       gv_objid_plans TYPE hrobjid,
+       gv_objid_orgeh TYPE hrobjid,
+       gv_objid_stell TYPE hrobjid,
+       gt_result1     LIKE swhactor OCCURS 0 WITH HEADER LINE,
+       gt_result2     LIKE swhactor OCCURS 0 WITH HEADER LINE,
+       gt_result_top  LIKE swhactor OCCURS 0 WITH HEADER LINE,
+       gw_result      LIKE swhactor,
+       gt_objec       LIKE objec OCCURS 0 WITH HEADER LINE,
+       gt_struc       LIKE struc OCCURS 0 WITH HEADER LINE,
 *       gt_1000         TYPE TABLE OF p1000,
 *       gw_1000         TYPE p1000,
-       gt_0000         TYPE TABLE OF p0000,
-       gw_0000         TYPE p0000,
-       gt_0001         TYPE TABLE OF p0001,
-       gw_0001         TYPE p0001,
-       gt_0002         TYPE TABLE OF p0002,
-       gw_0002         TYPE p0002,
-       gt_0008         TYPE TABLE OF p0008,
-       gw_0008         TYPE p0008,
-       gt_0105         TYPE TABLE OF p0105,
-       gw_0105         TYPE p0105,
-       gt_0769         TYPE TABLE OF p0769,
-       gw_0769         TYPE p0769,
-       gt_0770         TYPE TABLE OF p0770,
-       gw_0770         TYPE p0770,
-       gt_0771         TYPE TABLE OF p0771,
-       gw_0771         TYPE p0771.
+       gt_0000        TYPE TABLE OF p0000,
+       gw_0000        TYPE p0000,
+       gt_0001        TYPE TABLE OF p0001,
+       gw_0001        TYPE p0001,
+       gt_0002        TYPE TABLE OF p0002,
+       gw_0002        TYPE p0002,
+       gt_0008        TYPE TABLE OF p0008,
+       gw_0008        TYPE p0008,
+       gt_0105        TYPE TABLE OF p0105,
+       gw_0105        TYPE p0105,
+       gt_0769        TYPE TABLE OF p0769,
+       gw_0769        TYPE p0769,
+       gt_0770        TYPE TABLE OF p0770,
+       gw_0770        TYPE p0770,
+       gt_0771        TYPE TABLE OF p0771,
+       gw_0771        TYPE p0771.
 *DATA : gw_itab         LIKE gt_itab,
 *      gv_objid_plans TYPE hrobjid,
 *       gw_itab_by_date LIKE gt_itab_by_date.
@@ -381,7 +381,9 @@ GET pernr.
   CLEAR p0105.
   rp_provide_from_last p0105 '0004' pn-begda pn-endda.
   IF sy-subrc EQ 0.
-    int_tab-ceptel = p0105-usrid.
+    LOOP AT p0105 WHERE subty EQ 'CELL'.
+      int_tab-ceptel = p0105-usrid.
+    ENDLOOP.
   ENDIF.
 
   CLEAR p0105.
@@ -1499,7 +1501,7 @@ FORM get_higher_dept_man  USING    pv_department LIKE hrp1001-objid
          lt_managers   TYPE hap_t_hrsobid,
          ls_return     TYPE bal_s_msg.
 
-  DATA : ls_unit TYPE hrsobid,
+  DATA : ls_unit  TYPE hrsobid,
          ls_types TYPE hap_s_type.
 
   DATA : lw_1001 LIKE hrp1001.

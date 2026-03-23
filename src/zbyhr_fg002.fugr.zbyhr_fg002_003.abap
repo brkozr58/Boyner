@@ -9,6 +9,8 @@ FUNCTION zbyhr_fg002_003.
 *"     VALUE(IT_PERNR) TYPE  HRPADUN_AAP_PERSONS OPTIONAL
 *"     VALUE(IV_LOW) TYPE  SPMON OPTIONAL
 *"     VALUE(IV_HIGH) TYPE  SPMON OPTIONAL
+*"  EXPORTING
+*"     VALUE(IV_KISI) TYPE  CHAR1
 *"----------------------------------------------------------------------
   DATA : lt_person TYPE TABLE OF ts_person,
          lt_record LIKE solisti1 OCCURS 0 WITH HEADER LINE,
@@ -34,7 +36,8 @@ FUNCTION zbyhr_fg002_003.
       PERFORM send_mail_pdf TABLES lt_person[]
                                     USING
                                           iv_low
-                                          iv_high.
+                                          iv_high
+                                          iv_kisi.
       PERFORM send_mail_pass_service TABLES lt_person[].
     WHEN OTHERS.
   ENDCASE.

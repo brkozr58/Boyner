@@ -244,6 +244,12 @@
        <TYP>SPMON</TYP>
       </RSIMP>
      </IMPORT>
+     <EXPORT>
+      <RSEXP>
+       <PARAMETER>IV_KISI</PARAMETER>
+       <TYP>CHAR1</TYP>
+      </RSEXP>
+     </EXPORT>
      <DOCUMENTATION>
       <RSFDO>
        <PARAMETER>IV_PERNR</PARAMETER>
@@ -278,6 +284,11 @@
        <PARAMETER>IV_HIGH</PARAMETER>
        <KIND>P</KIND>
        <STEXT>Haciz için hesaplanan dönem</STEXT>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>IV_KISI</PARAMETER>
+       <KIND>P</KIND>
+       <STEXT>Tek basamaklı gösterge</STEXT>
       </RSFDO>
      </DOCUMENTATION>
     </item>

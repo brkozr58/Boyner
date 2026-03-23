@@ -3,7 +3,7 @@
 *&---------------------------------------------------------------------*
 *&
 *&---------------------------------------------------------------------*
-REPORT ZBYHR_P023
+REPORT zbyhr_p023
                LINE-SIZE 255 LINE-COUNT 63
                NO STANDARD PAGE HEADING MESSAGE-ID yy.
 *----------------------------------------------------------------------*
@@ -24,7 +24,7 @@ INFOTYPES: 0000, 0001, 0002, 0008, 0009, 0022, 0105, 0041,
 
 INCLUDE z_alv_data.
 
-DATA: calcmolga LIKE t500l-molga VALUE '47',
+DATA: calcmolga     LIKE t500l-molga VALUE '47',
       calc_currency LIKE t001-waers VALUE 'TRY'.
 DATA: save_calc_currency LIKE t001-waers.
 
@@ -50,35 +50,35 @@ DATA: BEGIN OF gt_itab OCCURS 0,
         sex              TYPE gesch,
         sexname          TYPE stext,
       END OF gt_itab.
-DATA : gw_itab         LIKE gt_itab,
+DATA : gw_itab        LIKE gt_itab,
 *       gw_itab_by_date LIKE gt_itab_by_date,
-       gv_objid_plans  TYPE hrobjid,
-       gv_objid_orgeh  TYPE hrobjid,
-       gv_objid_stell  TYPE hrobjid,
-       gt_result1      LIKE swhactor OCCURS 0 WITH HEADER LINE,
-       gt_result2      LIKE swhactor OCCURS 0 WITH HEADER LINE,
-       gt_result_top   LIKE swhactor OCCURS 0 WITH HEADER LINE,
-       gw_result       LIKE swhactor,
-       gt_objec        LIKE objec OCCURS 0 WITH HEADER LINE,
-       gt_struc        LIKE struc OCCURS 0 WITH HEADER LINE,
+       gv_objid_plans TYPE hrobjid,
+       gv_objid_orgeh TYPE hrobjid,
+       gv_objid_stell TYPE hrobjid,
+       gt_result1     LIKE swhactor OCCURS 0 WITH HEADER LINE,
+       gt_result2     LIKE swhactor OCCURS 0 WITH HEADER LINE,
+       gt_result_top  LIKE swhactor OCCURS 0 WITH HEADER LINE,
+       gw_result      LIKE swhactor,
+       gt_objec       LIKE objec OCCURS 0 WITH HEADER LINE,
+       gt_struc       LIKE struc OCCURS 0 WITH HEADER LINE,
 *       gt_1000         TYPE TABLE OF p1000,
 *       gw_1000         TYPE p1000,
-       gt_0000         TYPE TABLE OF p0000,
-       gw_0000         TYPE p0000,
-       gt_0001         TYPE TABLE OF p0001,
-       gw_0001         TYPE p0001,
-       gt_0002         TYPE TABLE OF p0002,
-       gw_0002         TYPE p0002,
-       gt_0008         TYPE TABLE OF p0008,
-       gw_0008         TYPE p0008,
-       gt_0105         TYPE TABLE OF p0105,
-       gw_0105         TYPE p0105,
-       gt_0769         TYPE TABLE OF p0769,
-       gw_0769         TYPE p0769,
-       gt_0770         TYPE TABLE OF p0770,
-       gw_0770         TYPE p0770,
-       gt_0771         TYPE TABLE OF p0771,
-       gw_0771         TYPE p0771.
+       gt_0000        TYPE TABLE OF p0000,
+       gw_0000        TYPE p0000,
+       gt_0001        TYPE TABLE OF p0001,
+       gw_0001        TYPE p0001,
+       gt_0002        TYPE TABLE OF p0002,
+       gw_0002        TYPE p0002,
+       gt_0008        TYPE TABLE OF p0008,
+       gw_0008        TYPE p0008,
+       gt_0105        TYPE TABLE OF p0105,
+       gw_0105        TYPE p0105,
+       gt_0769        TYPE TABLE OF p0769,
+       gw_0769        TYPE p0769,
+       gt_0770        TYPE TABLE OF p0770,
+       gw_0770        TYPE p0770,
+       gt_0771        TYPE TABLE OF p0771,
+       gw_0771        TYPE p0771.
 *DATA : gw_itab         LIKE gt_itab,
 *      gv_objid_plans TYPE hrobjid,
 *       gw_itab_by_date LIKE gt_itab_by_date.
@@ -92,37 +92,37 @@ DATA : BEGIN OF gt_manager OCCURS 0,
 DATA : gw_manager LIKE gt_manager.
 
 DATA: BEGIN OF int_tab OCCURS 0,
-        index TYPE i,
-        bukrs LIKE p0001-bukrs,
-        butxt LIKE t001-butxt,
+        index          TYPE i,
+        bukrs          LIKE p0001-bukrs,
+        butxt          LIKE t001-butxt,
         grup(10),
         gircik(1),
         pernr(8),
-        ename LIKE pernr-ename,
-        vorna LIKE p0002-vorna,
-        nachn LIKE p0002-nachn,
-        werks LIKE p0001-werks,
-        name1 LIKE t500p-name1,
-        btrtl LIKE p0001-btrtl,
-        btext LIKE t001p-btext,
-        persg LIKE p0001-persg,
-        cagrp LIKE t501t-ptext,
-        persk LIKE p0001-persk,
-        caagr LIKE t503t-ptext,
-        abkrs LIKE p0001-abkrs,
-        atext LIKE t549t-atext,
-        kostl LIKE p0001-kostl,
-        ktext	LIKE cskt-ktext,
-        orgeh LIKE p0001-orgeh,
-        otext LIKE hrp1000-stext,
-        pozition LIKE hrp1000-stext,
-        stell LIKE p0001-stell,
-        stext LIKE hrp1000-stext,
-        ansvh LIKE p0001-ansvh,
-        atx   LIKE t542t-atx,
-        mstbr LIKE p0001-mstbr,
-        sgmnt LIKE p0001-sgmnt,
-        sgmntt LIKE fagl_segmt-name,
+        ename          LIKE pernr-ename,
+        vorna          LIKE p0002-vorna,
+        nachn          LIKE p0002-nachn,
+        werks          LIKE p0001-werks,
+        name1          LIKE t500p-name1,
+        btrtl          LIKE p0001-btrtl,
+        btext          LIKE t001p-btext,
+        persg          LIKE p0001-persg,
+        cagrp          LIKE t501t-ptext,
+        persk          LIKE p0001-persk,
+        caagr          LIKE t503t-ptext,
+        abkrs          LIKE p0001-abkrs,
+        atext          LIKE t549t-atext,
+        kostl          LIKE p0001-kostl,
+        ktext	         LIKE cskt-ktext,
+        orgeh          LIKE p0001-orgeh,
+        otext          LIKE hrp1000-stext,
+        pozition       LIKE hrp1000-stext,
+        stell          LIKE p0001-stell,
+        stext          LIKE hrp1000-stext,
+        ansvh          LIKE p0001-ansvh,
+        atx            LIKE t542t-atx,
+        mstbr          LIKE p0001-mstbr,
+        sgmnt          LIKE p0001-sgmnt,
+        sgmntt         LIKE fagl_segmt-name,
 *        zzpergrp LIKE p0001-zzpergrp,
 *        zpergruptx LIKE zzpergr-zpergruptx,
 *        zzkonfirm LIKE p0001-zzkonfirm,
@@ -131,46 +131,46 @@ DATA: BEGIN OF int_tab OCCURS 0,
 *        zzfirmtxtsgk LIKE zzkonfirmsgk-zzfirmtxt,
 *        zzdepartman LIKE p0001-zzdepartman,
 *        zzdeptxt LIKE zzdepartman-zzdeptxt,
-        zzindalis LIKE hrp1000-short,
-        trfgr LIKE p0008-trfgr,
-        trfst LIKE p0008-trfst,
-        sskno LIKE p0769-sskno,
-        kanun LIKE p0769-kanun,
+        zzindalis      LIKE hrp1000-short,
+        trfgr          LIKE p0008-trfgr,
+        trfst          LIKE p0008-trfst,
+        sskno          LIKE p0769-sskno,
+        kanun          LIKE p0769-kanun,
 *        zzailebireyengel LIKE p0769-zzailebireyengel,
 *        zzengellidetayi LIKE p0769-zzengellidetayi,
-        merni LIKE p0770-merni,
-        kidembaztarih LIKE p2001-begda, "Kıdeme Baz Tarih
-        yilkizintarih LIKE p2001-begda, "İzne Baz Tarih
-        grupgirtarih LIKE p2001-begda, "Gruba Giriş Tarih
+        merni          LIKE p0770-merni,
+        kidembaztarih  LIKE p2001-begda, "Kıdeme Baz Tarih
+        yilkizintarih  LIKE p2001-begda, "İzne Baz Tarih
+        grupgirtarih   LIKE p2001-begda, "Gruba Giriş Tarih
         giristarih(12),
         cikistarih(12),
-        bukrshire LIKE p0000-begda,
-        bukrsfire LIKE p0000-endda,
-        cikisneden LIKE t530t-mgtxt,
+        bukrshire      LIKE p0000-begda,
+        bukrsfire      LIKE p0000-endda,
+        cikisneden     LIKE t530t-mgtxt,
         ucrettutar(15),
-        ucret LIKE t512t-lgtxt,
-        ssktur LIKE t7trs01-sstxt,
+        ucret          LIKE t512t-lgtxt,
+        ssktur         LIKE t7trs01-sstxt,
         sakatlikderece LIKE t7trt03-dtext,
-        bankl LIKE p0009-bankl,
-        bankn LIKE p0009-bankn,
-        iban  LIKE p0009-iban,
-        city      LIKE t7trg01-city,
-        city_txt  LIKE  dd07v-ddtext,
-        gesch     LIKE p0002-gesch,
-        gesch_txt LIKE  dd07v-ddtext,
-        gbdat     LIKE  p0002-gbdat,
-        manager_id LIKE pernr-pernr,
-        manager_ename LIKE p0001-ename,
-        mudur_id LIKE pernr-pernr,
-        mudur_ename LIKE p0001-ename,
-        direktor_id LIKE pernr-pernr,
+        bankl          LIKE p0009-bankl,
+        bankn          LIKE p0009-bankn,
+        iban           LIKE p0009-iban,
+        city           LIKE t7trg01-city,
+        city_txt       LIKE  dd07v-ddtext,
+        gesch          LIKE p0002-gesch,
+        gesch_txt      LIKE  dd07v-ddtext,
+        gbdat          LIKE  p0002-gbdat,
+        manager_id     LIKE pernr-pernr,
+        manager_ename  LIKE p0001-ename,
+        mudur_id       LIKE pernr-pernr,
+        mudur_ename    LIKE p0001-ename,
+        direktor_id    LIKE pernr-pernr,
         direktor_ename LIKE p0001-ename,
-        gmy_id LIKE pernr-pernr,
-        gmy_ename LIKE p0001-ename,
-        ceptel LIKE p0105-usrid,
-        email LIKE p0105-usrid_long,
-        cttyp LIKE p0771-cttyp,
-        mslks LIKE p0771-mslks,
+        gmy_id         LIKE pernr-pernr,
+        gmy_ename      LIKE p0001-ename,
+        ceptel         LIKE p0105-usrid,
+        email          LIKE p0105-usrid_long,
+        cttyp          LIKE p0771-cttyp,
+        mslks          LIKE p0771-mslks,
 *        mermag LIKE p9913-mermag,
 *        yonetici LIKE p9913-yonetici,
 *        satis LIKE p9913-satis,
@@ -178,21 +178,21 @@ DATA: BEGIN OF int_tab OCCURS 0,
 *        big LIKE p9913-big,
 *        backoffice LIKE p9913-backoffice,
 *        frontoffice LIKE p9913-frontoffice,
-        9913 LIKE p0001-bukrs,
-        foto LIKE p0001-bukrs,
+        9913           LIKE p0001-bukrs,
+        foto           LIKE p0001-bukrs,
 *        cmkod LIKE zhr_cm_kod-cmkod,
-        begdaegt LIKE p0022-begda,
-        enddaegt LIKE p0022-endda,
-        stext1 LIKE t517t-stext,   "Okul türü
-        insti1 LIKE p0022-insti,   "Okul adı
-        ftext1 LIKE t517x-ftext,   "Bölümü
+        begdaegt       LIKE p0022-begda,
+        enddaegt       LIKE p0022-endda,
+        stext1         LIKE t517t-stext,   "Okul türü
+        insti1         LIKE p0022-insti,   "Okul adı
+        ftext1         LIKE t517x-ftext,   "Bölümü
 *        bolgekodu LIKE zhr_magazabolgeb-bolgekodu,
 *        bolgeadi  LIKE zhr_magazabolgek-bolgeadi,
 *        sbolgeid LIKE zhr_satisbolgeb-sbolgeid,
 *        sbolgekodu LIKE zhr_satisbolgek-sbolgekodu,
 *        sbolgeadi  LIKE zhr_satisbolgek-sbolgeadi,
-        durum  LIKE t519t-stext,
-        horizondestek LIKE t7tri04-stext,
+        durum          LIKE t519t-stext,
+        horizondestek  LIKE t7tri04-stext,
 *        stext2 LIKE t517t-stext,   "Okul türü
 *        insti2 LIKE p0022-insti,   "Okul adı
 *        ftext2 LIKE t517x-ftext,   "Bölümü
@@ -200,9 +200,9 @@ DATA: BEGIN OF int_tab OCCURS 0,
       END OF int_tab.
 
 DATA : BEGIN OF gt_1000 OCCURS 0,
-        otype	TYPE otype,
-        objid TYPE hrobjid,
-        stext TYPE stext,
+         otype  TYPE otype,
+         objid TYPE hrobjid,
+         stext TYPE stext,
        END OF gt_1000.
 
 DATA: gt_517t LIKE t517t OCCURS 0 WITH HEADER LINE,
@@ -216,37 +216,37 @@ DATA: BEGIN OF wtype,
       END OF wtype.
 
 
-DATA : manager_pos TYPE plans,
-       manager_id TYPE persno,
-       manager_ename TYPE emnam,
-       gv_datum  TYPE datum,
+DATA : manager_pos     TYPE plans,
+       manager_id      TYPE persno,
+       manager_ename   TYPE emnam,
+       gv_datum        TYPE datum,
        pozisyon(40),
        ps_connect_info TYPE toav0,
        ucret_tur(25),
-       ucret_tutar LIKE p0008-bet01,
+       ucret_tutar     LIKE p0008-bet01,
        sigorta_tur(20),
 *       SAKATLIK_DERECE(20),
-       hata TYPE i VALUE 0,
-       dbegda LIKE sy-datum,
-       dendda LIKE sy-datum,
-       dmassg LIKE p0000-massg,
-       isdt LIKE p0000-massn,
-       sayfa TYPE i.
+       hata            TYPE i VALUE 0,
+       dbegda          LIKE sy-datum,
+       dendda          LIKE sy-datum,
+       dmassg          LIKE p0000-massg,
+       isdt            LIKE p0000-massn,
+       sayfa           TYPE i.
 
 DATA: totalper(5) ,
       w_kisi(5) ,
       grup_kisi(5) .
 DATA: endda LIKE prel-endda.
 
-DATA: hiredate LIKE rptxxxxx-datum1,
-      firedate LIKE rptxxxxx-datum1,
+DATA: hiredate      LIKE rptxxxxx-datum1,
+      firedate      LIKE rptxxxxx-datum1,
       bukrshiredate LIKE rptxxxxx-datum1,
       bukrsfiredate LIKE rptxxxxx-datum1,
-      massg    LIKE p0000-massg,
-      massn    LIKE p0000-massn.
+      massg         LIKE p0000-massg,
+      massn         LIKE p0000-massn.
 
-DATA: h_hire LIKE p0001-begda,
-      h_fire LIKE h_hire,
+DATA: h_hire  LIKE p0001-begda,
+      h_fire  LIKE h_hire,
       w_endda LIKE h_hire.
 
 DATA: BEGIN OF phifi OCCURS 5.
@@ -254,8 +254,8 @@ DATA: BEGIN OF phifi OCCURS 5.
 DATA: END OF phifi.
 
 *** Single Domain Text ****
-DATA: l_value LIKE  dd07v-domvalue_l,
-      l_text  LIKE  dd07v-ddtext,
+DATA: l_value  LIKE  dd07v-domvalue_l,
+      l_text   LIKE  dd07v-ddtext,
       gv_pernr TYPE persno,
       gv_orgeh TYPE orgeh,
       gv_stell TYPE stell.
@@ -271,29 +271,29 @@ DATA : h_variant LIKE disvariant,
 
 CONSTANTS: c_stat_etkin TYPE stat2 VALUE '3'.
 
-SELECTION-SCREEN BEGIN OF BLOCK secim WITH FRAME TITLE text-t03.
-SELECTION-SCREEN BEGIN OF LINE.
-SELECTION-SCREEN POSITION 01.
-PARAMETERS: s_giren RADIOBUTTON GROUP gr2.
-SELECTION-SCREEN COMMENT  3(08) text-s01.
-SELECTION-SCREEN POSITION 12.
-PARAMETERS: s_cikan RADIOBUTTON GROUP gr2.
-SELECTION-SCREEN COMMENT 14(08) text-s02.
-SELECTION-SCREEN POSITION 23.
-PARAMETERS: s_hepsi RADIOBUTTON GROUP gr2.
-SELECTION-SCREEN COMMENT 25(21) text-s03.
-SELECTION-SCREEN POSITION 47.
-PARAMETERS: s_calis RADIOBUTTON GROUP gr2.
-SELECTION-SCREEN COMMENT 49(10) text-s04.
-SELECTION-SCREEN POSITION 60.
-PARAMETERS: s_gircik RADIOBUTTON GROUP gr2.
-SELECTION-SCREEN COMMENT 62(17) text-s05.
-SELECTION-SCREEN END OF LINE.
+SELECTION-SCREEN BEGIN OF BLOCK secim WITH FRAME TITLE TEXT-t03.
+  SELECTION-SCREEN BEGIN OF LINE.
+    SELECTION-SCREEN POSITION 01.
+    PARAMETERS: s_giren RADIOBUTTON GROUP gr2.
+    SELECTION-SCREEN COMMENT  3(08) TEXT-s01.
+    SELECTION-SCREEN POSITION 12.
+    PARAMETERS: s_cikan RADIOBUTTON GROUP gr2.
+    SELECTION-SCREEN COMMENT 14(08) TEXT-s02.
+    SELECTION-SCREEN POSITION 23.
+    PARAMETERS: s_hepsi RADIOBUTTON GROUP gr2.
+    SELECTION-SCREEN COMMENT 25(21) TEXT-s03.
+    SELECTION-SCREEN POSITION 47.
+    PARAMETERS: s_calis RADIOBUTTON GROUP gr2.
+    SELECTION-SCREEN COMMENT 49(10) TEXT-s04.
+    SELECTION-SCREEN POSITION 60.
+    PARAMETERS: s_gircik RADIOBUTTON GROUP gr2.
+    SELECTION-SCREEN COMMENT 62(17) TEXT-s05.
+  SELECTION-SCREEN END OF LINE.
 SELECTION-SCREEN END OF BLOCK secim.
 
 PARAMETERS c_yb AS CHECKBOX DEFAULT 'X'.
 SELECTION-SCREEN : BEGIN OF BLOCK varyant WITH FRAME.
-PARAMETERS       : p_var LIKE disvariant-variant.
+  PARAMETERS       : p_var LIKE disvariant-variant.
 SELECTION-SCREEN : END OF BLOCK varyant .
 
 *<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -383,7 +383,9 @@ GET pernr.
   CLEAR p0105.
   rp_provide_from_last p0105 '0004' pn-begda pn-endda.
   IF sy-subrc EQ 0.
-    int_tab-ceptel = p0105-usrid.
+    LOOP AT p0105 WHERE subty EQ 'CELL'.
+      int_tab-ceptel = p0105-usrid.
+    ENDLOOP.
   ENDIF.
 
   CLEAR p0105.
@@ -1533,22 +1535,22 @@ FORM modify_fieldcat .
   ENDIF.
 
   CALL FUNCTION 'REUSE_ALV_GRID_DISPLAY'
-  EXPORTING
-    i_callback_program       = gv_repid
-*        i_callback_top_of_page   = 'TOP_OF_PAGE'
-    i_background_id          = 'ALV_BACKGROUND'
-    i_callback_pf_status_set = 'PF_STATUS_SET'
-    i_callback_user_command  = 'USER_COMMAND'
-    is_layout                = gs_layout
-    it_fieldcat              = <fcat>
-    it_sort                  = gt_sort
-    is_variant               = e_variant
-    it_events                = gt_events[]
-  TABLES
-    t_outtab                 = <fout>
-  EXCEPTIONS
-    program_error            = 1
-    OTHERS                   = 2.
+    EXPORTING
+      i_callback_program       = gv_repid
+*     i_callback_top_of_page   = 'TOP_OF_PAGE'
+      i_background_id          = 'ALV_BACKGROUND'
+      i_callback_pf_status_set = 'PF_STATUS_SET'
+      i_callback_user_command  = 'USER_COMMAND'
+      is_layout                = gs_layout
+      it_fieldcat              = <fcat>
+      it_sort                  = gt_sort
+      is_variant               = e_variant
+      it_events                = gt_events[]
+    TABLES
+      t_outtab                 = <fout>
+    EXCEPTIONS
+      program_error            = 1
+      OTHERS                   = 2.
 
 ENDFORM.                    "modify_fieldcat
 *User Command
@@ -1572,17 +1574,17 @@ FORM f4_for_variant.
   i_variant-report = sy-repid.
 
   CALL FUNCTION 'REUSE_ALV_VARIANT_F4'
-       EXPORTING
-            is_variant          = i_variant
-            i_save              = a_save
-*           i_tabname_header    =
-*           i_tabname_item      =
-*           it_default_fieldcat =
-       IMPORTING
-*           e_exit              =
-            es_variant          = e_variant
-       EXCEPTIONS
-            not_found = 2.
+    EXPORTING
+      is_variant = i_variant
+      i_save     = a_save
+*     i_tabname_header    =
+*     i_tabname_item      =
+*     it_default_fieldcat =
+    IMPORTING
+*     e_exit     =
+      es_variant = e_variant
+    EXCEPTIONS
+      not_found  = 2.
 
   IF sy-subrc = 2.
     MESSAGE s205(0k).
@@ -1652,7 +1654,7 @@ ENDFORM.                    " GRUP_ICI_TRANSFER
 FORM read_tarih_p0041  USING    p0041 TYPE p0041
                                 iv_datar TYPE datar
                        CHANGING ev_dardt TYPE dardt.
-  FIELD-SYMBOLS: <f1> TYPE ANY.
+  FIELD-SYMBOLS: <f1> TYPE any.
   DATA: lv_f1(40), lv_nc(2) TYPE n.
 
   CLEAR lv_nc.
@@ -1800,7 +1802,7 @@ FORM get_higher_dept_man  USING    pv_department LIKE hrp1001-objid
          lt_managers   TYPE hap_t_hrsobid,
          ls_return     TYPE bal_s_msg.
 
-  DATA : ls_unit TYPE hrsobid,
+  DATA : ls_unit  TYPE hrsobid,
          ls_types TYPE hap_s_type.
 
   DATA : lw_1001 LIKE hrp1001.

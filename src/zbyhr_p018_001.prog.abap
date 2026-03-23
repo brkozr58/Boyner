@@ -606,6 +606,7 @@ FORM download_ole .
         ld_path          TYPE string,
         ld_fullpath      TYPE string,
         ld_result        TYPE i,
+        rc               TYPE i,
         l_filename       TYPE string,
         lv_def_extension TYPE string,
         lv_bin_file      TYPE zbyhr_s001-bin_file.
@@ -641,6 +642,8 @@ FORM download_ole .
                                 gt_filter-btrtl
                                 ld_fullpath
                        CHANGING lv_bin_file.
+
+
   ENDLOOP.
 
 ENDFORM.
@@ -932,6 +935,28 @@ FORM set_excel_ole USING pv_bukrs
       #1 = pv_fullpath
       #2 = 51.
 
+
+  CALL METHOD OF go_excel 'Quit'.
+  FREE OBJECT: go_int, go_font, go_cell, go_sheet, go_book, go_books, go_excel.
+
+*  DATA : rc TYPE i .
+*
+*  CALL METHOD cl_gui_frontend_services=>file_set_attributes
+*    EXPORTING
+*      filename             = pv_fullpath
+*      readonly             = abap_true
+**     normal               =
+**     hidden               =
+**     archive              =
+*    IMPORTING
+*      rc                   = rc
+*    EXCEPTIONS
+*      cntl_error           = 1
+*      error_no_gui         = 2
+*      not_supported_by_gui = 3
+*      wrong_parameter      = 4
+*      OTHERS               = 5.
+
   DATA: lt_bin TYPE solix_tab.
   DATA: filelength TYPE int4.
 
@@ -974,9 +999,6 @@ FORM set_excel_ole USING pv_bukrs
       OTHERS       = 2.
   cv_bin_file = lv_xstring.
 
-
-  CALL METHOD OF go_excel 'Quit'.
-  FREE OBJECT: go_int, go_font, go_cell, go_sheet, go_book, go_books, go_excel.
 
 ENDFORM.
 *&---------------------------------------------------------------------*
@@ -1372,6 +1394,7 @@ FORM send_document.
          END OF lt_text.
   DATA: xml_table TYPE STANDARD TABLE OF string,
         xml       TYPE string.
+  CLEAR ld_fullpath .
 
   CREATE OBJECT lo_sftp
     EXPORTING
@@ -1430,9 +1453,10 @@ FORM send_document.
                                      gt_filter-werks
                                      gt_filter-btrtl .
 
-          s_file-pname = ls_t002-pname && '\' &&
-                         p_pdate &&
+          s_file-dname = ls_t002-pname .
+          s_file-pname =
                          gv_name &&
+                         p_pdate &&
                          gt_filter-bukrs &&
                          gt_filter-werks &&
                          gt_filter-btrtl &&
@@ -1445,6 +1469,25 @@ FORM send_document.
 *            e_data   = s_file-data_file
           ).
         WHEN 'E'.
+
+          IF ld_fullpath IS INITIAL .
+            l_filename = 'Garanti Bankası.xlsx'.
+            lv_def_extension = 'XLSX'.
+
+            CALL METHOD cl_gui_frontend_services=>file_save_dialog
+              EXPORTING
+                default_extension = lv_def_extension
+                default_file_name = l_filename
+                initial_directory = 'C:\'
+              CHANGING
+                filename          = ld_filename
+                path              = ld_path
+                fullpath          = ld_fullpath
+                user_action       = ld_result.
+            SPLIT ld_filename AT '.' INTO ld_filename DATA(lv2).
+          ENDIF.
+
+
 
           PERFORM set_excel_ole USING gt_filter-bukrs
                                       gt_filter-werks
@@ -1465,9 +1508,10 @@ FORM send_document.
 **             mimetype = 'application/xml'
 *            IMPORTING
 *              buffer   = s_file-bin_file.
-          s_file-pname = ls_t002-pname &&
+          s_file-dname = ls_t002-pname .
+          s_file-pname =
+                         ld_filename &&
                          p_pdate &&
-                         gv_name &&
                          gt_filter-bukrs &&
                          gt_filter-werks &&
                          gt_filter-btrtl && '.xls'.

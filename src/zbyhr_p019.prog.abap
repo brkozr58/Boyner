@@ -90,18 +90,18 @@ START-OF-SELECTION.
   CLEAR : gv_subrc.
 
 
-    IF p_save EQ 'X' AND
-       p_svfl IS INITIAL.
-      MESSAGE 'Lütfen PDF kayıt yeri seçiniz'(002) TYPE 'I'.
-      RETURN.
-    ENDIF.
+  IF p_save EQ 'X' AND
+     p_svfl IS INITIAL.
+    MESSAGE 'Lütfen PDF kayıt yeri seçiniz'(002) TYPE 'I'.
+    RETURN.
+  ENDIF.
 
-    IF p_save EQ 'X' AND
-       p_pdf EQ 'X'.
+  IF p_save EQ 'X' AND
+     p_pdf EQ 'X'.
 *    OR p_html EQ 'X' ).
-      MESSAGE 'Lütfen PDF olarak kaydet`i tek seçiniz!'(003) TYPE 'I'.
-      RETURN.
-    ENDIF.
+    MESSAGE 'Lütfen PDF olarak kaydet`i tek seçiniz!'(003) TYPE 'I'.
+    RETURN.
+  ENDIF.
 
 GET pernr.
   MOVE : pernr-pernr TO gs_per-pernr.
@@ -151,7 +151,10 @@ ENDFORM.                    " READ_BORDRO
 FORM send_pdf. "USING p_pernr.
 
 
-  DATA:  lv_svfl TYPE string.
+  DATA: lv_svfl    TYPE string,
+        lv_kisi(1),
+        lv_succ    TYPE i,
+        lv_error   TYPE i.
   CHECK p_svfl IS NOT INITIAL.
 
   lv_svfl = p_svfl.
@@ -166,10 +169,21 @@ FORM send_pdf. "USING p_pernr.
         iv_svfl  = lv_svfl
 *       it_pernr = gt_per
         iv_low   = s_date-low
-        iv_high  = s_date-high.
+        iv_high  = s_date-high
+      IMPORTING
+        iv_kisi  = lv_kisi.
+
+    IF lv_kisi = 'S'.
+      lv_succ = lv_succ + 1 .
+    ELSE.
+      lv_error = lv_error + 1.
+    ENDIF.
 
     CLEAR ls_per.
   ENDLOOP.
+  FORMAT COLOR COL_HEADING.
+  WRITE :/ 'Başarılı:' ,lv_succ.
+  WRITE :/ 'Başarısız:' ,lv_error.
 
 *  IF p_spool IS NOT INITIAL.
 *    p_forml = '-R01'.

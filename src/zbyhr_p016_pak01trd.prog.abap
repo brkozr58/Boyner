@@ -10,7 +10,6 @@ DATA:   g_repid LIKE sy-repid.
 DATA: BEGIN OF xfcode OCCURS 10,
         fcode(4),
       END OF xfcode.
-
 DATA: h_pernr    LIKE pernr-pernr,
       c_of(1)    TYPE c VALUE '0',
       m(1), h_yesno(1), h_zeile.       "Flags
@@ -135,6 +134,21 @@ DATA :
   kitonbetrg LIKE rt-betrg,
   ikid       LIKE ptr07 OCCURS 0 WITH HEADER LINE.
 
+DATA : lv_betrg_paa TYPE ptr_amaas,
+       lv_ekucr_paa TYPE ptr_ekucr,
+       lv_topla_paa TYPE ptr_odtop,
+       lv_k1yil_paa TYPE ptr_kdyil,
+       lv_kidem_paa TYPE ptr_kducr,
+       lv_kiton_paa TYPE maxbt,
+       lv_ihbar_paa TYPE ptr_ihucr.
+
+DATA : lv_betrg_pa TYPE ptr_amaas,
+       lv_ekucr_pa TYPE ptr_ekucr,
+       lv_topla_pa TYPE ptr_odtop,
+       lv_k1yil_pa TYPE ptr_kdyil,
+       lv_kidem_pa TYPE ptr_kducr,
+       lv_kiton_pa TYPE maxbt,
+       lv_ihbar_pa TYPE ptr_ihucr.
 
 DATA: BEGIN OF mmer OCCURS 1000,
         bukrs LIKE pernr-bukrs,

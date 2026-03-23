@@ -342,7 +342,8 @@ ENDFORM.
 *&---------------------------------------------------------------------*
 FORM send_mail_pdf  TABLES    it_person TYPE  tt_person
                      USING    iv_low
-                              iv_high.
+                              iv_high
+                              iv_kisi.
 
   DATA : i_reclist   LIKE somlreci1  OCCURS 0 WITH HEADER LINE,
          wa_objhead  TYPE soli_tab, w_ctrlop TYPE ssfctrlop,
@@ -388,6 +389,7 @@ FORM send_mail_pdf  TABLES    it_person TYPE  tt_person
           IF sy-subrc NE 0.
             FORMAT COLOR COL_NEGATIVE.
             WRITE :/ 'Pernr. = ',<wa>-pernr,'Ad Soyad = ' ,<wa>-ename, 'personelin mail verilerini kontrol edin'.
+            iv_kisi = 'E'.
             CONTINUE.
           ENDIF.
         ENDIF.
@@ -533,9 +535,11 @@ FORM send_mail_pdf  TABLES    it_person TYPE  tt_person
         IF sy-subrc EQ 0.
           FORMAT COLOR COL_POSITIVE.
           WRITE :/ 'Pernr. = ',<wa>-pernr,'Ad Soyad = ' ,<wa>-ename, 'personelin bordrosu mail ile gönderildi'.
+          iv_kisi = 'S'.
         ELSE.
           FORMAT COLOR COL_NEGATIVE.
           WRITE :/ 'Pernr. = ',<wa>-pernr,'Ad Soyad = ' ,<wa>-ename,  'personelin bordrosu mail ile gönderilemedi'.
+          iv_kisi = 'E'.
         ENDIF.
         WAIT UP TO 1 SECONDS.
       CATCH cx_ai_system_fault INTO DATA(lo_cx) .
@@ -551,8 +555,8 @@ FORM send_mail_pass_service  TABLES it_person TYPE  tt_person.
         lv_url         TYPE string,
         lo_http_client TYPE REF TO if_http_client.
 
-  DATA :  lv_user         TYPE string,
-         lv_pass          TYPE string.
+  DATA : lv_user TYPE string,
+         lv_pass TYPE string.
 
   LOOP AT it_person ASSIGNING FIELD-SYMBOL(<wa>) WHERE return IS INITIAL .
     CLEAR: lv_json,lv_rand2.
