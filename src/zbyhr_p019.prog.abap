@@ -175,7 +175,7 @@ FORM send_pdf. "USING p_pernr.
 
     IF lv_kisi = 'S'.
       lv_succ = lv_succ + 1 .
-    ELSE.
+    ELSEIF lv_kisi = 'E'.
       lv_error = lv_error + 1.
     ENDIF.
 

@@ -1,6 +1,18 @@
 *&---------------------------------------------------------------------*
 *& Include          ZBYHR_HTRCALC0
 *&---------------------------------------------------------------------*
+
+
+*&---------------------------------------------------------------------*
+*&      Form  init_objects_natio
+*&---------------------------------------------------------------------*
+FORM init_objects_natio.
+  IF pnpstat2[] IS INITIAL .
+    pnpstat2 = 'IEQ3'. COLLECT pnpstat2.
+  ENDIF.
+ENDFORM.
+
+
 *&---------------------------------------------------------------------*
 *&      Form  fuzbyhr
 *&---------------------------------------------------------------------*
@@ -430,10 +442,10 @@ FORM zgrtz.
 
 
   LOOP AT it INTO DATA(ls_ndy) WHERE lgart EQ '/NDY'.
-    LOOP AT ait INTO DATA(ls_ZUCR) WHERE apznr EQ ls_ndy-apznr
+    LOOP AT ait INTO DATA(ls_zucr) WHERE apznr EQ ls_ndy-apznr
                                      AND lgart EQ 'ZUCR'.
     ENDLOOP.
-    LOOP AT ait INTO DATA(ls_ZUCS) WHERE apznr EQ ls_ndy-apznr
+    LOOP AT ait INTO DATA(ls_zucs) WHERE apznr EQ ls_ndy-apznr
                                      AND lgart EQ 'ZUCS'.
     ENDLOOP.
 
@@ -467,13 +479,13 @@ FORM zgrtz.
 
     CASE ls_ndy-anzhl.
       WHEN 30.
-        IF ls_ZUCR-anzhl EQ 0 .
+        IF ls_zucr-anzhl EQ 0 .
           lv_vars = 30.
-        ELSEIF ls_ZUCR-anzhl GT 0.
-          lv_vars = ( ( lv_endda - lv_begda ) + 1 ) - ls_ZUCR-anzhl.
+        ELSEIF ls_zucr-anzhl GT 0.
+          lv_vars = ( ( lv_endda - lv_begda ) + 1 ) - ls_zucr-anzhl.
         ENDIF.
       WHEN OTHERS.
-        lv_vars = ( ( lv_endda - lv_begda ) + 1 ) - ls_ZUCR-anzhl - ls_ZUCS-anzhl - ls_7016-anzhl.
+        lv_vars = ( ( lv_endda - lv_begda ) + 1 ) - ls_zucr-anzhl - ls_zucs-anzhl - ls_7016-anzhl.
 
     ENDCASE.
 

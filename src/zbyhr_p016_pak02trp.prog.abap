@@ -864,11 +864,25 @@ FORM count_p0001.
   DATA : lt_t028 TYPE TABLE OF zbyhr_t028 WITH HEADER LINE .
   DATA: lv_diff  TYPE i.
 
-  lv_begda = iper-hire.
-  SELECT * FROM zbyhr_t028 INTO  TABLE lt_t028
+  IF emektar IS NOT INITIAL.
+    lv_begda = emektar.
+    iper-hire = emektar.
+
+    SELECT * FROM zbyhr_t028 INTO  TABLE lt_t028
+      WHERE pernr EQ pernr-pernr
+        AND begda LE emektar .
+
+    ELSE.
+
+      SELECT * FROM zbyhr_t028 INTO  TABLE lt_t028
       WHERE pernr EQ pernr-pernr
         AND begda LE '20260101' .
-  IF sy-subrc EQ 0 .
+
+      lv_begda = iper-hire.
+  ENDIF.
+
+
+  IF lt_t028 IS NOT INITIAL.
     SORT lt_t028 ASCENDING BY begda endda .
     LOOP AT lt_t028  .
       IF sy-tabix EQ 1 .
@@ -1681,11 +1695,11 @@ FORM at_user_command.
 *        topihbar    TYPE decfloat34, gentopihbar TYPE decfloat34,
 *        topkiton    TYPE decfloat34, gentopkiton TYPE decfloat34.
 
-  IF sy-uname EQ 'D_BOZER'.
-    PERFORM chek_alv_list.
-    CHECK 1 = 2.
-
-  ENDIF.
+*  IF sy-uname EQ 'D_BOZER'.
+*    PERFORM chek_alv_list.
+*    CHECK 1 = 2.
+*
+*  ENDIF.
 
 
   CASE sy-ucomm.
@@ -2704,6 +2718,9 @@ FORM write_blokkidem.
                                       CURRENCY h_curr,
         69 sy-vline.
   ULINE AT /(69).
+  IF emektar IS NOT INITIAL.
+    iper-fire = emektar.
+  ENDIF.
   IF iper-fchire IS NOT INITIAL .
     WRITE: / sy-vline, 'Çalıştığı zaman dilimi:',
                                      44 iper-fchire, '-' , iper-fire,
