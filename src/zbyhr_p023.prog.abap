@@ -193,6 +193,7 @@ DATA: BEGIN OF int_tab OCCURS 0,
 *        sbolgeadi  LIKE zhr_satisbolgek-sbolgeadi,
         durum          LIKE t519t-stext,
         horizondestek  LIKE t7tri04-stext,
+        zzdprt         LIKE p0001-zzdprt,
 *        stext2 LIKE t517t-stext,   "Okul türü
 *        insti2 LIKE p0022-insti,   "Okul adı
 *        ftext2 LIKE t517x-ftext,   "Bölümü
@@ -200,7 +201,7 @@ DATA: BEGIN OF int_tab OCCURS 0,
       END OF int_tab.
 
 DATA : BEGIN OF gt_1000 OCCURS 0,
-         otype  TYPE otype,
+         otype TYPE otype,
          objid TYPE hrobjid,
          stext TYPE stext,
        END OF gt_1000.
@@ -465,7 +466,8 @@ GET pernr.
 
       int_tab-bukrs = p0001-bukrs.
       int_tab-orgeh = p0001-orgeh.
-      int_tab-stell = p0001-stell.
+*      int_tab-stell = p0001-stell.
+      int_tab-stell = p0001-zzlvlk.
       int_tab-werks = p0001-werks.
       int_tab-btrtl = p0001-btrtl.
       int_tab-abkrs = p0001-abkrs.
@@ -474,6 +476,7 @@ GET pernr.
       int_tab-mstbr = p0001-mstbr.
       int_tab-ansvh = p0001-ansvh.
       int_tab-sgmnt = p0001-sgmnt.
+      int_tab-zzdprt = p0001-zzdprt.
       int_tab-gbdat = p0002-gbdat.
       int_tab-vorna = p0002-vorna.
       int_tab-nachn = p0002-nachn.
@@ -1323,23 +1326,15 @@ ENDFORM.                               " WRITE_TOP_OF_GROUP
 *&---------------------------------------------------------------------*
 FORM find_stell_text.
   CHECK p0001-stell NE '00000000'.
-  int_tab-stell = p0001-stell.
+  int_tab-stell = p0001-zzlvlk.
+  int_tab-stext = p0001-zzlvl.
 
-  READ TABLE gt_1000 WITH KEY otype = 'C'
-                            objid = int_tab-stell
-                         BINARY SEARCH.
-  IF sy-subrc EQ 0.
-    int_tab-stext = gt_1000-stext.
-  ENDIF.
-
-*  SELECT stext
-*   FROM   hrp1000
-*   INTO   int_tab-stell
-*   WHERE
-*          otype = 'C' AND
-*          objid = p0001-stell AND
-*          endda GE pn-endda.
-*  ENDSELECT.
+*  READ TABLE gt_1000 WITH KEY otype = 'C'
+*                            objid = int_tab-stell
+*                         BINARY SEARCH.
+*  IF sy-subrc EQ 0.
+*    int_tab-stext = gt_1000-stext.
+*  ENDIF.
 
 ENDFORM.                    " FIND_STELL_TEXT
 *&---------------------------------------------------------------------*
@@ -1546,6 +1541,7 @@ FORM modify_fieldcat .
       it_sort                  = gt_sort
       is_variant               = e_variant
       it_events                = gt_events[]
+      i_save                   = 'A'
     TABLES
       t_outtab                 = <fout>
     EXCEPTIONS

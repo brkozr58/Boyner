@@ -9,6 +9,7 @@ FUNCTION zbyhr_fg002_003.
 *"     VALUE(IT_PERNR) TYPE  HRPADUN_AAP_PERSONS OPTIONAL
 *"     VALUE(IV_LOW) TYPE  SPMON OPTIONAL
 *"     VALUE(IV_HIGH) TYPE  SPMON OPTIONAL
+*"     VALUE(P_MERG) TYPE  FLAG OPTIONAL
 *"  EXPORTING
 *"     VALUE(IV_KISI) TYPE  CHAR1
 *"----------------------------------------------------------------------
@@ -23,6 +24,7 @@ FUNCTION zbyhr_fg002_003.
                                   USING iv_pernr
                                         iv_low
                                         iv_high
+                                        P_MERG
                                          .
   CHECK lt_person[] IS NOT INITIAL .
 

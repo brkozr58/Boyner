@@ -403,10 +403,11 @@ CLASS lcl_report IMPLEMENTATION.
 
     IF sy-subrc EQ 0.
       READ TABLE lt_00 INTO ls_00 WITH KEY stat2 = '0'.
-      IF ls_00-begda IS NOT INITIAL.
+      IF sy-subrc EQ 0 AND ls_00-begda IS NOT INITIAL.
         ls_2010-begda = ls_00-begda - 1.
       ELSE.
         ls_2010-begda = s_datum-high.
+*        ls_2010-endda = s_datum-high.
       ENDIF.
 
       ls_2010-anzhl = gs_alv-anzhl.

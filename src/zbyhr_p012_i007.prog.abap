@@ -7,7 +7,10 @@
 *&---------------------------------------------------------------------*
 FORM write_to_screen2 .
 
-  SET PF-STATUS 'STATUS_02'  .
+  DATA fcode TYPE TABLE OF sy-ucomm.
+      fcode = VALUE #(
+    ( '&ZEXC' )   ).
+  SET PF-STATUS 'STATUS_02' EXCLUDING fcode .
 *  SORT GT_KOSTL ASCENDING BY KOSTL.
   DELETE gt_kostl WHERE val01 EQ space.
   SORT gt_kostl ASCENDING BY val01 val02 .
@@ -18,6 +21,9 @@ FORM write_to_screen2 .
          hd04 ASCENDING BY val01 val02,
          hd05 ASCENDING BY val01 val02,
          hd06 ASCENDING BY val01 val02.
+
+  gt_w[] = w[].
+
   LOOP AT gt_kostl.
 
     READ TABLE sub_t WITH KEY val01 = gt_kostl-val01

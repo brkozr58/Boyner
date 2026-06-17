@@ -333,6 +333,16 @@
       <FUN_TEXT>Liste durumu...</FUN_TEXT>
      </RSMPE_FUNT>
      <RSMPE_FUNT>
+      <CODE>&amp;LIMIT</CODE>
+      <TEXTNO>001</TEXTNO>
+      <TEXT_TYPE>S</TEXT_TYPE>
+      <TEXT_NAME>ICON_BW_SELECTION_SAP</TEXT_NAME>
+      <ICON_ID>@GR@</ICON_ID>
+      <FUN_TEXT>Sınırla</FUN_TEXT>
+      <ICON_TEXT>Sınırla</ICON_TEXT>
+      <INFO_TEXT>Sınırla</INFO_TEXT>
+     </RSMPE_FUNT>
+     <RSMPE_FUNT>
       <CODE>&amp;LIS</CODE>
       <TEXTNO>001</TEXTNO>
       <TEXT_TYPE>S</TEXT_TYPE>
@@ -1861,6 +1871,12 @@
       <NO>33</NO>
       <PFNO>13</PFNO>
      </RSMPE_BUT>
+     <RSMPE_BUT>
+      <PFK_CODE>000002</PFK_CODE>
+      <CODE>0001</CODE>
+      <NO>34</NO>
+      <PFNO>14</PFNO>
+     </RSMPE_BUT>
     </BUT>
     <PFK>
      <RSMPE_PFK>
@@ -2185,6 +2201,12 @@
       <CODE>000002</CODE>
       <PFNO>13</PFNO>
       <FUNCODE>&amp;DEL</FUNCODE>
+      <FUNNO>001</FUNNO>
+     </RSMPE_PFK>
+     <RSMPE_PFK>
+      <CODE>000002</CODE>
+      <PFNO>14</PFNO>
+      <FUNCODE>&amp;LIMIT</FUNCODE>
       <FUNNO>001</FUNNO>
      </RSMPE_PFK>
      <RSMPE_PFK>
@@ -2976,6 +2998,10 @@
      <RSMPE_STAF>
       <STATUS>DELETE_GUI</STATUS>
       <FUNCTION>&amp;LFO</FUNCTION>
+     </RSMPE_STAF>
+     <RSMPE_STAF>
+      <STATUS>DELETE_GUI</STATUS>
+      <FUNCTION>&amp;LIMIT</FUNCTION>
      </RSMPE_STAF>
      <RSMPE_STAF>
       <STATUS>DELETE_GUI</STATUS>

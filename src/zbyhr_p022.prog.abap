@@ -1175,6 +1175,7 @@ FORM modify_fieldcat .
       it_sort                  = gt_sort
       is_variant               = e_variant
       it_events                = gt_events[]
+      I_SAVE                   = 'A'
     TABLES
       t_outtab                 = <fout>
     EXCEPTIONS

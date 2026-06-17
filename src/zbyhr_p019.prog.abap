@@ -58,6 +58,8 @@ SELECTION-SCREEN BEGIN OF BLOCK frame1 WITH FRAME TITLE TEXT-001.
     p_pdf  RADIOBUTTON GROUP rd1 USER-COMMAND rd,
     p_save RADIOBUTTON GROUP rd1 DEFAULT 'X'.
 
+  PARAMETERS p_merg AS CHECKBOX .
+
 
   PARAMETERS: p_svfl TYPE text200. " LENGTH 200.
   PARAMETERS: p_forml TYPE t514d-forml DEFAULT '-BOY' OBLIGATORY .
@@ -158,29 +160,48 @@ FORM send_pdf. "USING p_pernr.
   CHECK p_svfl IS NOT INITIAL.
 
   lv_svfl = p_svfl.
+  LOOP AT s_date . ENDLOOP.
+  IF s_date-high IS INITIAL .
+    s_date-high = s_date-low.
+  ENDIF.
 
-
-  LOOP AT gt_per INTO DATA(ls_per).
+  IF p_save EQ 'X' AND p_merg EQ 'X'.
     CALL FUNCTION 'ZBYHR_FG002_003'
       EXPORTING
-        iv_pernr = ls_per-pernr
+*       iv_pernr = ls_per-pernr
         iv_send  = p_pdf
         iv_save  = p_save
         iv_svfl  = lv_svfl
-*       it_pernr = gt_per
+        it_pernr = gt_per
         iv_low   = s_date-low
         iv_high  = s_date-high
+        p_merg   = p_merg
       IMPORTING
         iv_kisi  = lv_kisi.
+  ELSE.
 
-    IF lv_kisi = 'S'.
-      lv_succ = lv_succ + 1 .
-    ELSEIF lv_kisi = 'E'.
-      lv_error = lv_error + 1.
-    ENDIF.
+    LOOP AT gt_per INTO DATA(ls_per).
+      CALL FUNCTION 'ZBYHR_FG002_003'
+        EXPORTING
+          iv_pernr = ls_per-pernr
+          iv_send  = p_pdf
+          iv_save  = p_save
+          iv_svfl  = lv_svfl
+*         it_pernr = gt_per
+          iv_low   = s_date-low
+          iv_high  = s_date-high
+        IMPORTING
+          iv_kisi  = lv_kisi.
 
-    CLEAR ls_per.
-  ENDLOOP.
+      IF lv_kisi = 'S'.
+        lv_succ = lv_succ + 1 .
+      ELSEIF lv_kisi = 'E'.
+        lv_error = lv_error + 1.
+      ENDIF.
+
+      CLEAR ls_per.
+    ENDLOOP.
+  ENDIF.
   FORMAT COLOR COL_HEADING.
   WRITE :/ 'Başarılı:' ,lv_succ.
   WRITE :/ 'Başarısız:' ,lv_error.
@@ -247,6 +268,7 @@ FORM at_selection  CHANGING p_svfl.
   DATA : lv_leng TYPE i.
 
   CHECK p_save EQ 'X'.
+
   lv_svfl = p_svfl.
   CALL METHOD cl_gui_frontend_services=>directory_browse
     EXPORTING

@@ -101,6 +101,8 @@ DATA :BEGIN OF w  OCCURS 0            ,
         count TYPE i  VALUE 1        , " Personel Count
       END OF w                        .
 
+DATA : gt_w LIKE TABLE OF w WITH HEADER LINE .
+
 DATA :BEGIN OF total  OCCURS 0        ,
 *        KOSTL LIKE PERNR-KOSTL, " Masraf Yeri
         fpper LIKE period-fpper,

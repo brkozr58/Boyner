@@ -243,6 +243,11 @@
        <OPTIONAL>X</OPTIONAL>
        <TYP>SPMON</TYP>
       </RSIMP>
+      <RSIMP>
+       <PARAMETER>P_MERG</PARAMETER>
+       <OPTIONAL>X</OPTIONAL>
+       <TYP>FLAG</TYP>
+      </RSIMP>
      </IMPORT>
      <EXPORT>
       <RSEXP>
@@ -284,6 +289,11 @@
        <PARAMETER>IV_HIGH</PARAMETER>
        <KIND>P</KIND>
        <STEXT>Haciz için hesaplanan dönem</STEXT>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>P_MERG</PARAMETER>
+       <KIND>P</KIND>
+       <STEXT>Formu birleştir</STEXT>
       </RSFDO>
       <RSFDO>
        <PARAMETER>IV_KISI</PARAMETER>
@@ -367,6 +377,10 @@
        <KIND>X</KIND>
       </RSFDO>
      </DOCUMENTATION>
+    </item>
+    <item>
+     <FUNCNAME>ZBYHR_FG002_ENCRYPT</FUNCNAME>
+     <SHORT_TEXT>Value encrypt</SHORT_TEXT>
     </item>
     <item>
      <FUNCNAME>ZHR_ISYERI_SSKNO_URET</FUNCNAME>

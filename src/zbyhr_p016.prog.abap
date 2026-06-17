@@ -377,6 +377,26 @@ FORM calc_kidem .
 *___Grev günlerinin hesaplanıp kıdem süresinden çıkartılması
 *___Calculate strike days and subtrack from Senioriyt days
   PERFORM count_grevg.
+
+  iper-ktime(4)   = iper-ktime(4)   - iper-gtime(4).
+*
+  IF iper-ktime+4(2) LT iper-gtime+4(2).
+    iper-ktime(4) = iper-ktime(4) - 1.
+
+    iper-ktime+4(2) = iper-ktime+4(2) + 12.
+    iper-ktime+4(2) = iper-ktime+4(2) - iper-gtime+4(2).
+
+    ELSE.
+
+      iper-ktime+4(2) = iper-ktime+4(2) - iper-gtime+4(2).
+  ENDIF.
+**  iper-ktime+4(2) = iper-ktime+4(2) - iper-gtime+4(2).
+*  IF iper-ktime+6(2) LT iper-gtime+6(2) .
+*
+*  ENDIF.
+  iper-ktime+6(2) = iper-ktime+6(2) - iper-gtime+6(2).
+
+
   CHECK fatalerr EQ space.             "Check Point
 
 *___Personelin aylıklı ya da saat ücretli olduğunun kontrolü /

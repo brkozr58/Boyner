@@ -9,7 +9,7 @@ FORM get_person_payroll_pdf  TABLES   it_person TYPE  tt_person
                              USING    iv_pernr
                                       iv_low
                                       iv_high
-                                        .
+                                      p_merg .
 *Types
   TYPES : t_pripar TYPE pri_params,
           t_arcpar TYPE arc_params,
@@ -24,7 +24,8 @@ FORM get_person_payroll_pdf  TABLES   it_person TYPE  tt_person
   DATA : lr_range            TYPE RANGE OF linetype,
          lt_record           TYPE TABLE OF  solisti1,
          lt_pdf              TYPE TABLE OF tline,
-         lv_dst_device       LIKE tsp03-padest VALUE 'Z_SB',
+*         lv_dst_device       LIKE tsp03-padest VALUE 'Z_SB',
+         lv_dst_device       LIKE tsp03-padest VALUE 'PDF_YAZICI',
          lt_tline            TYPE TABLE OF tline WITH HEADER LINE,
          lt_rgdir            TYPE STANDARD TABLE OF pc261 WITH HEADER LINE,
          gt_msg              TYPE TABLE OF bapiret2 WITH HEADER LINE,
@@ -52,62 +53,38 @@ FORM get_person_payroll_pdf  TABLES   it_person TYPE  tt_person
     APPEND VALUE #( selname = 'PNPPERNR' kind    = 'S' sign    = 'I' option  = 'EQ' low     = iv_pernr ) TO lt_rspar.
   ENDIF.
 
+  CASE 'X'.
+    WHEN p_merg.
+      APPEND  INITIAL LINE TO it_person ASSIGNING FIELD-SYMBOL(<fs_person>).
+      <fs_person>-ename = 'Boyner'.
+      CONCATENATE 'ÇOKLU' 'BORDROZARFI' INTO list_text SEPARATED BY  '+' .
+      CONCATENATE list_text sy-uzeit INTO list_text.
+      CALL FUNCTION 'GET_PRINT_PARAMETERS'
+        EXPORTING
+          in_archive_parameters  = lw_arcpar
+          in_parameters          = lw_pripar
+          layout                 = 'X_65_200'
+          line_count             = 65
+          line_size              = 177
+          abap_list              = 'X'
+          list_name              = lv_listname
+          list_text              = list_text
+          no_dialog              = 'X'
+        IMPORTING
+          out_archive_parameters = lw_arcpar
+          out_parameters         = ls_print_parameters
+        EXCEPTIONS
+          archive_info_not_found = 1
+          invalid_print_params   = 2
+          invalid_archive_params = 3
+          OTHERS                 = 4.
+      ls_print_parameters-pdest = 'ZPDF'.
+      IF iv_low  IS NOT INITIAL AND iv_high IS NOT INITIAL.
+        APPEND VALUE #( sign  = 'I' option = 'BT' low = iv_low high = iv_high ) TO lr_range.
+      ELSEIF iv_low  IS NOT INITIAL AND iv_high IS INITIAL.
+        APPEND VALUE #( sign  = 'I' option = 'EQ' low = iv_low high = iv_low ) TO lr_range.
+      ENDIF.
 
-  LOOP AT lt_rspar ASSIGNING FIELD-SYMBOL(<fs_wa>).
-    APPEND  INITIAL LINE TO it_person ASSIGNING FIELD-SYMBOL(<fs_person>).
-    lv_pernr = <fs_person>-pernr = <fs_wa>-low.
-
-    SELECT SINGLE ename FROM pa0001 INTO <fs_person>-ename
-        WHERE pernr EQ <fs_person>-pernr
-          AND endda GE sy-datum .
-
-    CONCATENATE lv_pernr 'BORDROZARFI' INTO list_text SEPARATED BY  '+' .
-    CONCATENATE list_text sy-uzeit INTO list_text.
-
-    CALL FUNCTION 'GET_PRINT_PARAMETERS'
-      EXPORTING
-        in_archive_parameters  = lw_arcpar
-        in_parameters          = lw_pripar
-        layout                 = 'X_65_200'
-        line_count             = 65
-        line_size              = 177
-        abap_list              = 'X'
-        list_name              = lv_listname
-        list_text              = list_text
-        no_dialog              = 'X'
-      IMPORTING
-        out_archive_parameters = lw_arcpar
-        out_parameters         = ls_print_parameters
-      EXCEPTIONS
-        archive_info_not_found = 1
-        invalid_print_params   = 2
-        invalid_archive_params = 3
-        OTHERS                 = 4.
-
-    ls_print_parameters-pdest = 'ZPDF'.
-    IF iv_low  IS NOT INITIAL AND iv_high IS NOT INITIAL.
-      APPEND VALUE #( sign  = 'I' option = 'BT' low = iv_low high = iv_high ) TO lr_range.
-    ELSEIF iv_low  IS NOT INITIAL AND iv_high IS INITIAL.
-      APPEND VALUE #( sign  = 'I' option = 'EQ' low = iv_low high = iv_low ) TO lr_range.
-    ENDIF.
-
-    REFRESH: lt_rgdir.
-    CALL FUNCTION 'CA_CU_READ_RGDIR_NEW'
-      EXPORTING
-        persnr                   = lv_pernr
-      TABLES
-        cu_ca_rgdir              = lt_rgdir
-      EXCEPTIONS
-        import_mismatch_error_cu = 1
-        import_mismatch_error_ca = 2
-        no_read_authority_ca     = 3
-        no_read_authority_cu     = 4
-        error_reading_cu         = 5
-        error_reading_ca         = 6
-        no_record_found          = 7
-        OTHERS                   = 8.
-
-    IF sy-subrc EQ 0.
       SUBMIT zbyhr_p020
               WITH formular EQ '-BOY'
                WITH s_fpper IN  lr_range
@@ -115,57 +92,172 @@ FORM get_person_payroll_pdf  TABLES   it_person TYPE  tt_person
                  AND RETURN TO SAP-SPOOL
                   SPOOL PARAMETERS ls_print_parameters WITHOUT SPOOL DYNPRO
                   .
-    ENDIF.
 
-    SELECT * FROM tsp01 INTO TABLE @DATA(lt_tsp01)
-      WHERE rqclient  EQ @sy-mandt
-        AND rqtitle   EQ @list_text
-        AND rq2name   EQ @lv_listname
-        AND rqowner   EQ @sy-uname .
+      SELECT * FROM tsp01 INTO TABLE @DATA(lt_tsp01)
+        WHERE rqclient  EQ @sy-mandt
+          AND rqtitle   EQ @list_text
+          AND rq2name   EQ @lv_listname
+          AND rqowner   EQ @sy-uname .
 
-    CHECK sy-subrc EQ 0 .
+      CHECK sy-subrc EQ 0 .
 
-    SORT lt_tsp01 DESCENDING BY rqcretime.
-    READ TABLE lt_tsp01 ASSIGNING FIELD-SYMBOL(<tsp01>) INDEX 1.
-    lv_spool_nr = <tsp01>-rqident.
+      SORT lt_tsp01 DESCENDING BY rqcretime.
+      READ TABLE lt_tsp01 ASSIGNING FIELD-SYMBOL(<tsp01>) INDEX 1.
+      lv_spool_nr = <tsp01>-rqident.
 
-    CALL FUNCTION 'CONVERT_ABAPSPOOLJOB_2_PDF'
-      EXPORTING
-        src_spoolid              = lv_spool_nr
-        dst_device               = lv_dst_device
-        no_dialog                = 'X'
-      TABLES
-        pdf                      = lt_pdf
-      EXCEPTIONS
-        err_no_abap_spooljob     = 1
-        err_no_spooljob          = 2
-        err_no_permission        = 3
-        err_conv_not_possible    = 4
-        err_bad_destdevice       = 5
-        user_cancelled           = 6
-        err_spoolerror           = 7
-        err_temseerror           = 8
-        err_btcjob_open_failed   = 9
-        err_btcjob_submit_failed = 10
-        err_btcjob_close_failed  = 11
-        OTHERS                   = 12.
-    <fs_person>-tpdf[] = lt_tline[] = lt_pdf[].
+      CALL FUNCTION 'CONVERT_ABAPSPOOLJOB_2_PDF'
+        EXPORTING
+          src_spoolid              = lv_spool_nr
+          dst_device               = lv_dst_device
+          no_dialog                = 'X'
+        TABLES
+          pdf                      = lt_pdf
+        EXCEPTIONS
+          err_no_abap_spooljob     = 1
+          err_no_spooljob          = 2
+          err_no_permission        = 3
+          err_conv_not_possible    = 4
+          err_bad_destdevice       = 5
+          user_cancelled           = 6
+          err_spoolerror           = 7
+          err_temseerror           = 8
+          err_btcjob_open_failed   = 9
+          err_btcjob_submit_failed = 10
+          err_btcjob_close_failed  = 11
+          OTHERS                   = 12.
+      <fs_person>-tpdf[] = lt_tline[] = lt_pdf[].
 
-    LOOP AT lt_tline.
-      TRANSLATE lt_tline USING '~'.
-      CONCATENATE wa_buffer lt_tline INTO wa_buffer.
-    ENDLOOP.
-    TRANSLATE wa_buffer USING '~'.
-    DO.
-      APPEND wa_buffer TO lt_record.
-      SHIFT wa_buffer LEFT BY 255 PLACES.
-      IF wa_buffer IS INITIAL.
-        EXIT.
-      ENDIF.
-    ENDDO.
+      LOOP AT lt_tline.
+        TRANSLATE lt_tline USING '~'.
+        CONCATENATE wa_buffer lt_tline INTO wa_buffer.
+      ENDLOOP.
+      TRANSLATE wa_buffer USING '~'.
+      DO.
+        APPEND wa_buffer TO lt_record.
+        SHIFT wa_buffer LEFT BY 255 PLACES.
+        IF wa_buffer IS INITIAL.
+          EXIT.
+        ENDIF.
+      ENDDO.
 
-    <fs_person>-trecord[] = lt_record[].
-  ENDLOOP.
+      <fs_person>-trecord[] = lt_record[].
+    WHEN OTHERS.
+
+      LOOP AT lt_rspar ASSIGNING FIELD-SYMBOL(<fs_wa>).
+        APPEND  INITIAL LINE TO it_person ASSIGNING <fs_person>.
+        lv_pernr = <fs_person>-pernr = <fs_wa>-low.
+
+        SELECT SINGLE ename FROM pa0001 INTO <fs_person>-ename
+            WHERE pernr EQ <fs_person>-pernr
+              AND endda GE sy-datum .
+
+        CONCATENATE lv_pernr 'BORDROZARFI' INTO list_text SEPARATED BY  '+' .
+        CONCATENATE list_text sy-uzeit INTO list_text.
+
+        CALL FUNCTION 'GET_PRINT_PARAMETERS'
+          EXPORTING
+            in_archive_parameters  = lw_arcpar
+            in_parameters          = lw_pripar
+            layout                 = 'X_65_200'
+            line_count             = 65
+            line_size              = 177
+            abap_list              = 'X'
+            list_name              = lv_listname
+            list_text              = list_text
+            no_dialog              = 'X'
+          IMPORTING
+            out_archive_parameters = lw_arcpar
+            out_parameters         = ls_print_parameters
+          EXCEPTIONS
+            archive_info_not_found = 1
+            invalid_print_params   = 2
+            invalid_archive_params = 3
+            OTHERS                 = 4.
+
+        ls_print_parameters-pdest = 'ZPDF'.
+        IF iv_low  IS NOT INITIAL AND iv_high IS NOT INITIAL.
+          APPEND VALUE #( sign  = 'I' option = 'BT' low = iv_low high = iv_high ) TO lr_range.
+        ELSEIF iv_low  IS NOT INITIAL AND iv_high IS INITIAL.
+          APPEND VALUE #( sign  = 'I' option = 'EQ' low = iv_low high = iv_low ) TO lr_range.
+        ENDIF.
+
+        REFRESH: lt_rgdir.
+        CALL FUNCTION 'CA_CU_READ_RGDIR_NEW'
+          EXPORTING
+            persnr                   = lv_pernr
+          TABLES
+            cu_ca_rgdir              = lt_rgdir
+          EXCEPTIONS
+            import_mismatch_error_cu = 1
+            import_mismatch_error_ca = 2
+            no_read_authority_ca     = 3
+            no_read_authority_cu     = 4
+            error_reading_cu         = 5
+            error_reading_ca         = 6
+            no_record_found          = 7
+            OTHERS                   = 8.
+        LOOP AT lt_rgdir WHERE fpper BETWEEN iv_low AND iv_high. ENDLOOP.
+        CHECK sy-subrc EQ 0.
+        SUBMIT zbyhr_p020
+                WITH formular EQ '-BOY'
+                 WITH s_fpper IN  lr_range
+                WITH SELECTION-TABLE lt_rspar
+                   AND RETURN TO SAP-SPOOL
+                    SPOOL PARAMETERS ls_print_parameters WITHOUT SPOOL DYNPRO
+                    .
+
+        SELECT * FROM tsp01 INTO TABLE lt_tsp01
+          WHERE rqclient  EQ sy-mandt
+            AND rqtitle   EQ list_text
+            AND rq2name   EQ lv_listname
+            AND rqowner   EQ sy-uname .
+
+        CHECK sy-subrc EQ 0 .
+
+        SORT lt_tsp01 DESCENDING BY rqcretime.
+        READ TABLE lt_tsp01 ASSIGNING <tsp01> INDEX 1.
+        lv_spool_nr = <tsp01>-rqident.
+
+        CALL FUNCTION 'CONVERT_ABAPSPOOLJOB_2_PDF'
+          EXPORTING
+            src_spoolid              = lv_spool_nr
+            dst_device               = lv_dst_device
+            no_dialog                = 'X'
+          TABLES
+            pdf                      = lt_pdf
+          EXCEPTIONS
+            err_no_abap_spooljob     = 1
+            err_no_spooljob          = 2
+            err_no_permission        = 3
+            err_conv_not_possible    = 4
+            err_bad_destdevice       = 5
+            user_cancelled           = 6
+            err_spoolerror           = 7
+            err_temseerror           = 8
+            err_btcjob_open_failed   = 9
+            err_btcjob_submit_failed = 10
+            err_btcjob_close_failed  = 11
+            OTHERS                   = 12.
+        <fs_person>-tpdf[] = lt_tline[] = lt_pdf[].
+
+        LOOP AT lt_tline.
+          TRANSLATE lt_tline USING '~'.
+          CONCATENATE wa_buffer lt_tline INTO wa_buffer.
+        ENDLOOP.
+        TRANSLATE wa_buffer USING '~'.
+        DO.
+          APPEND wa_buffer TO lt_record.
+          SHIFT wa_buffer LEFT BY 255 PLACES.
+          IF wa_buffer IS INITIAL.
+            EXIT.
+          ENDIF.
+        ENDDO.
+
+        <fs_person>-trecord[] = lt_record[].
+      ENDLOOP.
+  ENDCASE.
+
+
 ENDFORM.
 *&---------------------------------------------------------------------*
 *& Form download_pdf
@@ -180,8 +272,14 @@ FORM download_pdf  TABLES   it_person TYPE  tt_person
   LOOP AT it_person ASSIGNING FIELD-SYMBOL(<wa>).
 
 *    CONCATENATE iv_svfl  '\'  iv_month '_' iv_year '_Bordro_Zarfı_' sy-uzeit '.pdf' INTO lv_pdfname.
-    CONCATENATE iv_svfl '\' iv_low+4(2) '_' iv_low(4) '-' iv_high+4(2) '_'
-                iv_high(4) '_' <wa>-pernr '_Bordro_Zarfı.pdf' INTO lv_pdfname.
+    IF <wa>-pernr IS INITIAL .
+      CONCATENATE iv_svfl '\' iv_low+4(2) '_' iv_low(4) '-' iv_high+4(2) '_'
+                  iv_high(4) '_' <wa>-ename '_Bordro_Zarfı.pdf' INTO lv_pdfname.
+
+    ELSE.
+      CONCATENATE iv_svfl '\' iv_low+4(2) '_' iv_low(4) '-' iv_high+4(2) '_'
+                  iv_high(4) '_' <wa>-pernr '_Bordro_Zarfı.pdf' INTO lv_pdfname.
+    ENDIF.
 
     CALL FUNCTION 'GUI_DOWNLOAD'
       EXPORTING
@@ -239,6 +337,10 @@ FORM set_pdf_password_service  TABLES it_person TYPE  tt_person  .
          lv_reason        TYPE string,
          lv_response      TYPE string.
 
+  DATA : lo_encrypt TYPE REF TO zbyhr_cl_encryption.
+  CREATE OBJECT lo_encrypt.
+
+
   LOOP AT it_person ASSIGNING FIELD-SYMBOL(<wa>).
     TRY.
         REFRESH : ltt_solix.
@@ -268,6 +370,9 @@ FORM set_pdf_password_service  TABLES it_person TYPE  tt_person  .
           IMPORTING
             ran_int     = <wa>-password.
 
+        PERFORM encrpt_values USING <wa>-password
+                           CHANGING <wa>-pass_xst <wa>-bin_file.
+
         lv_url = 'https://integration-suite-boyner-dev.it-cpi024-rt.cfapps.eu10-002.hana.ondemand.com/cxf/SFBordroEncryption'.
         lv_pdf_base64 = cl_http_utility=>encode_x_base64( <wa>-bin_file ).
 
@@ -278,8 +383,7 @@ FORM set_pdf_password_service  TABLES it_person TYPE  tt_person  .
                   && |<soapenv:Body>|
                   && |<tem:setEncryption>|
                   && |<tem:LineArray>{ lv_pdf_base64 }</tem:LineArray>|
-*              && |<tem:Password>12345</tem:Password>|
-                  && |<tem:Password>{ <wa>-password }</tem:Password>|
+                  && |<tem:Password>{ <wa>-pass_xst }</tem:Password>|
                   && |</tem:setEncryption>|
                   && |</soapenv:Body>|
                   && |</soapenv:Envelope>|.
@@ -322,9 +426,27 @@ FORM set_pdf_password_service  TABLES it_person TYPE  tt_person  .
           IGNORING CASE
           SUBMATCHES lv_base64_result.
 
-        CLEAR <wa>-bin_file .
+        IF lv_base64_result IS NOT INITIAL .
+          lo_encrypt->decrypt_text(
+            EXPORTING
+              i_key              = 'BOYNER_ZARF'
+              i_iv               = '2026010120260101'
+              i_encoded_text     = lv_base64_result
+            IMPORTING
+              err_text           = DATA(lv_error)
+              e_text_str         = DATA(e_text_str)
+              e_text_xstr        = DATA(e_text_xstr)
+          ).
 
-        <wa>-bin_file = cl_http_utility=>decode_x_base64( lv_base64_result ).
+          <wa>-return = CONV text100( lv_error ) .
+          CLEAR lv_error.
+          CLEAR <wa>-bin_file .
+
+*        <wa>-bin_file = cl_http_utility=>decode_x_base64( lv_base64_result ).
+          <wa>-bin_file = cl_http_utility=>decode_x_base64( e_text_str ).
+        ELSE.
+          <wa>-return = 'Dosya alınamadı'.
+        ENDIF.
 
         CALL METHOD lo_http_client->close
           EXCEPTIONS
@@ -367,6 +489,12 @@ FORM send_mail_pdf  TABLES    it_person TYPE  tt_person
   LOOP AT it_person ASSIGNING FIELD-SYMBOL(<wa>) WHERE return IS INITIAL .
     CLEAR: it_attach[],it_attach.
     TRY.
+
+        CALL FUNCTION 'SCMS_BASE64_ENCODE_STR'
+          EXPORTING
+            input  = <wa>-bin_file
+          IMPORTING
+            output = <wa>-bin_file.
 
         CALL FUNCTION 'SCMS_XSTRING_TO_BINARY'
           EXPORTING
@@ -548,6 +676,7 @@ FORM send_mail_pdf  TABLES    it_person TYPE  tt_person
   ENDLOOP.
 
 ENDFORM.
+
 FORM send_mail_pass_service  TABLES it_person TYPE  tt_person.
   DATA: lv_json        TYPE string,
         lv_auth        TYPE string,
@@ -566,7 +695,8 @@ FORM send_mail_pass_service  TABLES it_person TYPE  tt_person.
                        begda LE @sy-datum AND
                        usrty EQ 'CELL'  AND
                        endda GE @sy-datum.
-        lv_rand2 = <wa>-password.
+*        lv_rand2 = <wa>-password.
+        lv_rand2 = <wa>-pass_xst.
         CONCATENATE lv_json '{ '
                  '"PhoneNumber":'           '"' lv_tel '",'
                  '"SmsContent":' '"' TEXT-001 '' TEXT-002 '' lv_rand2 '",'
@@ -622,17 +752,6 @@ FORM send_mail_pass_service  TABLES it_person TYPE  tt_person.
         " Gövdeye JSON ata (UTF-8 varsayılan)
         lo_http_client->request->set_cdata( lv_json ).
 
-*        lo_http_client->request->set_method( 'POST' ).
-*        lo_http_client->request->set_header_field(
-*          name  = 'Content-Type'
-*          value = 'text/xml; charset=utf-8'
-*        ).
-
-*        lo_http_client->request->set_cdata( lv_json ).
-*        lo_http_client->send( ).
-*        lo_http_client->receive( ).
-*        lv_response = lo_http_client->response->get_cdata( ).
-
         " İstek gönder
         CALL METHOD lo_http_client->send
           EXCEPTIONS
@@ -651,4 +770,69 @@ FORM send_mail_pass_service  TABLES it_person TYPE  tt_person.
         <wa>-return = CONV text100( lo_cx->get_text( ) ) .
     ENDTRY.
   ENDLOOP.
+ENDFORM.
+*&---------------------------------------------------------------------*
+*& Form encrpt_values
+*&---------------------------------------------------------------------*
+FORM encrpt_values  USING p_pass
+                 CHANGING c_pass
+                          c_bin_file   .
+  DATA : lo_encrypt TYPE REF TO zbyhr_cl_encryption.
+  DATA : lv_key TYPE xstring .
+  DATA : lv_kiv TYPE xstring .
+  CREATE OBJECT lo_encrypt.
+
+*  lv_key = cl_bcs_convert=>string_to_xstring( iv_string  = 'BOYNER_ZARF' ).
+*  lv_kiv = cl_bcs_convert=>string_to_xstring( iv_string  = '2026010120260101' ).
+
+  lo_encrypt->encrypt_text(
+    EXPORTING
+      i_key         = 'BOYNER_ZARF'
+      i_iv          = '2026010120260101'
+      i_xstring     = c_bin_file
+    RECEIVING
+      e_text_enc    = c_bin_file
+  ).
+
+  lo_encrypt->encrypt_text(
+    EXPORTING
+      i_key         = 'BOYNER_ZARF'
+      i_iv          = '2026010120260101'
+      i_text        = CONV #( p_pass )
+    RECEIVING
+      e_text_enc    = c_pass
+  ).
+
+
+ENDFORM.
+*&---------------------------------------------------------------------*
+*& Form DECRYPT_values
+*&---------------------------------------------------------------------*
+FORM decrypt_values  CHANGING c_pass
+                             c_bin_file   .
+
+  DATA : lv_key TYPE xstring .
+  DATA : lv_kiv TYPE xstring .
+
+  lv_key = cl_bcs_convert=>string_to_xstring( iv_string  = 'BOYNER_ZARF' ).
+  lv_kiv = cl_bcs_convert=>string_to_xstring( iv_string  = '2026010120260101' ).
+
+  cl_sec_sxml_writer=>decrypt(
+    EXPORTING
+      ciphertext = c_bin_file
+      key        = lv_key
+      algorithm  = cl_sec_sxml_writer=>co_aes256_algorithm
+    IMPORTING
+      plaintext  = c_bin_file
+  ).
+
+  cl_sec_sxml_writer=>decrypt(
+    EXPORTING
+      ciphertext = c_pass
+      key        = lv_key
+      algorithm  = cl_sec_sxml_writer=>co_aes256_algorithm
+    IMPORTING
+      plaintext  = c_pass
+  ).
+
 ENDFORM.

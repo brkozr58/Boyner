@@ -102,6 +102,16 @@
       <FUN_TEXT>PDF dosya</FUN_TEXT>
      </RSMPE_FUNT>
      <RSMPE_FUNT>
+      <CODE>&amp;ZEXC</CODE>
+      <TEXTNO>001</TEXTNO>
+      <TEXT_TYPE>S</TEXT_TYPE>
+      <TEXT_NAME>ICON_XLS</TEXT_NAME>
+      <ICON_ID>@J2@</ICON_ID>
+      <FUN_TEXT>Excel</FUN_TEXT>
+      <ICON_TEXT>Excel</ICON_TEXT>
+      <INFO_TEXT>Excel Dosya</INFO_TEXT>
+     </RSMPE_FUNT>
+     <RSMPE_FUNT>
       <CODE>BACK</CODE>
       <TEXTNO>001</TEXTNO>
       <TEXT_TYPE>S</TEXT_TYPE>
@@ -315,8 +325,14 @@
      <RSMPE_BUT>
       <PFK_CODE>000001</PFK_CODE>
       <CODE>0001</CODE>
-      <NO>08</NO>
+      <NO>06</NO>
       <PFNO>13</PFNO>
+     </RSMPE_BUT>
+     <RSMPE_BUT>
+      <PFK_CODE>000001</PFK_CODE>
+      <CODE>0001</CODE>
+      <NO>07</NO>
+      <PFNO>14</PFNO>
      </RSMPE_BUT>
     </BUT>
     <PFK>
@@ -342,6 +358,12 @@
       <CODE>000001</CODE>
       <PFNO>13</PFNO>
       <FUNCODE>&amp;PDF</FUNCODE>
+      <FUNNO>001</FUNNO>
+     </RSMPE_PFK>
+     <RSMPE_PFK>
+      <CODE>000001</CODE>
+      <PFNO>14</PFNO>
+      <FUNCODE>&amp;ZEXC</FUNCODE>
       <FUNNO>001</FUNNO>
      </RSMPE_PFK>
      <RSMPE_PFK>
@@ -489,6 +511,10 @@
      <RSMPE_STAF>
       <STATUS>STATUS_02</STATUS>
       <FUNCTION>&amp;PDF</FUNCTION>
+     </RSMPE_STAF>
+     <RSMPE_STAF>
+      <STATUS>STATUS_02</STATUS>
+      <FUNCTION>&amp;ZEXC</FUNCTION>
      </RSMPE_STAF>
      <RSMPE_STAF>
       <STATUS>STATUS_02</STATUS>

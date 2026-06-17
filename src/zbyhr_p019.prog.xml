@@ -62,6 +62,12 @@
     </item>
     <item>
      <ID>S</ID>
+     <KEY>P_MERG</KEY>
+     <ENTRY>Formları birleştir</ENTRY>
+     <LENGTH>26</LENGTH>
+    </item>
+    <item>
+     <ID>S</ID>
      <KEY>P_PDF</KEY>
      <ENTRY>PDF Olarak Gönder</ENTRY>
      <LENGTH>25</LENGTH>

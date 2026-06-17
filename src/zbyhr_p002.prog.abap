@@ -131,7 +131,7 @@ DATA : BEGIN OF gt_excel OCCURS 0 ,
          betrg  LIKE pa0014-betrg,
          preas  LIKE pa0014-preas,
          rtext  LIKE t530f-rtext,
-         zCount TYPE numc1,
+         zcount TYPE numc1,
        END OF gt_excel .
 
 DATA : BEGIN OF gt_excel2 OCCURS 0 ,
@@ -142,7 +142,7 @@ DATA : BEGIN OF gt_excel2 OCCURS 0 ,
          anzhl  LIKE pa0014-anzhl,
          betrg  LIKE pa0014-betrg,
          preas  LIKE pa0014-preas,
-         zCount TYPE numc1,
+         zcount TYPE numc1,
 *         RTEXT LIKE T530F-RTEXT,
        END OF gt_excel2 .
 
@@ -157,7 +157,7 @@ DATA : BEGIN OF gt_create OCCURS 0 ,
          betrg   LIKE pa0014-betrg,
          preas   LIKE pa0014-preas,
          rtext   LIKE t530f-rtext,
-         zCount  TYPE numc1,
+         zcount  TYPE numc1,
          mark ,
          icon(4) ,
          msg     TYPE string,
@@ -190,7 +190,7 @@ DATA : BEGIN OF gt_delete OCCURS 0 ,
          betrg   LIKE pa0014-betrg,
          preas   LIKE pa0014-preas,
          rtext   LIKE t530f-rtext,
-         zCount  TYPE numc1,
+         zcount  TYPE numc1,
          mark ,
          icon(4) ,
          msg     TYPE string,
@@ -261,12 +261,23 @@ END-OF-SELECTION  .
 *&      Form  PF_STATUS_SET
 *&---------------------------------------------------------------------*
 FORM gui USING p_gui .
+
+
+  DATA fcode TYPE TABLE OF sy-ucomm.
+
+  CASE 'X'.
+    WHEN r1.
+      REFRESH fcode.
+    WHEN OTHERS.
+      fcode = VALUE #(
+    ( '&LIMIT' )   ).
+  ENDCASE.
 *--
   CASE 'X' .
     WHEN r4.
       SET PF-STATUS 'CREATE_GUI' .
     WHEN r5.
-      SET PF-STATUS 'DELETE_GUI' .
+      SET PF-STATUS 'DELETE_GUI' EXCLUDING fcode.
 *    WHEN r6.
 *      SET PF-STATUS 'LIS9_GUI' .
   ENDCASE.
@@ -287,6 +298,8 @@ FORM command  USING r_ucomm LIKE sy-ucomm
       WHEN r5.
         PERFORM run_batch_delete .
     ENDCASE.
+  ELSEIF r_ucomm EQ '&LIMIT'.
+    PERFORM run_batch_limit .
   ENDIF .
 *--
 ENDFORM.                    "COMMAND
@@ -1532,4 +1545,190 @@ FORM run_batch_lis9 .
     UNASSIGN : <fs_infotype> .
     PERFORM refresh_alv .
   ENDIF .
+ENDFORM.
+*&---------------------------------------------------------------------*
+*& Form run_batch_limit
+*&---------------------------------------------------------------------*
+FORM run_batch_limit .
+*-- local definition
+  DATA: ivals  TYPE TABLE OF sval.
+  DATA: xvals  TYPE sval.
+  DATA : returncode .
+  DATA :
+    lv_index  TYPE sy-index,
+    lv_inf(5) ,
+    lv_infty  LIKE prelp-infty,
+    lv_subty  LIKE p0001-subty,
+    lv_pernr  LIKE pa0001-pernr,
+    lv_begda  LIKE pa0001-begda,
+    lv_endda  LIKE pa0001-endda.
+
+*      Normal koyuluk derecesi girişe hazır
+*01	açık renkli girişe hazır
+*02	Normal koyuluk derecesi girişe hazır değil
+*03	açık renkli girişe hazır değil
+*04	Görüntüleme!
+
+  DEFINE add_vals.
+    CLEAR xvals .
+    xvals-tabname       = &1.
+    xvals-fieldname     = &2.
+    xvals-field_attr    = &3.
+*    IF &4 IS NOT INITIAL .
+      xvals-value         = &4.
+*    ENDIF.
+    xvals-field_obl     = &5.
+    IF &6 IS NOT INITIAL .
+      xvals-fieldtext     = &6.
+    ENDIF.
+    APPEND xvals TO ivals.
+  END-OF-DEFINITION.
+*--
+  UNASSIGN <fs_field> .
+
+  CHECK r1 EQ 'X'.
+*--
+  lv_inf   = 'P0014' .
+
+  IF zbyhr_t024-f0014 NE 'X'.
+    MESSAGE '14 BT sınırlamaya yetkiniz yoktur.' TYPE 'S'
+        DISPLAY LIKE 'E'.
+    EXIT.
+  ENDIF.
+
+  add_vals: 'P0014' 'ENDDA' space  sy-datum abap_false space.
+
+  CALL FUNCTION 'POPUP_GET_VALUES_SET_MAX_FIELD'
+    EXPORTING
+      number_of_fields = '40'
+    EXCEPTIONS
+      out_of_range     = 1.
+  CLEAR returncode .
+  CALL FUNCTION 'POPUP_GET_VALUES'
+    EXPORTING
+      popup_title     = 'Sınırlama tarihi'
+      start_column    = 15
+      start_row       = 10
+    IMPORTING
+      returncode      = returncode
+    TABLES
+      fields          = ivals
+    EXCEPTIONS
+      error_in_fields = 1
+      OTHERS          = 2.
+  IF returncode IS INITIAL.
+    READ TABLE gt_delete WITH KEY mark = 'X' TRANSPORTING NO FIELDS .
+    IF sy-subrc <> 0 .
+      MESSAGE i000(zcspa) .
+    ELSE .
+      lv_infty = lv_inf+1(4) .
+
+      CREATE DATA gs_inftype TYPE (lv_inf) .
+      ASSIGN gs_inftype->* TO <fs_infotype> .
+
+      LOOP AT gt_delete WHERE mark EQ 'X' .
+
+        LOOP AT ivals INTO xvals. ENDLOOP.
+        CHECK gt_delete-endda GT xvals-value.
+        lv_index = sy-tabix .
+
+        SELECT SINGLE * FROM pa0014 INTO CORRESPONDING FIELDS OF
+        <fs_infotype>
+            WHERE pernr EQ gt_delete-pernr
+              AND begda EQ gt_delete-begda
+              AND endda EQ gt_delete-endda
+              AND subty EQ gt_delete-lgart.
+*
+        lv_pernr   = gt_delete-pernr .
+        ASSIGN COMPONENT 'BEGDA' OF STRUCTURE <fs_infotype> TO
+        <fs_field>
+        .
+        <fs_field> = gt_delete-begda .
+        lv_begda   = gt_delete-begda .
+        ASSIGN COMPONENT 'SUBTY' OF STRUCTURE <fs_infotype> TO
+        <fs_field>
+        .
+        <fs_field> = gt_delete-lgart .
+        lv_subty   = gt_delete-lgart .
+        ASSIGN COMPONENT 'ENDDA' OF STRUCTURE <fs_infotype> TO
+        <fs_field>.
+        <fs_field> = xvals-value .
+        lv_endda   = gt_delete-endda .
+        ASSIGN COMPONENT 'SPRPS' OF STRUCTURE <fs_infotype> TO
+        FIELD-SYMBOL(<fs_sprps>).
+        ASSIGN COMPONENT 'OBJPS' OF STRUCTURE <fs_infotype> TO
+        FIELD-SYMBOL(<fs_objps>).
+
+        lv_subty   = gt_delete-lgart .
+        ASSIGN COMPONENT 'INFTY' OF STRUCTURE <fs_infotype> TO
+        <fs_field>.
+        <fs_field> = lv_infty .
+
+
+        CALL FUNCTION 'BAPI_EMPLOYEE_DEQUEUE'
+          EXPORTING
+            number = lv_pernr.
+
+        CALL FUNCTION 'BAPI_EMPLOYEE_ENQUEUE'
+          EXPORTING
+            number = lv_pernr.
+
+        CALL FUNCTION 'HR_INFOTYPE_OPERATION'
+          EXPORTING
+            infty         = lv_infty
+            number        = lv_pernr
+            objectid      = <fs_objps>
+            lockindicator = <fs_sprps>
+            subtype       = lv_subty
+            validityend   = lv_endda
+            validitybegin = lv_begda
+            record        = <fs_infotype>
+            operation     = 'MOD'
+            tclas         = 'A'
+            dialog_mode   = '0'
+            nocommit      = nocommit
+          IMPORTING
+            return        = return
+            key           = key
+          EXCEPTIONS
+            OTHERS        = 0.
+
+        IF sy-subrc <> 0 .
+          MESSAGE return TYPE 'S' .
+        ENDIF .
+
+        IF return-message IS NOT INITIAL .
+          READ TABLE gt_delete INDEX lv_index .
+          gt_delete-icon = '@5C@' .
+          gt_delete-msg  = return-message .
+          MODIFY gt_delete INDEX lv_index .
+
+        ELSE .
+          READ TABLE gt_delete INDEX lv_index .
+          gt_delete-icon = '@5B@' .
+          gt_delete-endda = xvals-value .
+          gt_delete-msg  = 'Kayıt sınırlandı' .
+          MODIFY gt_delete INDEX lv_index .
+
+          COMMIT WORK AND WAIT .
+
+        ENDIF .
+
+        CALL FUNCTION 'BAPI_EMPLOYEE_DEQUEUE'
+          EXPORTING
+            number = lv_pernr.
+
+*--
+        CLEAR : gt_delete , lv_pernr ,
+                lv_index , lv_pernr ,
+                lv_begda , lv_endda ,
+                lv_subty .
+
+*--
+      ENDLOOP.
+      UNASSIGN : <fs_infotype> .
+      PERFORM refresh_alv .
+    ENDIF .
+  ENDIF .
+
 ENDFORM.

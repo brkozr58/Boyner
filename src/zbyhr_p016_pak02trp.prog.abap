@@ -217,14 +217,39 @@ ENDFORM.                               " TARIHECEVIR
 *&---------------------------------------------------------------------*
 FORM tarihecevir2 USING    gun
                            gunfarki.
-  DATA: ay(2)  TYPE n, yil(4) TYPE n.
-  yil = ( gun * 100  ) DIV 36525.
-  gun = gun - ( yil * 36525  / 100   ).
-  ay  = ( gun * 10000 ) DIV 304375.
-  gun = gun - ( ay  * 304375 / 10000 ).
-  gunfarki+6(2) = gun.
+*  DATA: ay(2)  TYPE n, yil(4) TYPE n.
+*  yil = ( gun * 100  ) DIV 36525.
+*  gun = gun - ( yil * 36525  / 100   ).
+*  ay  = ( gun * 10000 ) DIV 304375.
+*  gun = gun - ( ay  * 304375 / 10000 ).
+*  gunfarki+6(2) = gun.
+*  gunfarki+4(2) = ay.
+*  gunfarki+0(4) = yil.
+
+
+   DATA gun2 TYPE i.
+  DATA ay TYPE i.
+  DATA yil TYPE i.
+
+  DATA tarih1 LIKE sy-datum.
+
+  gun2 = gun.
+*  ay = ay1.
+*  yil = yil1.
+  IF gun2 GE 30.
+    ay = ay + ( gun DIV 30 ).
+    gun2 = ( gun2 MOD 30 ) .
+    " normalde olması gereken üstteki ama
+    gun2 = ( gun2 MOD 30 ) - 1 .
+  ENDIF.
+  IF ay GE 12.
+    yil = yil + ( ay DIV 12 ).
+    ay = ay MOD 12.
+  ENDIF.
+  gunfarki+6(2) = gun2.
   gunfarki+4(2) = ay.
   gunfarki+0(4) = yil.
+*  p_tarih1 = tarih1.
 ENDFORM.                               " TARIHECEVIR2
 
 *&---------------------------------------------------------------------*
@@ -863,26 +888,69 @@ FORM count_p0001.
 
   DATA : lt_t028 TYPE TABLE OF zbyhr_t028 WITH HEADER LINE .
   DATA: lv_diff  TYPE i.
+*
+*  IF emektar IS NOT INITIAL.
+**    lv_begda = emektar.
+*    iper-fire = emektar.
+*
+*    SELECT * FROM zbyhr_t028 INTO  TABLE lt_t028
+*      WHERE pernr EQ pernr-pernr
+*        AND begda LE emektar .
+*
+*  ELSE.
+*
+*    SELECT * FROM zbyhr_t028 INTO  TABLE lt_t028
+*    WHERE pernr EQ pernr-pernr
+*      AND begda LE '20260101' .
+*
+*    lv_begda = iper-hire.
+*  ENDIF.
+*
+*
+*  IF lt_t028 IS NOT INITIAL.
+*    SORT lt_t028 ASCENDING BY begda endda .
+*    LOOP AT lt_t028  .
+*      IF sy-tabix EQ 1 .
+*        iper-fchire = lt_t028-begda.
+*      ENDIF.
+*      CASE lt_t028-persk.
+*        WHEN 'P'.
+*          IF lt_t028-begda LT lt_t028-endda.
+*            PERFORM tarihfarki USING lt_t028-begda lt_t028-endda temptarh.
+*            PERFORM tarihtoplami2  USING iper-ptime temptarh '' .
+*
+**            lv_pday = lv_pday + ( lt_t028-endda - lt_t028-begda ) + 1 .
+*          ENDIF.
+*        WHEN OTHERS.
+*          IF lt_t028-begda LT lt_t028-endda.
+*            PERFORM tarihfarki USING lt_t028-begda lt_t028-endda temptarh.
+*            PERFORM tarihtoplami2  USING iper-ftime temptarh '' .
+**            lv_fday = lv_fday + ( lt_t028-endda - lt_t028-begda ) + 1 .
+*          ENDIF.
+*      ENDCASE.
+*      lv_begda = lt_t028-endda.
+*    ENDLOOP.
+*  ENDIF.
 
-  IF emektar IS NOT INITIAL.
-    lv_begda = emektar.
-    iper-hire = emektar.
-
+  lv_begda = iper-hire.
+  IF emektar IS NOT INITIAL .
     SELECT * FROM zbyhr_t028 INTO  TABLE lt_t028
-      WHERE pernr EQ pernr-pernr
-        AND begda LE emektar .
-
-    ELSE.
-
+        WHERE pernr EQ pernr-pernr
+          AND begda LE emektar .
+    IF sy-subrc NE 0.
       SELECT * FROM zbyhr_t028 INTO  TABLE lt_t028
-      WHERE pernr EQ pernr-pernr
-        AND begda LE '20260101' .
+          WHERE pernr EQ pernr-pernr
+            AND begda LE '20260101' .
+    ENDIF.
+    iper-tfire = iper-fire.
+    iper-fire = emektar.
 
-      lv_begda = iper-hire.
+  ELSE.
+    SELECT * FROM zbyhr_t028 INTO  TABLE lt_t028
+        WHERE pernr EQ pernr-pernr
+          AND begda LE '20260101' .
   ENDIF.
-
-
-  IF lt_t028 IS NOT INITIAL.
+  IF sy-subrc EQ 0 .
     SORT lt_t028 ASCENDING BY begda endda .
     LOOP AT lt_t028  .
       IF sy-tabix EQ 1 .
@@ -942,6 +1010,16 @@ FORM count_p0001.
         ENDIF.
     ENDCASE.
   ENDPROVIDE.
+
+  IF emektar IS NOT INITIAL AND lt_t028[] IS INITIAL .
+    PROVIDE * FROM p0001 BETWEEN lv_begda AND iper-fire.
+    ENDPROVIDE.
+    IF sy-subrc NE 0 .
+      PERFORM tarihfarki USING lv_begda iper-fire temptarh.
+      PERFORM tarihtoplami2  USING iper-ftime temptarh '' .
+    ENDIF.
+
+  ENDIF.
 
   temptarh = iper-ftime. CLEAR iper-ftime.
   PERFORM tarihtoplami2  USING iper-ftime temptarh 'X' .
@@ -1064,9 +1142,15 @@ FORM count_ucret.
   DELETE rgdir WHERE srtza NE 'A'.
   SORT rgdir BY fpper DESCENDING.
 
-  LOOP AT rgdir WHERE fpper LE iper-fire+0(6).
-    EXIT.
-  ENDLOOP.
+  IF emektar IS NOT INITIAL .
+    LOOP AT rgdir WHERE fpper LE pottarih+0(6).
+      EXIT.
+    ENDLOOP.
+  ELSE.
+    LOOP AT rgdir WHERE fpper LE iper-fire+0(6).
+      EXIT.
+    ENDLOOP.
+  ENDIF.
   IF sy-subrc EQ 0.
     CLEAR py_result.
     PERFORM read_payroll USING rgdir-fpper r_srtza
@@ -1303,12 +1387,19 @@ FORM count_t7trk02_betrg_0.
 
 * Changing notice grouping according to infotype 0041 .
 
-  SELECT  * FROM t7trk01 WHERE ihbar  EQ t7trg04-ihbar
-                           AND ihbfr LE p_fark
-                           AND ihfto GE p_fark
-                           AND begda  LE iper-fire
-                           AND endda  GE iper-fire.
-  ENDSELECT.
+    DATA : fire TYPE datum.
+  IF iper-tfire IS INITIAL .
+    fire = iper-fire.
+  else.
+    fire = iper-tfire.
+  ENDIF.
+    SELECT  * FROM t7trk01 WHERE ihbar  EQ t7trg04-ihbar
+                             AND ihbfr LE p_fark
+                             AND ihfto GE p_fark
+                             AND begda  LE fire
+                             AND endda  GE fire.
+    ENDSELECT.
+
   iper-tavan = t7trk01-kdtav * h_fact.
 
 * Ek ücretler
@@ -2916,6 +3007,16 @@ ENDFORM.                               " WRITE_BLOKBETRG
 *&      Form  LOOP_FOR_BATCH
 *&---------------------------------------------------------------------*
 FORM loop_for_batch_0776.
+
+  DATA : lv_datum TYPE datum .
+
+
+  IF emektar IS NOT INITIAL .
+    lv_datum = pottarih .
+  ELSE.
+    lv_datum = iper-fire .
+  ENDIF.
+
   LOOP AT iper.
     READ TABLE i0776 WITH KEY pernr = iper-pernr.
     IF sy-subrc EQ 0.
@@ -2924,7 +3025,8 @@ FORM loop_for_batch_0776.
         IF iper-ktime GE '00010000' .
           PERFORM batch_input_0776 USING 'K'
                                   iper-kidem iper-pernr
-                                  iper-hire iper-fire
+*                                  iper-hire iper-fire
+                                  iper-hire lv_datum
                                   h_curr.
 
           PERFORM hatatablosu USING
@@ -2934,7 +3036,8 @@ FORM loop_for_batch_0776.
         IF iper-ihgun GT 0 AND iper-ihbar NE 0.
           PERFORM batch_input_0776 USING 'I'
                                  iper-kidem iper-pernr
-                                  iper-hire iper-fire
+*                                  iper-hire iper-fire
+                                  iper-hire lv_datum
                                   h_curr.
 
           PERFORM hatatablosu USING
@@ -4180,6 +4283,14 @@ ENDFORM.                    " read_payroll_results
 *&---------------------------------------------------------------------*
 FORM loop_for_batch.
 
+  DATA : lv_datum TYPE datum .
+
+
+  IF emektar IS NOT INITIAL .
+    lv_datum = pottarih .
+  ELSE.
+    lv_datum = iper-fire .
+  ENDIF.
   LOOP AT iper.
 
     READ TABLE i0776 WITH KEY pernr = iper-pernr.
@@ -4189,7 +4300,8 @@ FORM loop_for_batch.
           REFRESH bdcdata.
 
           PERFORM batch_input USING i0776-lgkid iper-kidem iper-pernr
-                            iper-hire iper-fire iper-fire
+*                            iper-hire iper-fire iper-fire
+                            iper-hire iper-fire lv_datum
                                      h_curr.
           PERFORM hatatablosu USING
           'KIDEM: Kıdem Ücreti Eklendi:' 'B' iper-kidem.
@@ -4198,25 +4310,29 @@ FORM loop_for_batch.
 
             PERFORM batch_input USING i0776-lgkek iper-kikek iper-pernr
 
-                               iper-hire iper-fire iper-fire
+*                               iper-hire iper-fire iper-fire
+                               iper-hire iper-fire lv_datum
                                h_curr.
             PERFORM hatatablosu USING
             'KIDEM: Ek Ücretler Eklendi:' 'B' iper-kikek.
           ENDIF.
           PERFORM hatatablosu USING
-         'KIDEM: Toplu Girdi Oluşuruldu:' 'B' iper-fire+0(6).
+*         'KIDEM: Toplu Girdi Oluşuruldu:' 'B' iper-fire+0(6).
+         'KIDEM: Toplu Girdi Oluşuruldu:' 'B' lv_datum+0(6).
         ENDIF.
       ELSE.
         PERFORM hatatablosu USING
         'KIDEM: Hata Oluştu: Kıdem Tutarı Sıfır.'
-        'B' iper-fire+0(6).
+*        'B' iper-fire+0(6).
+        'B' lv_datum+0(6).
       ENDIF.
 
       IF iper-ihgun GT 0 AND iper-ihbar NE 0.
 
         PERFORM batch_input USING i0776-lgihb iper-ihbar iper-pernr
 
-                                 iper-hire iper-fire iper-fire
+*                                 iper-hire iper-fire iper-fire
+                                 iper-hire iper-fire lv_datum
                                  h_curr.
         PERFORM hatatablosu USING
                    'İHBAR: Ek Ücretler Eklendi:' 'B' iper-ihbar.
@@ -4471,9 +4587,18 @@ ENDFORM.                    " write_potline_cc
 *----------------------------------------------------------------------*
 FORM count_cocuk.
 
+  DATA : lv_datum TYPE datum .
+
+
+  IF emektar IS NOT INITIAL .
+    lv_datum = pottarih .
+  ELSE.
+    lv_datum = iper-fire .
+  ENDIF.
 * Kıdem Raporuna bilgi amaçlı çeşitli alanların eklenmesi
 
-  rp-read-infotype pernr-pernr 0002 p0769 iper-fire iper-fire.
+*  rp-read-infotype pernr-pernr 0002 p0769 iper-fire iper-fire.
+  rp-read-infotype pernr-pernr 0002 p0769 iper-fire lv_datum.
   iper-gesch = p0002-gesch.
 
 
@@ -4483,7 +4608,8 @@ FORM count_cocuk.
     iper-cins = 'Kadın'.
   ENDIF.
 
-  rp-read-infotype pernr-pernr 0769 p0769 iper-fire iper-fire.
+*  rp-read-infotype pernr-pernr 0769 p0769 iper-fire iper-fire.
+  rp-read-infotype pernr-pernr 0769 p0769 iper-fire lv_datum.
   iper-sskno = p0769-sskno.
   PERFORM re7trg04 USING p0001-werks p0001-btrtl.
 * SELECT * FROM t7trt02 WHERE grtax EQ t7trg04-grtax AND

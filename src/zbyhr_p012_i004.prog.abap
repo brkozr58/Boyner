@@ -338,6 +338,8 @@ ENDFORM.                    " HRP1000_TEXT
 *&---------------------------------------------------------------------*
 FORM user_comm .
   CASE sy-ucomm.
+    WHEN '&ZEXC'.
+      PERFORM create_xls.
     WHEN '&PDF'.
       PERFORM create_pdf .
 
@@ -563,5 +565,230 @@ FORM create_pdf .
       dataprovider_exception  = 20
       control_flush_error     = 21
       OTHERS                  = 22.
+
+ENDFORM.
+*&---------------------------------------------------------------------*
+*& Form create_xls
+*&---------------------------------------------------------------------*
+FORM create_xls .
+  DATA:
+    lt_list  TYPE TABLE OF abaplist,
+    lt_ascii TYPE TABLE OF soli,
+    lt_excel TYPE TABLE OF string,
+    lv_line  TYPE string.
+  DATA:filename TYPE string.
+  DATA:path TYPE string.
+  DATA:fullpath TYPE string.
+  DATA:l_field TYPE string.
+
+*
+*  DATA : lv_left(100),
+*         lv_middle(100),
+*         lv_right(100).
+*
+*
+*
+*
+*  CALL FUNCTION 'SAVE_LIST'
+*    TABLES
+*      listobject = lt_list.
+*
+*  CALL FUNCTION 'LIST_TO_ASCI'
+*    TABLES
+*      listasci   = lt_ascii
+*      listobject = lt_list
+*    EXCEPTIONS
+*      empty_list = 1
+*      OTHERS     = 2.
+*
+*  DATA(lv_chk) = space..
+*
+*  LOOP AT lt_ascii INTO DATA(ls_ascii).
+*
+*    lv_line = ls_ascii-line.
+*    IF ls_ascii-line(1) NE '-'.
+*      IF ls_ascii-line(5) EQ '|KİŞİ'.
+*        lv_chk = 'X'.
+*        SPLIT ls_ascii-line AT '|'
+*          INTO DATA(lv_dummy)
+*               lv_left
+*               lv_middle
+*               lv_right  .
+*        REPLACE ALL OCCURRENCES OF '|' IN lv_left WITH cl_abap_char_utilities=>horizontal_tab.
+*        REPLACE ALL OCCURRENCES OF '|' IN lv_middle WITH cl_abap_char_utilities=>horizontal_tab.
+*        REPLACE ALL OCCURRENCES OF '|' IN lv_right WITH cl_abap_char_utilities=>horizontal_tab.
+*
+*        CONCATENATE
+*        lv_left(8)
+*        lv_left+8(32)
+*        lv_left+40(7)
+*        lv_left+47(10)
+*        lv_left+57(17)
+*
+*        lv_middle(5)
+*        lv_middle+5(40)
+*        lv_middle+45(15)
+*        lv_middle+60(15)
+*
+*        lv_right(5)
+*        lv_right+5(40)
+*        lv_right+45(15)
+*
+*          INTO lv_line
+*        SEPARATED BY cl_abap_char_utilities=>horizontal_tab.
+*        APPEND lv_line TO lt_excel.
+*        CONTINUE.
+*      ENDIF.
+*      IF lv_chk = 'X'.
+*        CLEAR lv_line.
+*
+*        SPLIT ls_ascii-line AT '|'
+*          INTO lv_dummy
+*               lv_left
+*               lv_middle
+*               lv_right  .
+*        REPLACE ALL OCCURRENCES OF '|' IN lv_left WITH cl_abap_char_utilities=>horizontal_tab.
+*        REPLACE ALL OCCURRENCES OF '|' IN lv_middle WITH cl_abap_char_utilities=>horizontal_tab.
+*        REPLACE ALL OCCURRENCES OF '|' IN lv_right WITH cl_abap_char_utilities=>horizontal_tab.
+*
+*        CONCATENATE
+*        lv_left(8)
+*        lv_left+8(31)
+*        lv_left+39(9)
+*        lv_left+49(11)
+*        lv_left+60(15)
+*
+*        lv_middle(5)
+*        lv_middle+5(32)
+*        lv_middle+39(15)
+*        lv_middle+54(15)
+*
+*        lv_right(5)
+*        lv_right+5(32)
+*        lv_right+38(15)
+*
+*          INTO lv_line
+*        SEPARATED BY cl_abap_char_utilities=>horizontal_tab.
+*        REPLACE ALL OCCURRENCES OF '|' IN lv_line WITH cl_abap_char_utilities=>horizontal_tab.
+*        APPEND lv_line TO lt_excel.
+*      ELSE.
+*        REPLACE ALL OCCURRENCES OF '|' IN lv_line WITH cl_abap_char_utilities=>horizontal_tab.
+*        APPEND lv_line TO lt_excel.
+*      ENDIF.
+*
+*    ELSE.
+*      CLEAR lv_chk.
+*      CONTINUE.
+*    ENDIF.
+*
+*  ENDLOOP.
+
+  CALL METHOD cl_gui_frontend_services=>file_save_dialog
+    EXPORTING
+      window_title         = 'Dosya nereye indirilsin? '
+      default_extension    = 'XLS'
+      default_file_name    = 'Kapak İcmal.xls'
+    CHANGING
+      filename             = filename
+      path                 = path
+      fullpath             = fullpath
+    EXCEPTIONS
+      cntl_error           = 1
+      error_no_gui         = 2
+      not_supported_by_gui = 3
+      OTHERS               = 4.
+*    CHECK fullpath IS NOT INITIAL .
+*
+*    CALL FUNCTION 'GUI_DOWNLOAD'
+*      EXPORTING
+*        filename = fullpath
+*        filetype = 'ASC'
+*      TABLES
+*        data_tab = lt_excel.
+**      data_tab = lt_ascii[].
+
+
+  LOOP AT gt_kostl.
+*    READ TABLE ssort WITH KEY
+    DESCRIBE TABLE ssort LINES DATA(lv_i).
+    READ TABLE ssort INDEX 1 .
+    lv_line = ssort-ftxt.
+    IF lv_i GT 1 .
+      READ TABLE ssort INDEX 2 .
+      CONCATENATE
+        lv_line
+        ssort-ftxt
+        INTO lv_line
+      SEPARATED BY cl_abap_char_utilities=>horizontal_tab.
+    ENDIF.
+    APPEND lv_line TO lt_excel.
+
+    lv_line = gt_kostl-txt01.
+    CONCATENATE path gt_kostl-txt01 INTO fullpath.
+    IF lv_i GT 1 .
+      CONCATENATE
+        lv_line
+        gt_kostl-txt02
+        INTO lv_line
+      SEPARATED BY cl_abap_char_utilities=>horizontal_tab.
+      CONCATENATE fullpath gt_kostl-txt02 INTO fullpath SEPARATED BY '-'.
+    ENDIF.
+    CONCATENATE fullpath '.xls' INTO fullpath .
+    APPEND lv_line TO lt_excel.
+
+    CONCATENATE
+      'KİŞİ'
+      'ÜCRET TÜRÜ'
+      'ÜCRET TANIMI'
+      'GÜN'
+      'MATRAH'
+      'SAAT'
+      'TUTAR'
+      INTO lv_line
+    SEPARATED BY cl_abap_char_utilities=>horizontal_tab.
+    APPEND lv_line TO lt_excel.
+
+    DATA lv_count TYPE char5.
+    DATA lv_gun TYPE char15.
+    DATA lv_mat TYPE char15.
+    DATA lv_saat TYPE char15.
+    DATA lv_amt TYPE char15.
+
+    LOOP AT gt_w WHERE val01 EQ gt_kostl-val01
+                   AND val02 EQ gt_kostl-val02
+                   AND seqno NE 250.
+      lv_count = gt_w-count  .
+      WRITE gt_w-num TO lv_gun.
+      WRITE gt_w-mat TO lv_mat.
+      WRITE gt_w-mat TO lv_mat.
+      WRITE gt_w-saat TO lv_saat.
+      WRITE gt_w-amt TO lv_amt.
+      CONCATENATE
+        lv_count
+        gt_w-slga
+        gt_w-lgtxt
+        lv_gun
+        lv_mat
+        lv_saat
+        lv_amt
+        INTO lv_line
+      SEPARATED BY cl_abap_char_utilities=>horizontal_tab.
+      APPEND lv_line TO lt_excel.
+
+
+
+    ENDLOOP.
+
+    CHECK fullpath IS NOT INITIAL .
+
+    CALL FUNCTION 'GUI_DOWNLOAD'
+      EXPORTING
+        filename = fullpath
+        filetype = 'ASC'
+      TABLES
+        data_tab = lt_excel.
+*      data_tab = lt_ascii[].
+  ENDLOOP.
+
 
 ENDFORM.
