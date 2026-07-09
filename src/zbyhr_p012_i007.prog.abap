@@ -8,8 +8,8 @@
 FORM write_to_screen2 .
 
   DATA fcode TYPE TABLE OF sy-ucomm.
-      fcode = VALUE #(
-    ( '&ZEXC' )   ).
+*      fcode = VALUE #(
+*    ( '&ZEXC' )   ).
   SET PF-STATUS 'STATUS_02' EXCLUDING fcode .
 *  SORT GT_KOSTL ASCENDING BY KOSTL.
   DELETE gt_kostl WHERE val01 EQ space.

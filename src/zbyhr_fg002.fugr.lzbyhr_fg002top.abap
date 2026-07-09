@@ -5,9 +5,10 @@ FUNCTION-POOL zbyhr_fg002.                  "MESSAGE-ID ..
 TYPES : BEGIN OF ts_person,
           pernr    TYPE persno,
           ename    TYPE emnam,
-          password TYPE i,
-          bin_file TYPE xstring,
-          pass_xst TYPE xstring,
+          password TYPE i,            " ham şifre
+          str_pass TYPE string,       " Servise gönderilecek şifre
+          pass_xst TYPE xstring,      " binary şifre
+          bin_file TYPE xstring,      " bin dosya
           trecord  TYPE rspc_t_text,
           tpdf     TYPE tlinet,
           return   TYPE string,

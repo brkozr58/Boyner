@@ -78,7 +78,11 @@ FORM get_person_payroll_pdf  TABLES   it_person TYPE  tt_person
           invalid_print_params   = 2
           invalid_archive_params = 3
           OTHERS                 = 4.
-      ls_print_parameters-pdest = 'ZPDF'.
+      IF sy-sysid EQ 'JBE'.
+        ls_print_parameters-pdest = 'PDF_YAZICI'.
+      ELSE.
+        ls_print_parameters-pdest = 'ZPDF'.
+      ENDIF.
       IF iv_low  IS NOT INITIAL AND iv_high IS NOT INITIAL.
         APPEND VALUE #( sign  = 'I' option = 'BT' low = iv_low high = iv_high ) TO lr_range.
       ELSEIF iv_low  IS NOT INITIAL AND iv_high IS INITIAL.
@@ -174,7 +178,11 @@ FORM get_person_payroll_pdf  TABLES   it_person TYPE  tt_person
             invalid_archive_params = 3
             OTHERS                 = 4.
 
-        ls_print_parameters-pdest = 'ZPDF'.
+        IF sy-sysid EQ 'JBE'.
+          ls_print_parameters-pdest = 'PDF_YAZICI'.
+        ELSE.
+          ls_print_parameters-pdest = 'ZPDF'.
+        ENDIF.
         IF iv_low  IS NOT INITIAL AND iv_high IS NOT INITIAL.
           APPEND VALUE #( sign  = 'I' option = 'BT' low = iv_low high = iv_high ) TO lr_range.
         ELSEIF iv_low  IS NOT INITIAL AND iv_high IS INITIAL.
@@ -370,20 +378,36 @@ FORM set_pdf_password_service  TABLES it_person TYPE  tt_person  .
           IMPORTING
             ran_int     = <wa>-password.
 
+        lv_pdf_base64 = cl_http_utility=>encode_x_base64( <wa>-bin_file ).
         PERFORM encrpt_values USING <wa>-password
-                           CHANGING <wa>-pass_xst <wa>-bin_file.
+                           CHANGING <wa>-pass_xst
+                                    <wa>-bin_file
+                                    lv_pdf_base64
+                                    <wa>-str_pass.
+
+        "şifreyi aes yapmadan gönder
+        <wa>-str_pass = <wa>-password.
+
+*        DATA: lt_text TYPE STANDARD TABLE OF string.
+*        APPEND lv_pdf_base64 TO lt_text.
+*        CALL METHOD cl_gui_frontend_services=>gui_download
+*          EXPORTING
+*            filename = 'C:\TEMP\encrypted.pdf'
+*            filetype = 'ASC'
+*          CHANGING
+*            data_tab = lt_text.
 
         lv_url = 'https://integration-suite-boyner-dev.it-cpi024-rt.cfapps.eu10-002.hana.ondemand.com/cxf/SFBordroEncryption'.
-        lv_pdf_base64 = cl_http_utility=>encode_x_base64( <wa>-bin_file ).
-
+*        lv_pdf_base64 = cl_http_utility=>encode_x_base64( <wa>-bin_file ).
         CLEAR lv_soap.
+
         lv_soap = |<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" |
                   && |xmlns:tem="http://tempuri.org/">|
                   && |<soapenv:Header/>|
                   && |<soapenv:Body>|
                   && |<tem:setEncryption>|
                   && |<tem:LineArray>{ lv_pdf_base64 }</tem:LineArray>|
-                  && |<tem:Password>{ <wa>-pass_xst }</tem:Password>|
+                  && |<tem:Password>{ <wa>-str_pass }</tem:Password>|
                   && |</tem:setEncryption>|
                   && |</soapenv:Body>|
                   && |</soapenv:Envelope>|.
@@ -425,25 +449,26 @@ FORM set_pdf_password_service  TABLES it_person TYPE  tt_person  .
           IN lv_response
           IGNORING CASE
           SUBMATCHES lv_base64_result.
+*        <wa>-bin_file = cl_http_utility=>decode_x_base64( lv_base64_result ).
 
         IF lv_base64_result IS NOT INITIAL .
+
+          <wa>-bin_file = cl_http_utility=>decode_x_base64( lv_base64_result ).
           lo_encrypt->decrypt_text(
             EXPORTING
-              i_key              = 'BOYNER_ZARF'
+              i_key              = 'BOYNER_ZARF_2026'
               i_iv               = '2026010120260101'
-              i_encoded_text     = lv_base64_result
+              i_encoded_text_xst = <wa>-bin_file
             IMPORTING
               err_text           = DATA(lv_error)
               e_text_str         = DATA(e_text_str)
               e_text_xstr        = DATA(e_text_xstr)
           ).
 
+          <wa>-bin_file = e_text_xstr.
           <wa>-return = CONV text100( lv_error ) .
           CLEAR lv_error.
-          CLEAR <wa>-bin_file .
 
-*        <wa>-bin_file = cl_http_utility=>decode_x_base64( lv_base64_result ).
-          <wa>-bin_file = cl_http_utility=>decode_x_base64( e_text_str ).
         ELSE.
           <wa>-return = 'Dosya alınamadı'.
         ENDIF.
@@ -682,10 +707,16 @@ FORM send_mail_pass_service  TABLES it_person TYPE  tt_person.
         lv_auth        TYPE string,
         lv_rand2       TYPE string,
         lv_url         TYPE string,
-        lo_http_client TYPE REF TO if_http_client.
+        lo_http_client TYPE REF TO if_http_client,
+        lv_smstxt      TYPE string,
+        lv_smsx        TYPE xstring.
 
   DATA : lv_user TYPE string,
          lv_pass TYPE string.
+  DATA : lo_encrypt TYPE REF TO zbyhr_cl_encryption.
+  CREATE OBJECT lo_encrypt.
+
+
 
   LOOP AT it_person ASSIGNING FIELD-SYMBOL(<wa>) WHERE return IS INITIAL .
     CLEAR: lv_json,lv_rand2.
@@ -695,11 +726,27 @@ FORM send_mail_pass_service  TABLES it_person TYPE  tt_person.
                        begda LE @sy-datum AND
                        usrty EQ 'CELL'  AND
                        endda GE @sy-datum.
-*        lv_rand2 = <wa>-password.
-        lv_rand2 = <wa>-pass_xst.
+        lv_rand2 = <wa>-password.
+*        lv_rand2 = <wa>-pass_xst.
+
+        CONCATENATE TEXT-001 TEXT-002 lv_rand2 INTO lv_smstxt SEPARATED BY space.
+
+*
+*        lo_encrypt->encrypt_text(
+*          EXPORTING
+*            i_key         = 'BOYNER_ZARF_2026'
+*            i_iv          = '2026010120260101'
+*            i_text        = CONV #( lv_smstxt )
+*          RECEIVING
+*            e_text_enc    = lv_smstxt
+*        ).
+
+*        lv_smstxt = cl_http_utility=>encode_x_base64( unencoded = lv_smsx ).
+
         CONCATENATE lv_json '{ '
                  '"PhoneNumber":'           '"' lv_tel '",'
-                 '"SmsContent":' '"' TEXT-001 '' TEXT-002 '' lv_rand2 '",'
+                 '"SmsContent":' '"' lv_smstxt '",'
+*                 '"SmsContent":' '"' TEXT-001 '' TEXT-002 '' lv_rand2 '",'
 *                 '"SmsContent":' '"Sifreniz:' lv_rand2 '",'
                  '"Originator": 1,'
                  '"SmsDeliveryType": 2,'
@@ -776,32 +823,39 @@ ENDFORM.
 *&---------------------------------------------------------------------*
 FORM encrpt_values  USING p_pass
                  CHANGING c_pass
-                          c_bin_file   .
+                          c_bin_file
+                          c_base64
+                          c_srt_pass  .
   DATA : lo_encrypt TYPE REF TO zbyhr_cl_encryption.
   DATA : lv_key TYPE xstring .
   DATA : lv_kiv TYPE xstring .
   CREATE OBJECT lo_encrypt.
 
-*  lv_key = cl_bcs_convert=>string_to_xstring( iv_string  = 'BOYNER_ZARF' ).
-*  lv_kiv = cl_bcs_convert=>string_to_xstring( iv_string  = '2026010120260101' ).
 
   lo_encrypt->encrypt_text(
     EXPORTING
-      i_key         = 'BOYNER_ZARF'
+      i_key         = 'BOYNER_ZARF_2026'
       i_iv          = '2026010120260101'
-      i_xstring     = c_bin_file
+      i_text        = c_base64
+*      i_xstring     = c_bin_file
     RECEIVING
-      e_text_enc    = c_bin_file
+*      e_text_enc    = c_bin_file
+      e_text_enc    = c_base64
   ).
+*  c_base64 = cl_http_utility=>encode_x_base64( unencoded = c_bin_file ).
 
   lo_encrypt->encrypt_text(
     EXPORTING
-      i_key         = 'BOYNER_ZARF'
+      i_key         = 'BOYNER_ZARF_2026'
       i_iv          = '2026010120260101'
       i_text        = CONV #( p_pass )
     RECEIVING
-      e_text_enc    = c_pass
+*      e_text_enc    = c_pass
+      e_text_enc    = c_srt_pass
   ).
+
+*  c_srt_pass = cl_http_utility=>encode_x_base64( unencoded = c_pass ).
+
 
 
 ENDFORM.

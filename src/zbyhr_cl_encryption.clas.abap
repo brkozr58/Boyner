@@ -10,11 +10,11 @@ public section.
   methods ENCRYPT_TEXT
     importing
       !I_KEY type STRING
-      !I_IV type STRING
+      value(I_IV) type STRING optional
       value(I_TEXT) type STRING optional
       value(I_XSTRING) type XSTRING optional
     returning
-      value(E_TEXT_ENC) type XSTRING .         " Encrypted Base64 encoded string
+      value(E_TEXT_ENC) type STRING .          " Encrypted Base64 encoded string
   methods DECRYPT_TEXT
     importing
       !I_KEY type STRING
@@ -66,25 +66,21 @@ CLASS ZBYHR_CL_ENCRYPTION IMPLEMENTATION.
     IF lv_xstring IS NOT INITIAL.
       TRY.
 
-          " Add 16-byte padding before decryption
-          CONCATENATE c_iv(16) lv_xstring INTO lv_xstring IN BYTE MODE.
-
-          " Decrypt the ciphertext
-          DATA: lv_message_decrypted TYPE xstring.
+          " 5. Şifreyi ÇÖZÜYORUZ (DECRYPT)
           cl_sec_sxml_writer=>decrypt(
             EXPORTING
               ciphertext = lv_xstring
               key        = lv_key
-              algorithm  = cl_sec_sxml_writer=>co_aes256_algorithm_pem
+              algorithm  = cl_sec_sxml_writer=>co_aes128_algorithm_pem
             IMPORTING
-              plaintext  = e_text_xstr  ).
+              plaintext  = e_text_xstr ).
 
           " Convert the decrypted xstring to a string for output
           cl_abap_conv_in_ce=>create( input = e_text_xstr )->read( IMPORTING data = e_text_str ).
 
         CATCH cx_sec_sxml_encrypt_error INTO DATA(oref).
           " Handle decryption errors
-          err_text = 'Şifre çözme başarısız oldu: ' && oref->get_longtext( ).
+          err_text = 'Şifre Çözme Hatası! (Key, IV veya Dosya içeriği uyuşmuyor): ' && oref->get_text( ).
       ENDTRY.
     ELSE.
       " Handle the case where the xstring is empty after decoding
@@ -121,21 +117,21 @@ CLASS ZBYHR_CL_ENCRYPTION IMPLEMENTATION.
       EXPORTING
         plaintext  = lv_xstring
         key        = lv_key
-        algorithm  = cl_sec_sxml_writer=>co_aes256_algorithm_pem
+        algorithm  = cl_sec_sxml_writer=>co_aes128_algorithm_pem
         iv         = lv_kiv
       IMPORTING
-        ciphertext = e_text_enc ).
+        ciphertext = lv_message ).
 *        ciphertext = lv_message ).
 
 *    " Remove the 16-byte padding before encoding
-*    lr_xstring = lv_message+16.
+    lr_xstring = lv_message+16.
 
 *    " Encode the result as Base64
-*    CALL FUNCTION 'SCMS_BASE64_ENCODE_STR'
-*      EXPORTING
-*        input  = lr_xstring
-*      IMPORTING
-*        output = e_text_enc.
+    CALL FUNCTION 'SCMS_BASE64_ENCODE_STR'
+      EXPORTING
+        input  = lr_xstring
+      IMPORTING
+        output = e_text_enc.
 
   ENDMETHOD.
 
